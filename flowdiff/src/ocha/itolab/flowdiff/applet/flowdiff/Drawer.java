@@ -87,6 +87,8 @@ public class Drawer implements GLEventListener {
 	int hdiff = 50;
 	int numDiff = 0;
 
+	public static StreamlineArray slarray = new StreamlineArray();
+	
 	/**
 	 * Constructor
 	 *
@@ -276,10 +278,10 @@ public class Drawer implements GLEventListener {
 	}
 	public void setStreamlineArray() {
 		// TODO 自動生成されたメソッド・スタブ
-		arrsl1 = StreamlineArray.streamlines1;
-		arrsl2 = StreamlineArray.streamlines2;
-		deplist = StreamlineArray.deperture;
-		scolor = StreamlineArray.color;
+		arrsl1 = slarray.streamlines1;
+		arrsl2 = slarray.streamlines2;
+		deplist = slarray.deperture;
+		scolor = slarray.color;
 	}
 
 	/**

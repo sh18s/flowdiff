@@ -30,6 +30,7 @@ import ocha.itolab.flowdiff.core.data.Grid;
 import ocha.itolab.flowdiff.core.streamline.Streamline;
 import ocha.itolab.flowdiff.core.streamline.StreamlineArray;
 import ocha.itolab.flowdiff.core.streamline.StreamlineGenerator;
+import ocha.itolab.flowdiff.core.seedselect.*;
 
 
 public class ViewingPanel extends JPanel {
@@ -47,7 +48,7 @@ public class ViewingPanel extends JPanel {
 
 
 	public JButton  openDataButton, viewResetButton, viewBuildingButton,generateButton, viewVectorButton, viewCriticalPoint, viewVorticity,
-	resetAllStreamlineButton,removeStreamlineButton,highlightStreamline;
+	resetAllStreamlineButton,removeStreamlineButton,highlightStreamline, autoStreamlineButton;
 	public JRadioButton viewRotateButton, viewScaleButton, viewShiftButton, noneGridView, grid1View, grid2View, bothGridView,
 	noneRotView, grid1RotView, grid2RotView, bothRotView,viewRotate0,viewRotate1,viewRotate2,viewRotate3,viewRotate4,viewRotate5,
 	showDiffAngView,showDiffLenView,noneDiffView,showDiffVectorView,showDiffVectorViewLength;
@@ -186,7 +187,7 @@ public class ViewingPanel extends JPanel {
 
 		// パネル4
 		JPanel p4 = new JPanel();
-		p4.setLayout(new GridLayout(10,1));
+		p4.setLayout(new GridLayout(11,1));
 		p4.add(new JLabel("流線表示"));
 		p4.add(new JLabel("ピンク：建物有(ベクトル白)"));
 		p4.add(new JLabel("水色：建物無(ベクトル赤)"));
@@ -218,7 +219,10 @@ public class ViewingPanel extends JPanel {
 		p4.add(sliderZ);
 		p4.add(zText);
 		generateButton = new JButton("流線決定");
+		autoStreamlineButton = new JButton("流線自動選択");
 		p4.add(generateButton);
+		p4.add(autoStreamlineButton);
+
 
 		// パネル5
 		JPanel p5 = new JPanel();
@@ -364,6 +368,7 @@ public class ViewingPanel extends JPanel {
 		resetAllStreamlineButton.addActionListener(actionListener);
 		removeStreamlineButton.addActionListener(actionListener);
 		highlightStreamline.addActionListener(actionListener);
+		autoStreamlineButton.addActionListener(actionListener);
 	}
 
 	/**
@@ -426,15 +431,23 @@ public class ViewingPanel extends JPanel {
 				eIjk[2] = sliderZ.getValue() * numg[2] / 100;
 				StreamlineGenerator.generate(grid1, sl1, eIjk, null);
 				StreamlineGenerator.generate(grid2, sl2, eIjk, null);
-				StreamlineArray.addList(sl1, sl2, eIjk);
-				canvas.setStreamline(StreamlineArray.deperture, StreamlineArray.streamlines1, StreamlineArray.streamlines2, StreamlineArray.color);
+				Drawer.slarray.addList(sl1, sl2, eIjk);
+				canvas.setStreamline(Drawer.slarray.deperture, Drawer.slarray.streamlines1, Drawer.slarray.streamlines2, Drawer.slarray.color);
 				//canvas.setStreamlineHighColor(StreamlineArray.color);
 				//canvas.setStreamlineArray(Streamlinearray);
 				model.addElement(" (横："+eIjk[0]+", 高さ："+eIjk[1]+2+", 縦："+eIjk[2]+")");
 			}
 
+			
+			if (buttonPushed == autoStreamlineButton) {
+				StreamlineArray slset = BestSeedSetSelector.selectRandomly(grid1, grid2);
+				Drawer.slarray = slset;
+				canvas.setStreamline(Drawer.slarray.deperture, Drawer.slarray.streamlines1, Drawer.slarray.streamlines2, Drawer.slarray.color);
+			}
+			
+			
 			if(buttonPushed == resetAllStreamlineButton){
-				StreamlineArray.clearAllList();
+				Drawer.slarray.clearAllList();
 				model.clear();
 			}
 			if(buttonPushed == removeStreamlineButton){
@@ -444,7 +457,7 @@ public class ViewingPanel extends JPanel {
 				if (!list.isSelectionEmpty()){
 					if (index.length > 0){
 						for (int i = index.length-1 ; i > -1 ; i--){
-							StreamlineArray.clearList(index[i]);
+							Drawer.slarray.clearList(index[i]);
 							model.remove(index[i]);
 						}
 					}
@@ -459,7 +472,7 @@ public class ViewingPanel extends JPanel {
 					//StreamlineArray.setStreamlineColor(index, !(StreamlineArray.color.get(index)));
 					if (index.length > 0){
 						for (int i = index.length-1 ; i > -1 ; i--){
-							StreamlineArray.setStreamlineColor(index[i], !(StreamlineArray.color.get(index[i])));
+							Drawer.slarray.setStreamlineColor(index[i], !(Drawer.slarray.color.get(index[i])));
 						}
 					}
 				}

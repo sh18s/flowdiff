@@ -42,7 +42,7 @@ public class Streamline {
 	 * 任意の頂点の座標値を設定する
 	 */
 	public void setPosition(int id, double x, double y, double z) {
-		Vertex v = (Vertex)vertices.elementAt(id);
+		Vertex v = (Vertex)vertices.elementAt(id); //指定されたインデックスの要素を返す
 		v.position[0] = x;
 		v.position[1] = y;
 		v.position[2] = z;

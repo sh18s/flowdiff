@@ -169,16 +169,28 @@ public class StreamlineDifferenceEvaluator {
 	 * 流線ペア番号と距離をまとめるクラス
 	 */
 	public class RankValue{
-		int num;
-		double distance;
+		public int num;
+		public double distance;
 	}
 	
-	public class RankValueStore{
-		public RankValue rankValueStore(int i, double dist){
+	public class PutRankValue{
+		public RankValue putRankValue(int i, double dist){
 			RankValue value = new RankValue();
 			value.num = i;
 			value.distance = dist;
 			return value;
+		}
+	}
+	
+	public class RankValue2{
+		public int num;
+		public double dist;
+		
+		public void putNum(int slNum){
+			num = slNum;
+		}
+		public void putDist(double distance){
+			dist = distance;
 		}
 	}
 
@@ -196,10 +208,30 @@ public class StreamlineDifferenceEvaluator {
 			for(Streamline sl2: list2){
 				int i = 0;  // counter
 				double distance = calcPairDistance(sl1, sl2);
-				RankValueStore rvStore = new RankValueStore();
+				PutRankValue putRV = new PutRankValue();
 				// TODO:binary search
-				RankValue value = rvStore.rankValueStore(i, distance);
+				RankValue value = putRV.putRankValue(i, distance);
 				rankList.add(i, value);
+			}
+		}
+		return rankList;
+	}
+	
+	static LinkedList<RankValue2> rankStreamlineDistance2(StreamlineArray slset){
+		LinkedList<RankValue2> rankList = new LinkedList<RankValue2>();
+		
+		ArrayList<Streamline> list1 = slset.getAllList1();
+		ArrayList<Streamline> list2 = slset.getAllList2();
+		
+		for(Streamline sl1: list1){
+			for(Streamline sl2: list2){
+				int i = 0;  // counter
+				double distance = calcPairDistance(sl1, sl2);
+				RankValue2 value2 = new RankValue2();
+				// TODO:binary search
+				value2.putNum(i);
+				value2.putDist(distance);
+				rankList.add(i, value2);
 			}
 		}
 		return rankList;
@@ -251,4 +283,3 @@ public class StreamlineDifferenceEvaluator {
 	}
 
 }
-

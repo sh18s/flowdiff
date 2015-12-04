@@ -140,8 +140,6 @@ public static ArrayList<Integer> elementIds = new ArrayList<Integer>();
 			edge2[0] = gppos2[0] - gppos3[0];
 			edge2[1] = gppos2[1] - gppos3[1];
 			edge2[2] = gppos2[2] - gppos3[2];
-			
-			// 2辺の外積から、三角形の法線ベクトルを求める
 			trinormal[0] = edge1[1] * edge2[2] - edge2[1] * edge1[2];
 			trinormal[1] = edge1[2] * edge2[0] - edge2[2] * edge1[0];
 			trinormal[2] = edge1[0] * edge2[1] - edge2[0] * edge1[1];

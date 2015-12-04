@@ -218,6 +218,7 @@ public class StreamlineDifferenceEvaluator {
 				else{
 					System.out.println('a');
 				}
+				int i = 0;
 				rankList.add(i, value);
 			}
 		}

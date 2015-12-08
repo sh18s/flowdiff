@@ -167,70 +167,28 @@ public class StreamlineDifferenceEvaluator {
 	
 	
 	/**
-	 * 流線ペア番号と距離をまとめるクラス2
-	 */
-	public static class RankValue2{
-		public int num;
-		public double distance;
-	}
-	
-	public static class PutRankValue{
-		public static RankValue2 putRankValue(int i, double dist){
-			RankValue2 value = new RankValue2();
-			value.num = i;
-			value.distance = dist;
-			return value;
-		}
-	}
-	
-	/**
 	 * 流線ペア番号と距離をまとめるクラス
 	 */
 	public static class RankValue{
 		public int num;
 		public double distance;
-		
-		RankValue(int num, double distance){
-			this.num = num;
-			this.distance = distance;
-		}
-		
 	}
 	
-	/**
-	 * すべての流線ペアについて差分を計算し、その上位N本を決定する
-	 */
-	static LinkedList<RankValue> rankStreamlineDistance(StreamlineArray slset){
-		LinkedList<RankValue> rankList = new LinkedList<RankValue>();
-		
-		ArrayList<Streamline> list1 = slset.getAllList1();
-		ArrayList<Streamline> list2 = slset.getAllList2();
-		
-		for(Streamline sl1: list1){
-			for(Streamline sl2: list2){
-				int counter = 0;
-				double distance = calcPairDistance(sl1, sl2);
-				RankValue value = new RankValue(counter, distance);
-				// TODO: binary search
-				if(counter == 0){
-					rankList.add(0,value);
-				}
-				else{
-					System.out.println('a');
-				}
-				int i = 0;
-				rankList.add(i, value);
-			}
+	public static class PutRankValue{
+		public static RankValue putRankValue(int i, double dist){
+			RankValue value = new RankValue();
+			value.num = i;
+			value.distance = dist;
+			return value;
 		}
-		return rankList;
 	}
 
-
+	
 	/**
 	 * すべての流線ペアについて差分を計算し、その上位N本を決定する2
 	 */
-	static LinkedList<RankValue2> rankStreamlineDistance2(StreamlineArray slset){
-		LinkedList<RankValue2> rankList = new LinkedList<RankValue2>();
+	static LinkedList<RankValue> rankStreamlineDistance2(StreamlineArray slset){
+		LinkedList<RankValue> rankList = new LinkedList<RankValue>();
 		
 		ArrayList<Streamline> list1 = slset.getAllList1();
 		ArrayList<Streamline> list2 = slset.getAllList2();
@@ -240,8 +198,8 @@ public class StreamlineDifferenceEvaluator {
 				int i = 0;  // counter
 				double distance = calcPairDistance(sl1, sl2);
 				// TODO:binary search
-				RankValue2 value2 = PutRankValue.putRankValue(i, distance);
-				rankList.add(i, value2);
+				RankValue value = PutRankValue.putRankValue(i, distance);
+				rankList.add(i, value);
 			}
 		}
 		return rankList;

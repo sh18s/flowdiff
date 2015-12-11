@@ -1,5 +1,5 @@
 package ocha.itolab.flowdiff.core.seedselect;
-import java.util.Comparator;
+//import java.util.Comparator;
 import java.util.LinkedList;
 
 import ocha.itolab.flowdiff.core.seedselect.StreamlineDifferenceEvaluator.RankValue;
@@ -7,7 +7,7 @@ import ocha.itolab.flowdiff.core.seedselect.StreamlineDifferenceEvaluator.RankVa
 
 public class BinarySearch{
 
-	public static LinkedList<RankValue> main(LinkedList<RankValue> rankList, RankValue key){
+	public static LinkedList<RankValue> binarySearch(LinkedList<RankValue> rankList, RankValue key){
 		int pLeft = 0;
 		int pRight = rankList.size() -1;
 		

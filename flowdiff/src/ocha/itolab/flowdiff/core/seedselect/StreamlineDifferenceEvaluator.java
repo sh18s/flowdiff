@@ -4,7 +4,7 @@ import ocha.itolab.flowdiff.core.data.*;
 import ocha.itolab.flowdiff.core.streamline.*;
 import java.util.*;
 import java.util.LinkedList;
-import java.util.Collections;
+import ocha.itolab.flowdiff.core.seedselect.BinarySearch;
 
 public class StreamlineDifferenceEvaluator {
 
@@ -185,7 +185,7 @@ public class StreamlineDifferenceEvaluator {
 
 	
 	/**
-	 * すべての流線ペアについて差分を計算し、その上位N本を決定する2
+	 * すべての流線ペアについて差分を計算し、その上位N本を決定する
 	 */
 	static LinkedList<RankValue> rankStreamlineDistance2(StreamlineArray slset){
 		LinkedList<RankValue> rankList = new LinkedList<RankValue>();
@@ -197,11 +197,18 @@ public class StreamlineDifferenceEvaluator {
 			for(Streamline sl2: list2){
 				int i = 0;  // counter
 				double distance = calcPairDistance(sl1, sl2);
-				// TODO:binary search
 				RankValue value = PutRankValue.putRankValue(i, distance);
-				rankList.add(i, value);
+				rankList = BinarySearch.binarySearch(rankList, value);
+				i ++;
 			}
 		}
+		
+		for(int i = 0; i < list1.size(); i ++){
+			Streamline sl1 = list1.get(i);
+			Streamline sl2 = list1.get(i);
+		}
+		
+		
 		return rankList;
 	}
 	

@@ -36,6 +36,27 @@ public class StreamlineDifferenceEvaluator {
 	
 	}
 
+	/**
+	 * 流線ペアの形状エントロピーを算出し、ランキングする
+	 */
+	
+	/**
+	 * 流線の形状エントロピーを算出する
+	 */
+	static double calcEntropy(double length, double[] p){
+		double e = 0.0;
+		for(double px: p){
+			e += px * Math.log10(px);
+		}
+		e *= -1;
+		return e;
+	}
+	
+	/**
+	 * p(x)を計算する
+	 */
+	
+	
 	
 	/**
 	 * Evaluate the lengths of streamlines

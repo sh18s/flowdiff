@@ -169,13 +169,13 @@ public class StreamlineDifferenceEvaluator {
 	/**
 	 * 流線ペア番号と距離をまとめるクラス
 	 */
-	public static class RankValue{
+	public class RankValue{
 		public int num;
 		public double distance;
 	}
 	
-	public static class PutRankValue{
-		public static RankValue putRankValue(int i, double dist){
+	public class PutRankValue{
+		public RankValue putRankValue(int i, double dist){
 			RankValue value = new RankValue();
 			value.num = i;
 			value.distance = dist;
@@ -193,19 +193,16 @@ public class StreamlineDifferenceEvaluator {
 		ArrayList<Streamline> list1 = slset.getAllList1();
 		ArrayList<Streamline> list2 = slset.getAllList2();
 		
-		for(Streamline sl1: list1){
-			for(Streamline sl2: list2){
-				int i = 0;  // counter
-				double distance = calcPairDistance(sl1, sl2);
-				RankValue value = PutRankValue.putRankValue(i, distance);
-				rankList = BinarySearch.binarySearch(rankList, value);
-				i ++;
-			}
-		}
-		
 		for(int i = 0; i < list1.size(); i ++){
 			Streamline sl1 = list1.get(i);
 			Streamline sl2 = list1.get(i);
+			double distance = calcPairDistance(sl1, sl2);
+			PutRankValue pValue = new PutRankValue();
+			RankValue value = new RankValue();
+			value = pValue.putRankValue(i, distance);
+//			RankValue value = pValue.putRankValue(i, distance);
+//			RankValue value = PutRankValue.putRankValue(i, distance);
+			rankList = BinarySearch.binarySearch(rankList, value);
 		}
 		
 		

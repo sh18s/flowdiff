@@ -2,8 +2,9 @@ package ocha.itolab.flowdiff.core.seedselect;
 
 import ocha.itolab.flowdiff.core.data.*;
 import ocha.itolab.flowdiff.core.streamline.*;
+
 import java.util.*;
-import java.util.LinkedList;
+
 import ocha.itolab.flowdiff.core.seedselect.BinarySearch;
 
 public class StreamlineDifferenceEvaluator {
@@ -46,17 +47,36 @@ public class StreamlineDifferenceEvaluator {
 	static double calcEntropy(double length, double[] p){
 		double e = 0.0;
 		for(double px: p){
-			e += px * Math.log10(px);
+			e -= px * Math.log10(px);
 		}
-		e *= -1;
 		return e;
 	}
 	
 	/**
-	 * p(x)を計算する
+	 * ある流線について、p(x)を計算する
 	 */
+	static double calcPx(Streamline sl){
+		double px = 0.0;
+		return px;
+	}
 	
-	
+	/**
+	 * ある流線を線分に分割する
+	 */
+	static ArrayList<Double[]> getSegment(Streamline sl){
+		ArrayList<Double[]> segments = new ArrayList<Double[]>();
+		int nums = sl.getNumVertex() -1;
+		for(int i = 0; i < nums; i++){
+			double p1[] = sl.getPosition(i);
+			double p2[] = sl.getPosition(i + 1);
+			Double seg[] = null;
+			for(int j = 0; j < 3; j++){
+				seg[j] = p1[j] - p2[j];
+			}
+			segments.add(seg[]);
+		}
+		return segments;
+	}
 	
 	/**
 	 * Evaluate the lengths of streamlines

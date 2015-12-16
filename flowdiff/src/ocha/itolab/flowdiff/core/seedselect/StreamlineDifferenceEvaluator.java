@@ -9,33 +9,8 @@ import ocha.itolab.flowdiff.core.seedselect.BinarySearch;
 
 public class StreamlineDifferenceEvaluator {
 
-	
-	public static double evaluate1(Grid grid1, Grid grid2, 
-			Streamline sl1, Streamline sl2) {
-		double score = 0.0, score1, score2;
-		double c1 = 1.0, c2 = 1000.0;
-		
-		
-		// evaluate the lengths of streamlines
-		score1 = evaluateLength(sl1, sl2);
-		
-		// evaluate the similarity between the common-seed streamlines
-		score2 = evaluateSimilarity(sl1, sl2);
-		
-		
-		// calculate the score
-		score = c1 * score1 + c2 * score2;
-		//System.out.println("     evaluate1: SCORE=" + score + " s1=" + score1 + " s2=" + score2);
-		return score;
-	}
-	
-	
-	public static double evaluate2(Grid grid1, Grid grid2, StreamlineArray slset) {
-		// evaluate the distances among all the streamlines
-		double score = evaluateDistance(slset);
-		return score;
-	
-	}
+	public static final int xLength = 1;
+	public static final int xDirection = 6;
 	
 	/**
 	 * 視点に依存しない評価値を算出し、ランキングする

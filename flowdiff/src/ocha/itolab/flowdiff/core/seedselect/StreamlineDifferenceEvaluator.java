@@ -44,33 +44,47 @@ public class StreamlineDifferenceEvaluator {
 	/**
 	 * 流線の形状エントロピーを算出する
 	 */
-	static double calcEntropy(double length, double[] p){
+	static double calcEntropy(ArrayList<Double[]> segments){
 		double e = 0.0;
-		for(double px: p){
-			e -= px * Math.log10(px);
+		double[][] p = calcPx(segments);
+		for(int i = 0; i < xLength; i++){
+			for(int j = 0; j < xDirection; j++){
+				e -= p[i][j] * Math.log10(p[i][j]);
+			}
 		}
 		return e;
 	}
 	
 	/**
-	 * p(x)を算出する
+	 * すべてのxについて、p(x)を算出する
 	 */
+	static double[][] calcPx(ArrayList<Double[]> segments){
+		double p[][] = null;
+		int[][] x = calcSmallx(segments);
+		int num = segments.size();
+		
+		for(int i = 0; i < xLength; i++){
+			for(int j = 0; j < xDirection; j++){
+				p[i][j] = x[i][j] / num;
+			}
+		}
+		return p;
+	}
 	
 	/**
 	 * ある流線について、xを算出する
 	 */
-	static int[][] calcPx(ArrayList<Double> segments, int[] lx, int[] dx){
-		double px = 0.0;
-		int x[][];
-		x = new int[1][6];
-		for(int i = 0; i < 1; i++){
-			for(int j = 0; j < 6; j++){
+	static int[][] calcSmallx(ArrayList<Double[]> segments){
+		int x[][] = new int[xLength][xDirection];
+		for(int i = 0; i < xLength; i++){
+			for(int j = 0; j < xDirection; j++){
 				x[i][j] = 0;
 			}
 		}
-		for(double[] seg[] : segments){
-			int counter = 0;
-			x[lx[counter]][dx[counter]] ++ ;
+		int[] lx = calcPxLength(segments);
+		int[] dx = calcPxDirection(segments);
+		for(int i = 0; i < segments.size(); i ++){
+			x[lx[i]][dx[i]] ++ ;
 		}
 		return x;
 	}
@@ -84,7 +98,7 @@ public class StreamlineDifferenceEvaluator {
 	}
 	
 	/**
-	 * ある流線について、	方向を評価する
+	 * ある流線について、方向を評価する
 	 */
 	static int[] calcPxDirection(ArrayList<Double[]> segments){
 		// 方向：6段階評価

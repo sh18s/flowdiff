@@ -36,9 +36,34 @@ public class StreamlineDifferenceEvaluator {
 		return score;
 	
 	}
+	
+	/**
+	 * 視点に依存しない評価値を算出し、ランキングする
+	 */
+	static LinkedList<RankValue> independentValue(StreamlineArray slset){
+		LinkedList<RankValue> rankList = new LinkedList<RankValue>();
+		
+		ArrayList<Streamline> list1 = slset.getAllList1();
+		ArrayList<Streamline> list2 = slset.getAllList2();
+		
+		for(int i = 0; i < list1.size(); i ++){
+			Streamline sl1 = list1.get(i);
+			Streamline sl2 = list1.get(i);
+			double distance = calcPairDistance(sl1, sl2);
+			PutRankValue pValue = new PutRankValue();
+			RankValue value = new RankValue();
+			value = pValue.putRankValue(i, distance);
+//			RankValue value = pValue.putRankValue(i, distance);
+//			RankValue value = PutRankValue.putRankValue(i, distance);
+			rankList = BinarySearch.binarySearch(rankList, value);
+		}
+		
+		
+		return rankList;
+	}
 
 	/**
-	 * 流線ペアの形状エントロピーを算出し、ランキングする
+	 * 流線ペアの形状エントロピーを算出する
 	 */
 	
 	/**
@@ -53,27 +78,76 @@ public class StreamlineDifferenceEvaluator {
 	}
 	
 	/**
-	 * ある流線について、p(x)を計算する
+	 * p(x)を算出する
 	 */
-	static double calcPx(Streamline sl){
+	
+	/**
+	 * ある流線について、xを算出する
+	 */
+	static int[][] calcPx(ArrayList<Double> segments, int[] lx, int[] dx){
 		double px = 0.0;
-		return px;
+		int x[][];
+		x = new int[1][6];
+		for(int i = 0; i < 1; i++){
+			for(int j = 0; j < 6; j++){
+				x[i][j] = 0;
+			}
+		}
+		for(double[] seg[] : segments){
+			int counter = 0;
+			x[lx[counter]][dx[counter]] ++ ;
+		}
+		return x;
 	}
 	
 	/**
-	 * ある流線を線分に分割する
+	 * ある流線について、長さを評価する
+	 */
+	static int[] calcPxLength(ArrayList<Double[]> segments){
+		int x[] = {0, 0, 0, 0, 0, 0};
+		return x;
+	}
+	
+	/**
+	 * ある流線について、	方向を評価する
+	 */
+	static int[] calcPxDirection(ArrayList<Double[]> segments){
+		// 方向：6段階評価
+		int x[] = {0, 0, 0, 0, 0, 0};
+		
+		for(double[] seg[]: segments){
+			int counter = 0;
+			double[] absSeg = new double[3];
+			for(int i = 0; i < 3; i++){
+				absSeg[i] = Math.abs(seg[i]);
+			}
+			double max = Math.max(absSeg[0], absSeg[1]);
+			max = Math.max(max, absSeg[2]);
+			if(max == absSeg[0]) x[0]++;
+			else if(max == absSeg[1]) x[1]++;
+			else if(max == absSeg[2]) x[2]++;
+			else if(max == -absSeg[0]) x[3]++;
+			else if(max == -absSeg[1]) x[4]++;
+			else if(max == -absSeg[2]) x[5]++;
+		}
+		return x;
+	}
+	
+	/**
+	 * ある流線を有向線分に分割する
 	 */
 	static ArrayList<Double[]> getSegment(Streamline sl){
 		ArrayList<Double[]> segments = new ArrayList<Double[]>();
 		int nums = sl.getNumVertex() -1;
-		for(int i = 0; i < nums; i++){
+		for(int i = 0; i < nums - 1; i++){
 			double p1[] = sl.getPosition(i);
 			double p2[] = sl.getPosition(i + 1);
-			Double seg[] = null;
+			double[] seg = new double[3];
+//			Double[] seg = null;
 			for(int j = 0; j < 3; j++){
-				seg[j] = p1[j] - p2[j];
+				seg[j] = p2[j] - p1[j];
 			}
-			segments.add(seg[]);
+			segments.add(seg);
 		}
 		return segments;
 	}
@@ -123,12 +197,12 @@ public class StreamlineDifferenceEvaluator {
 		}
 	}
 
-	
 	/**
-	 * すべての流線ペアについて差分を計算し、その上位N本を決定する
+	 * すべての流線ペアについて差分を計算する
 	 */
-	static LinkedList<RankValue> rankStreamlineDistance2(StreamlineArray slset){
-		LinkedList<RankValue> rankList = new LinkedList<RankValue>();
+	static ArrayList<Double> calcStreamlineDifference(StreamlineArray slset){
+		ArrayList<Double> diff = new ArrayList<Double>();
+//		LinkedList<RankValue> rankList = new LinkedList<RankValue>();
 		
 		ArrayList<Streamline> list1 = slset.getAllList1();
 		ArrayList<Streamline> list2 = slset.getAllList2();
@@ -137,16 +211,9 @@ public class StreamlineDifferenceEvaluator {
 			Streamline sl1 = list1.get(i);
 			Streamline sl2 = list1.get(i);
 			double distance = calcPairDistance(sl1, sl2);
-			PutRankValue pValue = new PutRankValue();
-			RankValue value = new RankValue();
-			value = pValue.putRankValue(i, distance);
-//			RankValue value = pValue.putRankValue(i, distance);
-//			RankValue value = PutRankValue.putRankValue(i, distance);
-			rankList = BinarySearch.binarySearch(rankList, value);
+			diff.add(distance);
 		}
-		
-		
-		return rankList;
+		return diff;
 	}
 	
 	

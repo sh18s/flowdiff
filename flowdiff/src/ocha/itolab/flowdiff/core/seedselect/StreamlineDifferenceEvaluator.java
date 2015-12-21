@@ -11,24 +11,8 @@ public class StreamlineDifferenceEvaluator {
 
 	public static final int xLength = 1;
 	public static final int xDirection = 6;
-	
-	
-	/**
-	 * 流線ペア番号と距離をまとめるクラス
-	 */
-	public class RankValue{
-		public int num;
-		public double distance;
-	}
-	
-	public class PutRankValue{
-		public RankValue putRankValue(int i, double dist){
-			RankValue value = new RankValue();
-			value.num = i;
-			value.distance = dist;
-			return value;
-		}
-	}
+	public static final double alpha = 0.3;
+	public static final double beta = 1.0 - alpha;
 	
 	
 	/**
@@ -175,34 +159,6 @@ public class StreamlineDifferenceEvaluator {
 			segments.add(seg);
 		}
 		return segments;
-	}
-	
-	/**
-	 * Evaluate the lengths of streamlines
-	 */
-	static double evaluateLength(Streamline sl1, Streamline sl2) {
-		double length = 0.0;
-		length += calcStreamlineLength(sl1);
-		length += calcStreamlineLength(sl2);
-		return length;
-	}
-	
-	
-	/**
-	 * Calculate the length of streamline
-	 */
-	static double calcStreamlineLength(Streamline sl) {
-		double length = 0.0;
-		int nums = sl.getNumVertex() - 1;
-		for(int i = 0; i < nums; i++) {
-			double p1[] = sl.getPosition(i);
-			double p2[] = sl.getPosition(i + 1);
-			double d = (p1[0] - p2[0]) * (p1[0] - p2[0])
-					 + (p1[1] - p2[1]) * (p1[1] - p2[1])
-					 + (p1[2] - p2[2]) * (p1[2] - p2[2]);
-			length += Math.sqrt(d);
-		}
-		return length;
 	}
 
 	/**

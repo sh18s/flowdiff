@@ -18,44 +18,46 @@ public class StreamlineDifferenceEvaluator {
 	/**
 	 * 視点に依存しない評価値を算出し、ランキングする
 	 */
-	static LinkedList<RankValue> independentValue(StreamlineArray slset, ArrayList<Double> diff){
-		LinkedList<RankValue> rankList = new LinkedList<RankValue>();
+	static LinkedList<Double> rankIndependentValue(StreamlineArray slset){
+		LinkedList<Double> rankList = new LinkedList<Double>();
 		
 		ArrayList<Streamline> list1 = slset.getAllList1();
 		ArrayList<Streamline> list2 = slset.getAllList2();
+		
+		ArrayList<Double> diff = calcStreamlineDifference(list1, list2);
+		ArrayList<Double> entropy = calcShapeEntropy(list1, list2);
 		
 		for(int i = 0; i < list1.size(); i ++){
 			Streamline sl1 = list1.get(i);
 			Streamline sl2 = list1.get(i);
-			double distance = calcPairDistance(sl1, sl2);
-			PutRankValue pValue = new PutRankValue();
-			RankValue value = new RankValue();
-			value = pValue.putRankValue(i, distance);
-//			RankValue value = pValue.putRankValue(i, distance);
-//			RankValue value = PutRankValue.putRankValue(i, distance);
-			rankList = BinarySearch.binarySearch(rankList, value);
+			double iValue = calcIndependentValue(diff.get(i), entropy.get(i));
+			rankList = BinarySearch.binarySearch(rankList, iValue);
 		}
-		
-		
 		return rankList;
+	}
+	
+	/**
+	 * ある流線ペアの視点に依存しない評価値を計算する
+	 */
+	static double calcIndependentValue(double difference, double shapeEntropy){
+		double iValue = 0.0;
+//		TODO: 正規化
+		iValue = alpha * difference + beta + shapeEntropy;
+		return iValue;
 	}
 
 	/**
-	 * 流線ペアの形状エントロピーを算出する
+	 * すべての流線ペアの形状エントロピーを算出する
 	 */
-	static ArrayList<Double> clacPairEntropy(StreamlineArray slset, double e1, double e2){
-		
-		ArrayList<Streamline> list1 = slset.getAllList1();
-		ArrayList<Streamline> list2 = slset.getAllList2();
-		
+	static ArrayList<Double> calcShapeEntropy(ArrayList<Streamline> list1, ArrayList<Streamline> list2){		
 		ArrayList<Double> e = new ArrayList<Double>();
+		
 		for(int i = 0; i < list1.size(); i++){
 			Streamline sl1 = list1.get(i);
-			Streamline sl2 = list1.get(i);
-			ArrayList<Double[]> segments1 = getSegment(sl1);
-			ArrayList<Double[]> segments2 = getSegment(sl2);
-			
-			
+			Streamline sl2 = list2.get(i);
+			ArrayList<ArrayList<Double>> segments1 = getSegment(sl1);
+			ArrayList<ArrayList<Double>> segments2 = getSegment(sl2);
+			e.add(calcEntropy(segments1) + calcEntropy(segments2));
 		}
 		return e;
 	}
@@ -63,7 +65,7 @@ public class StreamlineDifferenceEvaluator {
 	/**
 	 * 流線の形状エントロピーを算出する
 	 */
-	static double calcEntropy(ArrayList<Double[]> segments){
+	static double calcEntropy(ArrayList<ArrayList<Double>> segments){
 		double e = 0.0;
 		double[][] p = calcPx(segments);
 		for(int i = 0; i < xLength; i++){
@@ -77,8 +79,8 @@ public class StreamlineDifferenceEvaluator {
 	/**
 	 * すべてのxについて、p(x)を算出する
 	 */
-	static double[][] calcPx(ArrayList<Double[]> segments){
-		double p[][] = null;
+	static double[][] calcPx(ArrayList<ArrayList<Double>> segments){
+		double p[][] = new double[xLength][xDirection];
 		int[][] x = calcSmallx(segments);
 		int num = segments.size();
 		
@@ -93,7 +95,7 @@ public class StreamlineDifferenceEvaluator {
 	/**
 	 * ある流線について、xを算出する
 	 */
-	static int[][] calcSmallx(ArrayList<Double[]> segments){
+	static int[][] calcSmallx(ArrayList<ArrayList<Double>> segments){
 		int x[][] = new int[xLength][xDirection];
 		for(int i = 0; i < xLength; i++){
 			for(int j = 0; j < xDirection; j++){
@@ -111,7 +113,7 @@ public class StreamlineDifferenceEvaluator {
 	/**
 	 * ある流線について、長さを評価する
 	 */
-	static int[] calcPxLength(){
+	static int[] calcPxLength(ArrayList<ArrayList<Double>> segments){
 		// 速度: 1段階評価
 		int x[] = {0, 0, 0, 0, 0, 0};
 		return x;
@@ -120,24 +122,23 @@ public class StreamlineDifferenceEvaluator {
 	/**
 	 * ある流線について、方向を評価する
 	 */
-	static int[] calcPxDirection(ArrayList<Double[]> segments){
+	static int[] calcPxDirection(ArrayList<ArrayList<Double>> segments){
 		// 方向：6段階評価
 		int x[] = {0, 0, 0, 0, 0, 0};
 		
-		for(double[] seg[]: segments){
-			int counter = 0;
-			double[] absSeg = new double[3];
-			for(int i = 0; i < 3; i++){
-				absSeg[i] = Math.abs(seg[i]);
+		for(ArrayList<Double> seg: segments){
+			ArrayList<Double> absSeg = new ArrayList<Double>();
+			for(double element: seg){
+				absSeg.add(Math.abs(element));
 			}
-			double max = Math.max(absSeg[0], absSeg[1]);
-			max = Math.max(max, absSeg[2]);
-			if(max == absSeg[0]) x[0]++;
-			else if(max == absSeg[1]) x[1]++;
-			else if(max == absSeg[2]) x[2]++;
-			else if(max == -absSeg[0]) x[3]++;
-			else if(max == -absSeg[1]) x[4]++;
-			else if(max == -absSeg[2]) x[5]++;
+			double max = Math.max(absSeg.indexOf(0), absSeg.indexOf(1));
+			max = Math.max(max, absSeg.indexOf(2));
+			if(max == absSeg.indexOf(0)) x[0]++;
+			else if(max == absSeg.indexOf(1)) x[1]++;
+			else if(max == absSeg.indexOf(2)) x[2]++;
+			else if(max == -absSeg.indexOf(0)) x[3]++;
+			else if(max == -absSeg.indexOf(1)) x[4]++;
+			else if(max == -absSeg.indexOf(2)) x[5]++;
 		}
 		return x;
 	}
@@ -145,16 +146,15 @@ public class StreamlineDifferenceEvaluator {
 	/**
 	 * ある流線を有向線分に分割する
 	 */
-	static ArrayList<Double[]> getSegment(Streamline sl){
-		ArrayList<Double[]> segments = new ArrayList<Double[]>();
+	static ArrayList<ArrayList<Double>> getSegment(Streamline sl){
+		ArrayList<ArrayList<Double>> segments = new ArrayList<ArrayList<Double>>();
 		int nums = sl.getNumVertex() -1;
 		for(int i = 0; i < nums - 1; i++){
 			double p1[] = sl.getPosition(i);
 			double p2[] = sl.getPosition(i + 1);
-			double[] seg = new double[3];
-//			Double[] seg = null;
+			ArrayList<Double> seg = new ArrayList<Double>();
 			for(int j = 0; j < 3; j++){
-				seg[j] = p2[j] - p1[j];
+				seg.add(j, p2[j] - p1[j]);
 			}
 			segments.add(seg);
 		}
@@ -164,13 +164,9 @@ public class StreamlineDifferenceEvaluator {
 	/**
 	 * すべての流線ペアについて差分を計算する
 	 */
-	static ArrayList<Double> calcStreamlineDifference(StreamlineArray slset){
+	static ArrayList<Double> calcStreamlineDifference(ArrayList<Streamline> list1, ArrayList<Streamline> list2){
 		ArrayList<Double> diff = new ArrayList<Double>();
-//		LinkedList<RankValue> rankList = new LinkedList<RankValue>();
-		
-		ArrayList<Streamline> list1 = slset.getAllList1();
-		ArrayList<Streamline> list2 = slset.getAllList2();
-		
+
 		for(int i = 0; i < list1.size(); i ++){
 			Streamline sl1 = list1.get(i);
 			Streamline sl2 = list1.get(i);

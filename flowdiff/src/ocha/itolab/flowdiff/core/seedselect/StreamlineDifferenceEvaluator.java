@@ -12,10 +12,29 @@ public class StreamlineDifferenceEvaluator {
 	public static final int xLength = 1;
 	public static final int xDirection = 6;
 	
+	
+	/**
+	 * 流線ペア番号と距離をまとめるクラス
+	 */
+	public class RankValue{
+		public int num;
+		public double distance;
+	}
+	
+	public class PutRankValue{
+		public RankValue putRankValue(int i, double dist){
+			RankValue value = new RankValue();
+			value.num = i;
+			value.distance = dist;
+			return value;
+		}
+	}
+	
+	
 	/**
 	 * 視点に依存しない評価値を算出し、ランキングする
 	 */
-	static LinkedList<RankValue> independentValue(StreamlineArray slset){
+	static LinkedList<RankValue> independentValue(StreamlineArray slset, ArrayList<Double> diff){
 		LinkedList<RankValue> rankList = new LinkedList<RankValue>();
 		
 		ArrayList<Streamline> list1 = slset.getAllList1();
@@ -40,6 +59,22 @@ public class StreamlineDifferenceEvaluator {
 	/**
 	 * 流線ペアの形状エントロピーを算出する
 	 */
+	static ArrayList<Double> clacPairEntropy(StreamlineArray slset, double e1, double e2){
+		
+		ArrayList<Streamline> list1 = slset.getAllList1();
+		ArrayList<Streamline> list2 = slset.getAllList2();
+		
+		ArrayList<Double> e = new ArrayList<Double>();
+		for(int i = 0; i < list1.size(); i++){
+			Streamline sl1 = list1.get(i);
+			Streamline sl2 = list1.get(i);
+			ArrayList<Double[]> segments1 = getSegment(sl1);
+			ArrayList<Double[]> segments2 = getSegment(sl2);
+			
+			
+		}
+		return e;
+	}
 	
 	/**
 	 * 流線の形状エントロピーを算出する
@@ -92,7 +127,8 @@ public class StreamlineDifferenceEvaluator {
 	/**
 	 * ある流線について、長さを評価する
 	 */
-	static int[] calcPxLength(ArrayList<Double[]> segments){
+	static int[] calcPxLength(){
+		// 速度: 1段階評価
 		int x[] = {0, 0, 0, 0, 0, 0};
 		return x;
 	}
@@ -168,23 +204,6 @@ public class StreamlineDifferenceEvaluator {
 		}
 		return length;
 	}
-	
-	/**
-	 * 流線ペア番号と距離をまとめるクラス
-	 */
-	public class RankValue{
-		public int num;
-		public double distance;
-	}
-	
-	public class PutRankValue{
-		public RankValue putRankValue(int i, double dist){
-			RankValue value = new RankValue();
-			value.num = i;
-			value.distance = dist;
-			return value;
-		}
-	}
 
 	/**
 	 * すべての流線ペアについて差分を計算する
@@ -226,7 +245,8 @@ public class StreamlineDifferenceEvaluator {
 			double pos[] = sla.getPosition(i);
 			distance += calcOnePosDistance(pos, slb);
 		}
-		return distance /=numver;
+		distance /= numver;
+		return distance;
 		
 	}
 	

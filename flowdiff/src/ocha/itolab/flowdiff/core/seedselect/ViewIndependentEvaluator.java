@@ -16,10 +16,48 @@ public class ViewIndependentEvaluator {
 	
 	
 	/**
+	 * 評価値と流線番号をまとめるクラス
+	 */
+	public static class RankValue{
+		int num;
+		double value;
+	}
+	
+	public static class PutRankValue{
+		public static RankValue putRankValue(int i, double value){
+			RankValue rankValue = new RankValue();
+			rankValue.num = i;
+			rankValue.value = value;
+			return rankValue;
+		}
+	}
+	
+	/**
 	 * 視点に依存しない評価値を算出し、ランキングする
 	 */
-	static LinkedList<Double> rankIndependentValue(StreamlineArray slset){
-		LinkedList<Double> rankList = new LinkedList<Double>();
+	static LinkedList<RankValue> rankIndependentValue(StreamlineArray slset){
+		LinkedList<RankValue> rankList = new LinkedList<RankValue>();
+		
+		ArrayList<Streamline> list1 = slset.getAllList1();
+		ArrayList<Streamline> list2 = slset.getAllList2();
+		
+		ArrayList<Double> diff = calcStreamlineDifference(list1, list2);
+		ArrayList<Double> entropy = calcShapeEntropy(list1, list2);
+		
+		for(int i = 0; i < list1.size(); i ++){ // i : 流線番号
+			Streamline sl1 = list1.get(i);
+			Streamline sl2 = list1.get(i);
+			double iValue = calcIndependentValue(diff.get(i), entropy.get(i));
+			rankList = BinarySearch.binarySearch(rankList, PutRankValue.putRankValue(i, iValue));
+		}
+		return rankList;
+	}
+	
+	/**
+	 * すべての流線の視点に依存しない評価値を算出する
+	 */
+	public StreamlineArray calcAllIndependentValue(StreamlineArray slset){
+		StreamlineArray selected = new StreamlineArray();
 		
 		ArrayList<Streamline> list1 = slset.getAllList1();
 		ArrayList<Streamline> list2 = slset.getAllList2();
@@ -31,10 +69,12 @@ public class ViewIndependentEvaluator {
 			Streamline sl1 = list1.get(i);
 			Streamline sl2 = list1.get(i);
 			double iValue = calcIndependentValue(diff.get(i), entropy.get(i));
-			rankList = BinarySearch.binarySearch(rankList, iValue);
+//			rankList = BinarySearch.binarySearch(rankList, iValue);
+			
 		}
-		return rankList;
+		return selected;
 	}
+	
 	
 	/**
 	 * ある流線ペアの視点に依存しない評価値を計算する

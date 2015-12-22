@@ -1,13 +1,13 @@
 package ocha.itolab.flowdiff.core.seedselect;
 
-import ocha.itolab.flowdiff.core.data.*;
+//import ocha.itolab.flowdiff.core.data.*;
 import ocha.itolab.flowdiff.core.streamline.*;
 
 import java.util.*;
 
 import ocha.itolab.flowdiff.core.seedselect.BinarySearch;
 
-public class StreamlineDifferenceEvaluator {
+public class ViewIndependentEvaluator {
 
 	public static final int xLength = 1;
 	public static final int xDirection = 6;

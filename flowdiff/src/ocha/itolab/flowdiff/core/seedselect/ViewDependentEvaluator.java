@@ -5,9 +5,17 @@ import java.util.*;
 import ocha.itolab.flowdiff.core.streamline.*;
 import ocha.itolab.flowdiff.core.data.*;
 
-public class ViewDependentEvauation {
+public class ViewDependentEvaluator {
 	static int REPEAT1 = 1000, REPEAT2 = 20;
 	static int NUMSEED = 20, NUMCANDIDATE = 200;
+	
+	/**
+	 * 視点に依存しない評価値のみで表示する流線群を決定する
+	 */
+	public static StreamlineArray selectSimply(Grid grid1, Grid grid2){
+		StreamlineArray bestSet = null;
+		return bestSet;
+	}
 	
 	/**
 	 * Select the best set of streamlines

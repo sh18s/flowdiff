@@ -30,7 +30,7 @@ public class Grid {
 		elnum[1] = ny -1;
 		elnum[2] = nz -1;
 
-		gtotal = nx * ny * nz;
+		gtotal = nx * ny * nz; //総格子点数
 		etotal = (nx - 1) * (ny - 1) * (nz - 1);
 		//System.out.println("nx,ny,nz="+nx+","+ny+","+nz);
 
@@ -39,7 +39,7 @@ public class Grid {
 		for(int i = 0; i < gtotal; i++)
 			garray[i] = new GridPoint();
 
-		// 要素の配列を確保する
+		// 要素(格子)の配列を確保する
 		earray = new Element[etotal];
 		for(int i = 0; i < etotal; i++)
 			earray[i] = new Element();

@@ -1,7 +1,8 @@
 package ocha.itolab.flowdiff.core.seedselect;
 //import java.util.Comparator;
 import java.util.LinkedList;
-import ocha.itolab.flowdiff.core.seedselect.ViewIndependentEvaluator.RankValue;
+//import ocha.itolab.flowdiff.core.seedselect.ViewIndependentEvaluator.RankValue;
+import ocha.itolab.flowdiff.core.seedselect.SingleEvaluator.RankValue;
 
 
 public class BinarySearch{

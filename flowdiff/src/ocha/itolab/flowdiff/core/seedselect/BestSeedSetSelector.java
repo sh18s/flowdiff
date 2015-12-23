@@ -21,37 +21,43 @@ public class BestSeedSetSelector {
 		ArrayList<Seed> seedlist = new ArrayList<Seed>();
 		
 		// first random try to find good seeds
+		// TODO: 1000回じゃなくてすべての流線ペアぶんforをまわす
 		for(int i = 0; i < REPEAT1; i++) {
 
 			// randomly generate a set of seeds
-			StreamlineArray slset = new StreamlineArray();
 			Seed seed = new Seed();
 			seed.id = i;
+//			seed.id = 0;
 			seed.eid = setSeedRandomly1(grid1);
-			//System.out.println("   seedid=" + seed.id[0] + "," + seed.id[1] + "," + seed.id[2]);
+			//System.out.println("   seedid=" + seed.eid[0] + "," + seed.eid[1] + "," + seed.eid[2]);
 			seed.sl1 = new Streamline();
 			seed.sl2 = new Streamline();
 			StreamlineGenerator.generate(grid1, seed.sl1, seed.eid, null);
 			StreamlineGenerator.generate(grid2, seed.sl2, seed.eid, null);
-			seed.score = StreamlineArrayEvaluator.evaluate1(grid1, grid2, seed.sl1, seed.sl2);
+			//seed.score = StreamlineArrayEvaluator.evaluate1(grid1, grid2, seed.sl1, seed.sl2);
+			seed.score = SingleEvaluator.rankSingleValue(grid1, grid2, seed.sl1, seed.sl2);
+			System.out.println(seed.score + "," + i);
 			treeset.add((Object)seed);
 		}
 		
 		Iterator it = treeset.iterator();
         while (it.hasNext()) {
         	Seed s = (Seed)it.next();
-			seedlist.add(s);
+			seedlist.add(s); // 1000こぶんのidと評価値が入ってる
         }
-		int nums = treeset.size();
-		for (int i = 0; i < nums; i++) {
-		
-		}
+//        TODO: seedlistを評価値順に並べ替え
+//        TODO: 視点に依存しない評価値による足切り
+//        TODO: x番目までをbestsetに入れる
+//		int nums = treeset.size();
+//		for (int i = 0; i < nums; i++) {
+//		
+//		}
 		
 		// second random try to find the best set of seeds
 		for(int i = 0; i < REPEAT2; i++) {
 
 			// randomly generate a set of seeds
-			StreamlineArray slset = setSeedRandomly2(seedlist);
+			StreamlineArray slset = setSeedRandomly2(seedlist); //  1000このうちの20この流線ペア
 			
 			// evaluate the streamline set
 			double score = StreamlineArrayEvaluator.evaluate2(grid1, grid2, slset);
@@ -60,7 +66,7 @@ public class BestSeedSetSelector {
 				bestset = slset;
 			}
 		}
-		
+		//System.out.println(bestset.streamlines1.size());
 		// return
 		return bestset;
 	}
@@ -120,7 +126,6 @@ public class BestSeedSetSelector {
 			slset.addDeperture(seeds[i].eid);
 			slset.color.add(false);
 		}
-		
 		return slset;
 	}
 	

@@ -36,7 +36,7 @@ public class BestSeedSetSelector {
 			StreamlineGenerator.generate(grid2, seed.sl2, seed.eid, null);
 			//seed.score = StreamlineArrayEvaluator.evaluate1(grid1, grid2, seed.sl1, seed.sl2);
 			seed.score = SingleEvaluator.rankSingleValue(grid1, grid2, seed.sl1, seed.sl2);
-			System.out.println(seed.score + "," + i);
+//			System.out.println(seed.score + "," + i);
 			treeset.add((Object)seed);
 		}
 		

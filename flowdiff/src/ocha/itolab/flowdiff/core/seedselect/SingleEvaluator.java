@@ -39,8 +39,7 @@ public class SingleEvaluator {
 		double singleValue;
 
 		double diff = calcPairDistance(sl1, sl2);
-		double entropy = 0.0;
-		// double entropy = calcShapeEntropy(sl1, sl2);
+		double entropy = calcShapeEntropy(sl1, sl2);
 		singleValue = calcIndependentValue(diff, entropy);
 
 		return singleValue;
@@ -91,7 +90,7 @@ public class SingleEvaluator {
 		double p[][] = new double[xLength][xDirection];
 		int[][] x = calcSmallx(segments);
 		int num = segments.size();
-		
+		if(num == 0) num = 1;		
 		for(int i = 0; i < xLength; i++){
 			for(int j = 0; j < xDirection; j++){
 				p[i][j] = x[i][j] / num;
@@ -110,46 +109,43 @@ public class SingleEvaluator {
 				x[i][j] = 0;
 			}
 		}
-		int[] lx = calcPxLength(segments);
-		int[] dx = calcPxDirection(segments);
-		for(int i = 0; i < segments.size(); i ++){
-			x[lx[i]][dx[i]] ++ ;
-		}
-		return x;
-	}
-	
-	/**
-	 * ある流線について、長さを評価する
-	 */
-	static int[] calcPxLength(ArrayList<ArrayList<Double>> segments){
-		// 速度: 1段階評価
-		int x[] = {0, 0, 0, 0, 0, 0};
-		return x;
-	}
-	
-	/**
-	 * ある流線について、方向を評価する
-	 */
-	static int[] calcPxDirection(ArrayList<ArrayList<Double>> segments){
-		// 方向：6段階評価
-		int x[] = {0, 0, 0, 0, 0, 0};
 		
 		for(ArrayList<Double> seg: segments){
-			ArrayList<Double> absSeg = new ArrayList<Double>();
-			for(double element: seg){
-				absSeg.add(Math.abs(element));
-			}
-			double max = Math.max(absSeg.indexOf(0), absSeg.indexOf(1));
-			max = Math.max(max, absSeg.indexOf(2));
-			if(max == absSeg.indexOf(0)) x[0]++;
-			else if(max == absSeg.indexOf(1)) x[1]++;
-			else if(max == absSeg.indexOf(2)) x[2]++;
-			else if(max == -absSeg.indexOf(0)) x[3]++;
-			else if(max == -absSeg.indexOf(1)) x[4]++;
-			else if(max == -absSeg.indexOf(2)) x[5]++;
+			int lFlag = calcOnePxLength(seg);
+			int dFlag = calcOnePxDirection(seg);
+			x[lFlag][dFlag] ++;
 		}
 		return x;
 	}
+	
+	/**
+	 * あるセグメントについて、長さを評価する
+	 */
+	static int calcOnePxLength(ArrayList<Double> segments){
+		// 速度: 1段階評価
+		return 0;
+	}
+		
+	/**
+	 * あるセグメントについて、方向を評価する
+	 */
+	static int calcOnePxDirection(ArrayList<Double> segment){
+		// 方向：6段階評価
+		
+		ArrayList<Double> absSeg = new ArrayList<Double>();
+		for(double element: segment){
+			absSeg.add(Math.abs(element));
+		}
+		double max = Math.max(absSeg.indexOf(0), absSeg.indexOf(1));
+		max = Math.max(max, absSeg.indexOf(2));
+		if(max == absSeg.indexOf(0)) return 0;
+		else if(max == absSeg.indexOf(1)) return 1;
+		else if(max == absSeg.indexOf(2)) return 2;
+		else if(max == -absSeg.indexOf(0)) return 3;
+		else if(max == -absSeg.indexOf(1)) return 4;
+		else return 5;
+	}
+
 	
 	/**
 	 * ある流線を有向線分に分割する

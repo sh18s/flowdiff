@@ -27,6 +27,7 @@ import javax.swing.event.ChangeListener;
 
 import ocha.itolab.flowdiff.core.data.FileReader;
 import ocha.itolab.flowdiff.core.data.Grid;
+import ocha.itolab.flowdiff.core.data.TecPlotFileReader;
 import ocha.itolab.flowdiff.core.streamline.Streamline;
 import ocha.itolab.flowdiff.core.streamline.StreamlineArray;
 import ocha.itolab.flowdiff.core.streamline.StreamlineGenerator;
@@ -34,6 +35,10 @@ import ocha.itolab.flowdiff.core.seedselect.*;
 
 
 public class ViewingPanel extends JPanel {
+	// file path for Mac
+	String path = "/Users/shokosawada/git/flowdiff/flowdiff/data/DeltaWing/";
+	String filename1 = "DeltaWing_AoA20.dat";
+	String filename2 = "DeltaWing_AoA27.dat";
 
 	// ベクタ場のファイルを読み込む（相対パス）
 	//110度の時
@@ -400,8 +405,10 @@ public class ViewingPanel extends JPanel {
 			JButton buttonPushed = (JButton) e.getSource();
 
 			if (buttonPushed == openDataButton) {
-				grid1 = FileReader.getGrid(url1);
-				grid2 = FileReader.getGrid(url2);
+//				grid1 = FileReader.getGrid(url1);
+//				grid2 = FileReader.getGrid(url2);
+				grid1 = TecPlotFileReader.getGrid(path + filename1);
+				grid2 = TecPlotFileReader.getGrid(path + filename2);
 				sliderX.setValue(10);
 				sliderY.setValue(10);
 				sliderZ.setValue(10);

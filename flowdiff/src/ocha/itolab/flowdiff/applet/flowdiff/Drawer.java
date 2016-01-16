@@ -12,6 +12,7 @@ import javax.media.opengl.GLEventListener;
 import javax.media.opengl.awt.GLCanvas;
 import javax.media.opengl.glu.GLU;
 
+import ocha.itolab.flowdiff.applet.flowdiff.Transformer;
 import ocha.itolab.flowdiff.core.data.Building;
 import ocha.itolab.flowdiff.core.data.Element;
 import ocha.itolab.flowdiff.core.data.Grid;
@@ -86,9 +87,9 @@ public class Drawer implements GLEventListener {
 	DiffVectorCal dv;
 	int hdiff = 50;
 	int numDiff = 0;
-
-	public static StreamlineArray slarray = new StreamlineArray();
 	
+	public static StreamlineArray slarray = new StreamlineArray();
+
 	/**
 	 * Constructor
 	 *
@@ -190,7 +191,7 @@ public class Drawer implements GLEventListener {
 		centerY = (minmax[2] + minmax[3]) * 0.5;
 		centerZ = (minmax[4] + minmax[5]) * 0.5;
 		setBuildingLabel(grid1);
-		setVorticity1(grid1);
+		//setVorticity1(grid1);
 	}
 
 	/**
@@ -202,7 +203,7 @@ public class Drawer implements GLEventListener {
 		centerX = (minmax[0] + minmax[1]) * 0.5;
 		centerY = (minmax[2] + minmax[3]) * 0.5;
 		centerZ = (minmax[4] + minmax[5]) * 0.5;
-		setVorticity2(grid2);
+		//setVorticity2(grid2);
 	}
 
 	/*
@@ -277,11 +278,15 @@ public class Drawer implements GLEventListener {
 		scolor = c;
 	}
 	public void setStreamlineArray() {
-		// TODO 自動生成されたメソッド・スタブ
 		arrsl1 = slarray.streamlines1;
 		arrsl2 = slarray.streamlines2;
 		deplist = slarray.deperture;
 		scolor = slarray.color;
+		// TODO 自動生成されたメソッド・スタブ
+//		arrsl1 = StreamlineArray.streamlines1;
+//		arrsl2 = StreamlineArray.streamlines2;
+//		deplist = StreamlineArray.deperture;
+//		scolor = StreamlineArray.color;
 	}
 
 	/**
@@ -428,7 +433,7 @@ public class Drawer implements GLEventListener {
 
 		drawBox();
 		//建物の描画
-		drawBuilding2(grid1,isBuilding);
+		//drawBuilding2(grid1,isBuilding);
 
 
 		//両方ベクトル表示

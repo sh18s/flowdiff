@@ -400,8 +400,8 @@ public class Grid {
 
 
 	// targetとなっているelementとstreamlineの交差判定
-	public boolean intersectWithTarget(Streamline sl) {
-		int targetId = calcElementId(target[0],target[1], target[2]);
-		return getElement(targetId).intersect(targetId, sl, levelMode);
-	}
+//	public boolean intersectWithTarget(Streamline sl) {
+//		int targetId = calcElementId(target[0],target[1], target[2]);
+//		return getElement(targetId).intersect(targetId, sl, levelMode);
+//	}
 }

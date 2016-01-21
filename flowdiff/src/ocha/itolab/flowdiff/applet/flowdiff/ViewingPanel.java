@@ -35,10 +35,15 @@ import ocha.itolab.flowdiff.core.seedselect.*;
 
 
 public class ViewingPanel extends JPanel {
+	// new data
 	// file path for Mac
-	String path = "/Users/shokosawada/git/flowdiff/flowdiff/data/DeltaWing/";
+//	String path = "/Users/shokosawada/git/flowdiff/flowdiff/data/DeltaWing/";
+	// file path for Windows
+	String path = "C:/DeltaWing/";
+	
 	String filename1 = "DeltaWing_AoA20.dat";
 	String filename2 = "DeltaWing_AoA27.dat";
+	
 
 	// ベクタ場のファイルを読み込む（相対パス）
 	//110度の時

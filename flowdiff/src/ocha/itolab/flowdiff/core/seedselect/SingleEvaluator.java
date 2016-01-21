@@ -5,8 +5,6 @@ import ocha.itolab.flowdiff.core.streamline.*;
 
 import java.util.*;
 
-import ocha.itolab.flowdiff.core.seedselect.BinarySearch;
-
 public class SingleEvaluator {
 
 	public static final int xLength = 1;
@@ -18,24 +16,24 @@ public class SingleEvaluator {
 	/**
 	 * 評価値と流線番号をまとめるクラス
 	 */
-	public static class RankValue{
-		int num;
-		double value;
-	}
-	
-	public static class PutRankValue{
-		public static RankValue putRankValue(int i, double value){
-			RankValue rankValue = new RankValue();
-			rankValue.num = i;
-			rankValue.value = value;
-			return rankValue;
-		}
-	}
+//	public static class RankValue{
+//		int num;
+//		double value;
+//	}
+//	
+//	public static class PutRankValue{
+//		public static RankValue putRankValue(int i, double value){
+//			RankValue rankValue = new RankValue();
+//			rankValue.num = i;
+//			rankValue.value = value;
+//			return rankValue;
+//		}
+//	}
 	
 	/**
 	 * 視点に依存しない評価値を算出し、ランキングする
 	 */
-	static double rankSingleValue(Grid grid1, Grid grid2, Streamline sl1, Streamline sl2){
+	static double calcSingleValue(Grid grid1, Grid grid2, Streamline sl1, Streamline sl2){
 		double singleValue;
 
 		double diff = calcPairDistance(sl1, sl2);

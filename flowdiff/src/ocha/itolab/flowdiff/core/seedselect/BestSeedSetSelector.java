@@ -4,9 +4,10 @@ import java.util.*;
 
 import ocha.itolab.flowdiff.core.streamline.*;
 import ocha.itolab.flowdiff.core.data.*;
+import ocha.itolab.flowdiff.core.seedselect.BinarySearch;
 
 public class BestSeedSetSelector {
-	static int REPEAT1 = 1000, REPEAT2 = 20;
+	static int REPEAT1 = 2000, REPEAT2 = 20;
 	static int NUMSEED = 20, NUMCANDIDATE = 200;
 	
 	/**
@@ -22,20 +23,22 @@ public class BestSeedSetSelector {
 		
 		// first random try to find good seeds
 		// TODO: 1000回じゃなくてすべての流線ペアぶんforをまわす
+		int total = grid1.getNumGridPointAll();
+		System.out.println("total = " + total);
 		for(int i = 0; i < REPEAT1; i++) {
+//		for(int i = 0; i < total; i++) {
 
 			// randomly generate a set of seeds
 			Seed seed = new Seed();
 			seed.id = i;
 //			seed.id = 0;
 			seed.eid = setSeedRandomly1(grid1);
-			//System.out.println("   seedid=" + seed.eid[0] + "," + seed.eid[1] + "," + seed.eid[2]);
 			seed.sl1 = new Streamline();
 			seed.sl2 = new Streamline();
 			StreamlineGenerator.generate(grid1, seed.sl1, seed.eid, null);
 			StreamlineGenerator.generate(grid2, seed.sl2, seed.eid, null);
 			//seed.score = StreamlineArrayEvaluator.evaluate1(grid1, grid2, seed.sl1, seed.sl2);
-			seed.score = SingleEvaluator.rankSingleValue(grid1, grid2, seed.sl1, seed.sl2);
+			seed.score = SingleEvaluator.calcSingleValue(grid1, grid2, seed.sl1, seed.sl2);
 //			System.out.println(seed.score + "," + i);
 			treeset.add((Object)seed);
 		}
@@ -45,7 +48,12 @@ public class BestSeedSetSelector {
         	Seed s = (Seed)it.next();
 			seedlist.add(s); // 1000こぶんのidと評価値が入ってる
         }
-//        TODO: seedlistを評価値順に並べ替え
+        
+//        seedlistを評価値に並べ替え
+        ArrayList<Seed> rankList = new ArrayList<Seed>();
+        for(Seed key: seedlist){
+        	rankList = BinarySearch.binarySearch(rankList, key);
+        }
 //        TODO: 視点に依存しない評価値による足切り
 //        TODO: x番目までをbestsetに入れる
 //		int nums = treeset.size();

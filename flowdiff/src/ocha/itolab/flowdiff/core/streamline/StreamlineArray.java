@@ -9,6 +9,21 @@ public class StreamlineArray {
 	public static ArrayList<int[]> deperture = new ArrayList<int[]>();//流線始点のリスト
 	public static ArrayList<Boolean> color = new ArrayList<Boolean>(); //色の変化　初期ビット数
 	
+	
+	// added by itot 2016/1/17
+	public StreamlineArray(){
+		clear();
+	}
+	
+	//added by itot 2016/1/17
+	public static void clear(){
+		streamlines1.clear();
+		streamlines2.clear();
+		deperture.clear();
+		color.clear();
+	}
+	
+	
 	/**
 	 * 流線リストのセット
 	 * @param s1

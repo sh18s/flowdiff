@@ -42,41 +42,27 @@ public class BestSeedSetSelector {
 //			System.out.println(seed.score + "," + i);
 			treeset.add((Object)seed);
 		}
-		
+
 		Iterator it = treeset.iterator();
-        while (it.hasNext()) {
-        	Seed s = (Seed)it.next();
+		while (it.hasNext()) {
+			Seed s = (Seed)it.next();
 			seedlist.add(s); // 1000こぶんのidと評価値が入ってる
+		}
+
+		//      seedlistを評価値に並べ替え
+		ArrayList<Seed> rankList = new ArrayList<Seed>();
+		for(Seed key: seedlist){
+			rankList = BinarySearch.binarySearch(rankList, key);
+		}
+//		System.out.println(rankList.get(0));
+//		視点に依存しない評価値で足切り
+		ArrayList<Seed> mList = new ArrayList<Seed>(); // 意義のある流線ペア群
+        for(int i = 0; i < NUMCANDIDATE; i++){
+        	mList.add(rankList.get(i));
         }
         
-//        seedlistを評価値に並べ替え
-        ArrayList<Seed> rankList = new ArrayList<Seed>();
-        for(Seed key: seedlist){
-        	rankList = BinarySearch.binarySearch(rankList, key);
-        }
-//        TODO: 視点に依存しない評価値による足切り
-//        TODO: x番目までをbestsetに入れる
-//		int nums = treeset.size();
-//		for (int i = 0; i < nums; i++) {
-//		
-//		}
-		
-		// second random try to find the best set of seeds
-		for(int i = 0; i < REPEAT2; i++) {
-
-			// randomly generate a set of seeds
-			StreamlineArray slset = setSeedRandomly2(seedlist); //  1000このうちの20この流線ペア
-			
-			// evaluate the streamline set
-			double score = StreamlineArrayEvaluator.evaluate2(grid1, grid2, slset);
-			if(score > bestscore) {
-				bestscore = score;
-				bestset = slset;
-			}
-		}
-		//System.out.println(bestset.streamlines1.size());
-		// return
-		return bestset;
+        bestset = ViewDependentEvaluator.select(mList);
+        return bestset;		
 	}
 	
 	
@@ -136,16 +122,6 @@ public class BestSeedSetSelector {
 		}
 		return slset;
 	}
-	
-	
-	
-	static class Seed {
-		int id;
-		double score;
-		int eid[];
-		Streamline sl1, sl2;
-	}
-	
 	
 	static class SeedComparator implements Comparator {
 

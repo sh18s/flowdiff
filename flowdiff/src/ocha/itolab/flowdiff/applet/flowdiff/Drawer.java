@@ -11,12 +11,14 @@ import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.awt.GLCanvas;
 import javax.media.opengl.glu.GLU;
+import javax.media.opengl.glu.gl2.GLUgl2;
 
 import ocha.itolab.flowdiff.applet.flowdiff.Transformer;
 import ocha.itolab.flowdiff.core.data.Building;
 import ocha.itolab.flowdiff.core.data.Element;
 import ocha.itolab.flowdiff.core.data.Grid;
 import ocha.itolab.flowdiff.core.data.GridPoint;
+import ocha.itolab.flowdiff.core.seedselect.ViewDependentEvaluator;
 import ocha.itolab.flowdiff.core.streamline.Streamline;
 import ocha.itolab.flowdiff.core.streamline.StreamlineArray;
 import ocha.itolab.flowdiff.core.streamline.StreamlineGenerator;
@@ -40,6 +42,7 @@ public class Drawer implements GLEventListener {
 	private GL gl;
 	private GL2 gl2;
 	private GLU glu;
+	private GLUgl2 glu2;
 	private GLUT glut;
 	GLAutoDrawable glAD;
 	GLCanvas glcanvas;
@@ -355,6 +358,7 @@ public class Drawer implements GLEventListener {
 		gl = drawable.getGL();
 		gl2= drawable.getGL().getGL2();
 		glu = new GLU();
+		glu2 = new GLUgl2();
 		glut = new GLUT();
 		this.glAD = drawable;
 
@@ -430,6 +434,8 @@ public class Drawer implements GLEventListener {
 		gl.glGetIntegerv(GL.GL_VIEWPORT, viewport);
 		gl2.glGetDoublev(GL2.GL_MODELVIEW_MATRIX, modelview);
 		gl2.glGetDoublev(GL2.GL_PROJECTION_MATRIX, projection);
+		
+		ViewDependentEvaluator.setViewConfiguration(modelview, projection, viewport, glu2);
 
 		drawBox();
 		//建物の描画

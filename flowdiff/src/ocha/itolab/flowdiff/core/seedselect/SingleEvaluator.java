@@ -12,24 +12,6 @@ public class SingleEvaluator {
 	public static final double alpha = 0.3;
 	public static final double beta = 1.0 - alpha;
 	
-	
-	/**
-	 * 評価値と流線番号をまとめるクラス
-	 */
-//	public static class RankValue{
-//		int num;
-//		double value;
-//	}
-//	
-//	public static class PutRankValue{
-//		public static RankValue putRankValue(int i, double value){
-//			RankValue rankValue = new RankValue();
-//			rankValue.num = i;
-//			rankValue.value = value;
-//			return rankValue;
-//		}
-//	}
-	
 	/**
 	 * 視点に依存しない評価値を算出し、ランキングする
 	 */
@@ -39,7 +21,7 @@ public class SingleEvaluator {
 		double diff = calcPairDistance(sl1, sl2);
 		double entropy = calcShapeEntropy(sl1, sl2);
 		singleValue = calcIndependentValue(diff, entropy);
-
+//		System.out.println("diff, entropy = " + diff + ", " + entropy);
 		return singleValue;
 	}	
 	
@@ -64,6 +46,7 @@ public class SingleEvaluator {
 		ArrayList<ArrayList<Double>> segments1 = getSegment(sl1);
 		ArrayList<ArrayList<Double>> segments2 = getSegment(sl2);
 		e = calcEntropy(segments1) + calcEntropy(segments2);
+//		System.out.println("e = " + e);
 		return e;
 	}
 	
@@ -75,6 +58,7 @@ public class SingleEvaluator {
 		double[][] p = calcPx(segments);
 		for(int i = 0; i < xLength; i++){
 			for(int j = 0; j < xDirection; j++){
+//				System.out.println("p = " + p[i][j]);
 				e -= p[i][j] * Math.log10(p[i][j]);
 			}
 		}
@@ -91,6 +75,7 @@ public class SingleEvaluator {
 		if(num == 0) num = 1;		
 		for(int i = 0; i < xLength; i++){
 			for(int j = 0; j < xDirection; j++){
+//				System.out.println("x = " + x[i][j]);
 				p[i][j] = x[i][j] / num;
 			}
 		}
@@ -112,6 +97,7 @@ public class SingleEvaluator {
 			int lFlag = calcOnePxLength(seg);
 			int dFlag = calcOnePxDirection(seg);
 			x[lFlag][dFlag] ++;
+			System.out.println("dFlag = " + dFlag);
 		}
 		return x;
 	}
@@ -129,19 +115,19 @@ public class SingleEvaluator {
 	 */
 	static int calcOnePxDirection(ArrayList<Double> segment){
 		// 方向：6段階評価
+		int dFlag;
+		double max = Math.max(Math.abs(segment.get(0)), Math.abs(segment.get(1)));
+		max = Math.max(max, Math.abs(segment.get(2)));
 		
-		ArrayList<Double> absSeg = new ArrayList<Double>();
-		for(double element: segment){
-			absSeg.add(Math.abs(element));
-		}
-		double max = Math.max(absSeg.indexOf(0), absSeg.indexOf(1));
-		max = Math.max(max, absSeg.indexOf(2));
-		if(max == absSeg.indexOf(0)) return 0;
-		else if(max == absSeg.indexOf(1)) return 1;
-		else if(max == absSeg.indexOf(2)) return 2;
-		else if(max == -absSeg.indexOf(0)) return 3;
-		else if(max == -absSeg.indexOf(1)) return 4;
-		else return 5;
+		
+		System.out.println("max = " + max);
+		if(max == segment.get(0)) dFlag = 0;
+		if(max == segment.get(1)) dFlag = 1;
+		else if(max == segment.get(2)) dFlag = 2;
+		else if(max == -1.0 * segment.get(0)) dFlag = 3;
+		else if(max == -1.0 * segment.get(1)) dFlag = 4;
+		else dFlag = 5;
+		return dFlag;
 	}
 
 	

@@ -1,15 +1,16 @@
 package ocha.itolab.flowdiff.core.seedselect;
-//import java.util.Comparator;
-//import java.util.LinkedList;
+
 import java.util.*;
-import ocha.itolab.flowdiff.core.seedselect.BestSeedSetSelector.Seed;
+//import ocha.itolab.flowdiff.core.seedselect.Seed;
 
 public class BinarySearch{
 
-	public static ArrayList<Seed> binarySearch(ArrayList<Seed> rankList, Seed key){
+	public static LinkedList<Seed> binarySearch(LinkedList<Seed> rankList, Seed key){
 		int pLeft = 0;
 		int pRight = rankList.size() -1;
-		
+		int i = 0;
+//		System.out.println("key.socre = " + key.score);
+
 		if(rankList.size() == 0){
 			rankList.add(key);
 			return rankList;
@@ -27,8 +28,9 @@ public class BinarySearch{
 				}else{
 					pRight = center - 1;
 				}
+			i ++ ;
 			}while(pLeft < pRight);
-
+			System.out.println("rankListの" + i + "番目は" + rankList.get(i));
 			return rankList;
 		}
 	}

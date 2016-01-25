@@ -58,8 +58,8 @@ public class SingleEvaluator {
 		double[][] p = calcPx(segments);
 		for(int i = 0; i < xLength; i++){
 			for(int j = 0; j < xDirection; j++){
-//				System.out.println("p = " + p[i][j]);
 				e -= p[i][j] * Math.log10(p[i][j]);
+				System.out.println("log10(p[i][j]) = " + Math.log10(p[i][j]));
 			}
 		}
 		return e;
@@ -75,8 +75,8 @@ public class SingleEvaluator {
 		if(num == 0) num = 1;		
 		for(int i = 0; i < xLength; i++){
 			for(int j = 0; j < xDirection; j++){
-//				System.out.println("x = " + x[i][j]);
 				p[i][j] = x[i][j] / num;
+//				System.out.println("x, num, p = " + x[i][j] + "," + num + "," + p[i][j]);
 			}
 		}
 		return p;
@@ -97,7 +97,7 @@ public class SingleEvaluator {
 			int lFlag = calcOnePxLength(seg);
 			int dFlag = calcOnePxDirection(seg);
 			x[lFlag][dFlag] ++;
-			System.out.println("dFlag = " + dFlag);
+//			System.out.println("dFlag = " + dFlag);
 		}
 		return x;
 	}
@@ -116,17 +116,40 @@ public class SingleEvaluator {
 	static int calcOnePxDirection(ArrayList<Double> segment){
 		// 方向：6段階評価
 		int dFlag;
+		ArrayList<Double> absSeg = new ArrayList<Double>();
+		for(int i = 0; i < 3; i++){
+			String seg = String.format("%.8f", segment.get(i));
+			segment.set(i, Double.parseDouble(seg));
+			absSeg.add(Math.abs(segment.get(i)));
+		}
 		double max = Math.max(Math.abs(segment.get(0)), Math.abs(segment.get(1)));
 		max = Math.max(max, Math.abs(segment.get(2)));
 		
 		
-		System.out.println("max = " + max);
-		if(max == segment.get(0)) dFlag = 0;
-		if(max == segment.get(1)) dFlag = 1;
-		else if(max == segment.get(2)) dFlag = 2;
-		else if(max == -1.0 * segment.get(0)) dFlag = 3;
-		else if(max == -1.0 * segment.get(1)) dFlag = 4;
-		else dFlag = 5;
+//		System.out.println("max = " + max);
+//		if(max == segment.get(0)) dFlag = 0;
+//		if(max == segment.get(1)) dFlag = 1;
+//		else if(max == segment.get(2)) dFlag = 2;
+//		else if(max == -1.0 * segment.get(0)) dFlag = 3;
+//		else if(max == -1.0 * segment.get(1)) dFlag = 4;
+//		else{
+//			System.out.println("max, seg = " + max + "," + segment.get(2));
+//			dFlag = 5;
+//		}
+		
+
+		if(absSeg.get(0) <= absSeg.get(1)){
+			if(absSeg.get(1) <= absSeg.get(2)){
+				if(0 <= segment.get(2)) dFlag = 0;
+				else dFlag = 1;
+			}else{
+				if(0 <= segment.get(1)) dFlag = 2;
+				else dFlag = 3;
+			}
+		}else{
+			if(0 < segment.get(0)) dFlag = 4;
+			else dFlag = 5;
+		}
 		return dFlag;
 	}
 

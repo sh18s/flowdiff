@@ -20,8 +20,9 @@ public class SingleEvaluator {
 
 		double diff = calcPairDistance(sl1, sl2);
 		double entropy = calcShapeEntropy(sl1, sl2);
-		singleValue = calcIndependentValue(diff, entropy);
-//		System.out.println("diff, entropy = " + diff + ", " + entropy);
+		// 本来は正規化すべきだが、エントロピーを10^29することで調整
+		singleValue = calcIndependentValue(diff, entropy * Math.pow(10, 29));
+		System.out.println("diff, entropy = " + diff + ", " + entropy);
 		return singleValue;
 	}	
 	
@@ -58,8 +59,12 @@ public class SingleEvaluator {
 		double[][] p = calcPx(segments);
 		for(int i = 0; i < xLength; i++){
 			for(int j = 0; j < xDirection; j++){
-				e -= p[i][j] * Math.log10(p[i][j]);
-				System.out.println("log10(p[i][j]) = " + Math.log10(p[i][j]));
+				if(p[i][j] == 0){
+					continue;
+				}else{
+					e -= p[i][j] * Math.log10(p[i][j]);
+				}
+//				System.out.println("log10(p[i][j]) = " + Math.log10(p[i][j]));
 			}
 		}
 		return e;
@@ -75,7 +80,7 @@ public class SingleEvaluator {
 		if(num == 0) num = 1;		
 		for(int i = 0; i < xLength; i++){
 			for(int j = 0; j < xDirection; j++){
-				p[i][j] = x[i][j] / num;
+				p[i][j] = (double)x[i][j] / (double)num;
 //				System.out.println("x, num, p = " + x[i][j] + "," + num + "," + p[i][j]);
 			}
 		}
@@ -124,19 +129,6 @@ public class SingleEvaluator {
 		}
 		double max = Math.max(Math.abs(segment.get(0)), Math.abs(segment.get(1)));
 		max = Math.max(max, Math.abs(segment.get(2)));
-		
-		
-//		System.out.println("max = " + max);
-//		if(max == segment.get(0)) dFlag = 0;
-//		if(max == segment.get(1)) dFlag = 1;
-//		else if(max == segment.get(2)) dFlag = 2;
-//		else if(max == -1.0 * segment.get(0)) dFlag = 3;
-//		else if(max == -1.0 * segment.get(1)) dFlag = 4;
-//		else{
-//			System.out.println("max, seg = " + max + "," + segment.get(2));
-//			dFlag = 5;
-//		}
-		
 
 		if(absSeg.get(0) <= absSeg.get(1)){
 			if(absSeg.get(1) <= absSeg.get(2)){

@@ -1,6 +1,6 @@
 package ocha.itolab.flowdiff.core.seedselect;
 
-import java.util.ArrayList;
+//import java.util.ArrayList;
 
 import ocha.itolab.flowdiff.core.streamline.Streamline;
 

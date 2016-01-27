@@ -2,18 +2,25 @@ package ocha.itolab.flowdiff.core.seedselect;
 
 import java.util.*;
 
+import org.json.JSONException;
+
+import ocha.itolab.flowdiff.applet.flowdiff.PlotPanel;
 import ocha.itolab.flowdiff.core.streamline.*;
 import ocha.itolab.flowdiff.core.data.*;
 //import ocha.itolab.flowdiff.core.seedselect.BinarySearch;
 
 public class BestSeedSetSelector {
-	static int REPEAT1 = 1000, REPEAT2 = 20;
-	static int NUMSEED = 20, NUMCANDIDATE = 200;
+	static int REPEAT1 = 10000, REPEAT2 = 20;
+	static int NUMSEED = 20, NUMCANDIDATE = 100;
+	static int selectCounter = 0;
+	
+
 	
 	/**
 	 * Select the best set of streamlines
+	 * @throws JSONException 
 	 */
-	public static StreamlineArray selectRandomly(Grid grid1, Grid grid2) {
+	public static StreamlineArray selectRandomly(Grid grid1, Grid grid2) throws JSONException {
 		StreamlineArray bestset = null;
 		double bestscore = 0.0;
 		
@@ -26,17 +33,17 @@ public class BestSeedSetSelector {
 		int[] total = grid1.getNumElement();
 		int[] eleNum = new int[3];
 		
-//		for(int i = 0; i < REPEAT1; i++) {
-		for(int i = 0; i < total[0] ; i++){
-			eleNum[0] = i;
-			for(int j = 0; j < total[1] ; j++){
-				eleNum[1] = j;
-				for(int k = 0; k < total[2]; k++){
-					eleNum[2] = k;
+		for(int i = 0; i < REPEAT1; i++) {
+//		for(int i = 0; i < total[0] ; i++){
+//			eleNum[0] = i;
+//			for(int j = 0; j < total[1] ; j++){
+//				eleNum[1] = j;
+//				for(int k = 0; k < total[2]; k++){
+//					eleNum[2] = k;
 					Seed seed = new Seed();
 					seed.id = i;
-//					seed.eid = setSeedRandomly1(grid1);
-					seed.eid = eleNum;
+					seed.eid = setSeedRandomly1(grid1);
+//					seed.eid = eleNum;
 //					System.out.println("eid = " + seed.eid[0] + "," + seed.eid[1] + ","+ seed.eid[2]);
 					seed.sl1 = new Streamline();
 					seed.sl2 = new Streamline();
@@ -48,8 +55,8 @@ public class BestSeedSetSelector {
 					seedlist.add(i, seed);
 //					System.out.println("score = " + seed.score + "," + i);
 //					treeset.add((Object)seed);
-				}
-			}
+//				}
+//			}
 		}
 
 //		Iterator it = treeset.iterator();
@@ -58,20 +65,36 @@ public class BestSeedSetSelector {
 //			seedlist.add(s); // 1000こぶんのidと評価値が入ってる
 //		}
 
-		// seedlistを評価値に並べ替え
-		LinkedList<Seed> rankList = new LinkedList<Seed>();
-		for(Seed key: seedlist){
-//			System.out.println("key.socre = " + key.score);
-			rankList = BinarySearch.binarySearch(rankList, key);
+		// IVGraphのスライダが動いていなければ、視点に依存しない評価値で足切り
+//		if(PlotPanel.elim == 100 && PlotPanel.dlim == 100){
+//			System.out.println("sliders are not moving.");
+			// seedlistを評価値に並べ替え
+			LinkedList<Seed> rankList = new LinkedList<Seed>();
+			for(Seed key: seedlist){
+				rankList = BinarySearch.binarySearch(rankList, key);
+			}
+			// 視点に依存しない評価値で足切り
+			ArrayList<Seed> meaningList = new ArrayList<Seed>(); // 意義のある流線ペア群
+			for(int i = 0; i < NUMCANDIDATE; i++){
+				meaningList.add(rankList.get(i));
+			}
+			bestset = ViewDependentEvaluator.select(meaningList);
+//		}
+			
+		// ランダムにNUMCANDIDATE本選んで可視化する
+		ArrayList<Seed> randomList = new ArrayList<Seed>();	
+		for(int i = 0; i < NUMCANDIDATE; i++){
+			int random = (int)(Math.random()*REPEAT1);
+			Seed seed = seedlist.get(random);
+			randomList.add(seed);
 		}
-//		視点に依存しない評価値で足切り
-		ArrayList<Seed> mList = new ArrayList<Seed>(); // 意義のある流線ペア群
-        for(int i = 0; i < NUMCANDIDATE; i++){
-        	mList.add(rankList.get(i));
-        }
-        
-        bestset = ViewDependentEvaluator.select(mList);
-        return bestset;		
+//		bestset = ViewDependentEvaluator.select(randomList);
+			
+		MakeJsonFile mjf = new MakeJsonFile();
+		mjf.makeJsonFile(bestset);
+		
+		selectCounter ++;
+        return bestset;
 	}
 	
 	

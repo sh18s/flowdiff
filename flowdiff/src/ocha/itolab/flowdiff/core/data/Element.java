@@ -3,6 +3,7 @@ package ocha.itolab.flowdiff.core.data;
 import ocha.itolab.flowdiff.core.streamline.Streamline;
 import ocha.itolab.flowdiff.core.streamline.StreamlineGenerator;
 
+// 格子点データ
 public class Element {
 	// 格子データ？
 	public GridPoint gp[] = new GridPoint[8];

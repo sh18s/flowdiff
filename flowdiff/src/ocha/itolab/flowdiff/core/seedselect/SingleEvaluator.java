@@ -1,9 +1,13 @@
 package ocha.itolab.flowdiff.core.seedselect;
 
+import ocha.itolab.flowdiff.applet.flowdiff.PlotPanel;
 import ocha.itolab.flowdiff.core.data.*;
 import ocha.itolab.flowdiff.core.streamline.*;
 
 import java.util.*;
+
+
+
 
 public class SingleEvaluator {
 
@@ -11,18 +15,43 @@ public class SingleEvaluator {
 	public static final int xDirection = 6;
 	public static final double alpha = 0.3;
 	public static final double beta = 1.0 - alpha;
+	public static ArrayList<IndependentValue>  graphIVList = new ArrayList<IndependentValue>();
 	
 	/**
-	 * 視点に依存しない評価値を算出し、ランキングする
+	 * 視点に依存しない評価値をわたすための関数
 	 */
 	static double calcSingleValue(Grid grid1, Grid grid2, Streamline sl1, Streamline sl2){
 		double singleValue;
 
 		double diff = calcPairDistance(sl1, sl2);
 		double entropy = calcShapeEntropy(sl1, sl2);
+		//System.out.println("e, diff: " + entropy + diff);
+		
+		//　正規化するために最大値を保存
+		if(PlotPanel.dmax < diff) PlotPanel.dmax = diff;
+		if(PlotPanel.emax < entropy) PlotPanel.emax = entropy;
+		
+		makeGraphIVList(diff, entropy);
+//		System.out.println("elim = " + PlotPanel.elim + ", dlim = " + PlotPanel.dlim);
+		
+		BestSeedSetSelector bestSeedSetSelecotr = new BestSeedSetSelector();
+		
+		// グラフで設定された閾値と比較
+//		if(BestSeedSetSelector.selectCounter > 1){
+//			if(PlotPanel.elim > 0){
+//				if(diff > -PlotPanel.dlim / PlotPanel.elim * entropy + PlotPanel.dlim){
+//					// 本来は正規化すべきだが、エントロピーを10^29することで調整
+//					singleValue = calcIndependentValue(diff, entropy * Math.pow(10, 29));
+//				}else singleValue = 0;
+//			}else{
+//				return singleValue = 0;
+//			}
+//		}else{
+//			singleValue = calcIndependentValue(diff, entropy * Math.pow(10, 29));
+//		}
+		
 		// 本来は正規化すべきだが、エントロピーを10^29することで調整
 		singleValue = calcIndependentValue(diff, entropy * Math.pow(10, 29));
-		System.out.println("diff, entropy = " + diff + ", " + entropy);
 		return singleValue;
 	}	
 	
@@ -34,6 +63,13 @@ public class SingleEvaluator {
 //		TODO: 正規化
 		iValue = alpha * difference + beta + shapeEntropy;
 		return iValue;
+	}
+	
+	// グラフ用リストをつくる
+	static void makeGraphIVList(double difference, double shapeEntropy){
+		IndependentValue iv = new IndependentValue();
+		iv.inputValue(difference, shapeEntropy);
+		graphIVList.add(iv);
 	}
 
 	/**
@@ -47,8 +83,12 @@ public class SingleEvaluator {
 		ArrayList<ArrayList<Double>> segments1 = getSegment(sl1);
 		ArrayList<ArrayList<Double>> segments2 = getSegment(sl2);
 		e = calcEntropy(segments1) + calcEntropy(segments2);
+//		double ip = calcMaxIP(segments1) + calcMaxIP(segments2);
+		double ip = calcMaxIP2(segments1) + calcMaxIP2(segments2);
+//		System.out.println("ip = " + ip);
 //		System.out.println("e = " + e);
-		return e;
+//		return e;
+		return ip;
 	}
 	
 	/**
@@ -144,7 +184,106 @@ public class SingleEvaluator {
 		}
 		return dFlag;
 	}
-
+	
+	/**
+	 * あるセグメントについて、方向を評価する
+	 */
+	static int calcOnePxDirection2(ArrayList<Double> segment){
+		// 方向：14段階評価
+		// 基準ベクトル
+		double vec0 [] = {1, 0, 0};
+		double vec1 [] = {0, 1, 0};
+		double vec2 [] = {0, 0, 1};
+		double vec3 [] = {-1, 0, 0};
+		double vec4 [] = {0, -1, 0};
+		double vec5 [] = {0, 0, -1};
+		double vec6 [] = {1, 1, 1};
+		double vec7 [] = {-1, 1, 1};
+		double vec8 [] = {-1, -1, 1};
+		double vec9 [] = {1, -1, 1};
+		double vec10 [] = {1, 1, -1};
+		double vec11 [] = {-1, 1, -1};
+		double vec12 [] = {1, -1, -1};
+		double vec13 [] = {-1, -1, -1};
+		double[][] vecs = {vec0, vec1, vec2, vec3, vec4, vec5, vec6, vec7, vec8, vec9, vec10, vec11, vec12, vec13,};
+		int flag = 0;
+		
+		// セグメントとの内積が最も大きくなる基準ベクトルに近似
+		double ip = 0;
+		double maxIp = 0;
+		for(int i = 0; i < 14; i++){
+			double vec[] = vecs[i];
+			for(int j = 0; j < 3; j++){
+				ip += vec[j]*segment.get(j);
+			}
+			if(maxIp < ip){
+				maxIp = ip;
+				flag = i;
+			}
+		}
+		return flag;
+	}
+	
+	/**
+	 * ある流線について、最小の内積を求める
+	 */
+	static double calcMaxIP2(ArrayList<ArrayList<Double>> segments){
+		double min = 0;
+		
+		for(int i = 0; i < segments.size() - 1; i++){
+			ArrayList<Double> segment1 = new ArrayList<Double>();
+			ArrayList<Double> segment2 = new ArrayList<Double>();
+			segment1 = segments.get(i);
+			// 正規化するためにセグメントの大きさを取得
+			double mag1 = Math.pow(segment1.get(0), 2) + Math.pow(segment1.get(1), 2) + Math.pow(segment1.get(2), 2);
+			segment2 = segments.get(i + 1);
+			// 正規化するためにセグメントの大きさを取得
+			double mag2 = Math.pow(segment2.get(0), 2) + Math.pow(segment2.get(1), 2) + Math.pow(segment2.get(2), 2);
+			double ip = 0;
+			// 正規化したセグメント同士の内積を計算
+			for(int k = 0; k < 3; k++){
+				if(mag1 == 0 && mag2 ==0){
+					ip += (segment1.get(k) / Math.sqrt(mag1)) * (segment2.get(k) / Math.sqrt(mag2));
+				}
+			}
+			if(ip < min) min = ip;
+		}
+		return min;
+	}
+	
+	
+	
+	/**
+	 * ある流線のすべてのセグメントの組み合わせについて、最大の内積を求める
+	 */
+	static double calcMaxIP(ArrayList<ArrayList<Double>> segments){
+		double max = 0;
+		
+		for(int i = 0; i < segments.size(); i++){
+			ArrayList<Double> segment1 = new ArrayList<Double>();
+			segment1 = segments.get(i);
+			// 正規化するためにセグメントの大きさを取得
+			double mag1 = Math.pow(segment1.get(0), 2) + Math.pow(segment1.get(1), 2) + Math.pow(segment1.get(2), 2);
+			for(int j = 0; j < segments.size(); j++){
+				if(i == j) continue;
+				else{
+					ArrayList<Double> segment2 = new ArrayList<Double>();
+					segment2 = segments.get(j);
+					// 正規化するためにセグメントの大きさを取得
+					double mag2 = Math.pow(segment2.get(0), 2) + Math.pow(segment2.get(1), 2) + Math.pow(segment2.get(2), 2);
+					double ip = 0;
+					// 正規化したセグメン同士の内積を計算
+					for(int k = 0; k < 3; k++){
+						if(mag1 == 0 && mag2 ==0){
+							ip += (segment1.get(k) / Math.sqrt(mag1)) * (segment2.get(k) / Math.sqrt(mag2));
+						}
+					}
+					if(max < ip) max = ip;
+				}
+			}
+		}
+		return max;
+	}
 	
 	/**
 	 * ある流線を有向線分に分割する
@@ -190,15 +329,32 @@ public class SingleEvaluator {
 		int ver2 = sl2.getNumVertex();
 		if(ver1 <= 0 || ver2 <= 0) return distance;
 		
-		Streamline sla, slb;
+		Streamline sla, slb; // 線分が多い方の流線をslaにする
 		if(ver1 < ver2){
 			sla = sl2; slb = sl1; numver = ver2;
 		}else{
 			sla = sl1; slb = sl2; numver = ver1;
 		}
+		DistPos distPos = new DistPos();
+		double dist = 0;
+		int nearPos = 0;
+		int prePos = 0; // 1つ前の格子点の、最も近い格子点
+		
 		for(int i = 0; i < numver; i++){
+			if(i > 0) prePos = nearPos;
 			double pos[] = sla.getPosition(i);
-			distance += calcOnePosDistance(pos, slb);
+			distPos = calcOnePosDistance(pos, slb);
+			nearPos = distPos.getPos();
+//			System.out.println("i = " + i + ", nearPos = " + nearPos);
+			// 逆流判定
+			if(prePos > nearPos){
+				double pos2[] = slb.getPosition(i);
+				dist = (pos[0] - pos2[0]) * (pos[0] - pos2[0])
+					 + (pos[1] - pos2[1]) * (pos[1] - pos2[1])
+					 + (pos[2] - pos2[2]) * (pos[2] - pos2[2]);
+			}else dist = distPos.getDist();
+			distance += dist;
+//			distance += calcOnePosDistance(pos, slb);
 		}
 		distance /= numver;
 		return distance;
@@ -208,11 +364,18 @@ public class SingleEvaluator {
 	/**
 	 * ある格子点から、ペアとなる流線の最も近い格子点までの距離を計算する
 	 */
-	static double calcOnePosDistance(double pos[], Streamline sl) {
+	static DistPos calcOnePosDistance(double pos[], Streamline sl) {
 		double distance = 1.0e+30;
-		if(sl.getNumVertex() <= 0) return distance;
+		DistPos distPos = new DistPos();
+		
+		if(sl.getNumVertex() <= 0){
+			distPos.setDist(distance);
+			distPos.setPos(0);
+			return distPos;
+		}
 		
 		// for each point of the streamline
+		int nearPos = 0;
 		for(int i = 0; i < sl.getNumVertex(); i++) {
 			double pos2[] = sl.getPosition(i);
 			double d = (pos[0] - pos2[0]) * (pos[0] - pos2[0])
@@ -220,9 +383,30 @@ public class SingleEvaluator {
 					 + (pos[2] - pos2[2]) * (pos[2] - pos2[2]);
 			if(distance > d)
 				distance = d;
+				nearPos = i;
 		}
+		distPos.setDist(Math.sqrt(distance));
+		distPos.setPos(nearPos);
+		return distPos;
+	}
+	
+	// 最も近い格子点とその距離
+	static class DistPos{
+		double distance;
+		int pos;
 		
-		return Math.sqrt(distance);
+		void setDist(double distance){
+			this.distance = distance;
+		}
+		void setPos(int pos){
+			this.pos = pos;
+		}
+		double getDist(){
+			return this.distance;
+		}
+		int getPos(){
+			return this.pos;
+		}
 	}
 
 }

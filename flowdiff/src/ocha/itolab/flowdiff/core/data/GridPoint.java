@@ -2,7 +2,7 @@ package ocha.itolab.flowdiff.core.data;
 
 public class GridPoint {
 	/*
-	 * ある頂点における位置とベクトルデータ
+	 * 格子データ(格子点データの集合？)
 	 */
 	double pos[] = new double[3];
 	double vec[] = new double[3];

@@ -1129,25 +1129,30 @@ public class Drawer implements GLEventListener {
 		for(int i=0;i<arrsl.size();i++){
 			Streamline sl = arrsl.get(i);
 			int numvertex = sl.getNumVertex();
+			gl2.glLineWidth(2.0f);
 
 			//色のハイライト
 			if(color.get(i)){
 				if(id == 1){
 					//grid1白
 					gl2.glColor3d(1.0, 1.0, 1.0);
+//					gl2.glLineWidth(2.0f);
 				}
 				if(id == 2){
 					//grid2黄色
 					gl2.glColor3d(0.5, 1.0, 0.5);
+//					gl2.glLineWidth(2.5f);
 				}
 			}else{
 				if(id == 1){
 					//grid1ピンク
 					gl2.glColor3d(1.0, 0.0, 1.0);
+//					gl2.glLineWidth(2.5f);
 				}
 				if(id == 2){
 					//grid2シアン
 					gl2.glColor3d(0.0, 1.0, 1.0);
+//					gl2.glLineWidth(2.5f);
 				}
 			}
 

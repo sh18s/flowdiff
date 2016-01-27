@@ -125,5 +125,9 @@
 	<classpathentry kind="lib" path="/Users/shokosawada/source/jar/jogl-all.jar"/>
 	<classpathentry kind="lib" path="/Users/shokosawada/source/jar/jogl-test-android.jar"/>
 	<classpathentry kind="lib" path="/Users/shokosawada/source/jar/jogl-test.jar"/>
+	<classpathentry kind="lib" path="/Users/shokosawada/source/jar/jcommon-1.0.23.jar"/>
+	<classpathentry kind="lib" path="/Users/shokosawada/source/jar/jfreechart-1.0.19.jar"/>
+	<classpathentry kind="lib" path="/Users/shokosawada/source/jar/jsonic-1.1.3.jar"/>
+	<classpathentry kind="lib" path="/Users/shokosawada/source/jar/java-json.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

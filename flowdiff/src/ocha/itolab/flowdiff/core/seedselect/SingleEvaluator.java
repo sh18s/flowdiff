@@ -11,16 +11,17 @@ import java.util.*;
 
 public class SingleEvaluator {
 
-	public static final int xLength = 1;
-	public static final int xDirection = 6;
+	public static final int xLength = 2;
+	public static final int xDirection = 14;
 	public static final double alpha = 0.3;
 	public static final double beta = 1.0 - alpha;
 	public static ArrayList<IndependentValue>  graphIVList = new ArrayList<IndependentValue>();
 	
 	/**
 	 * 視点に依存しない評価値をわたすための関数
+	 * Fuction to hand score of pair of streamlines to "BestSeedSetSelector"
 	 */
-	static double calcSingleValue(Grid grid1, Grid grid2, Streamline sl1, Streamline sl2){
+	static double calcSingleValue(Streamline sl1, Streamline sl2){
 		double singleValue;
 
 		double diff = calcPairDistance(sl1, sl2);
@@ -50,8 +51,7 @@ public class SingleEvaluator {
 //			singleValue = calcIndependentValue(diff, entropy * Math.pow(10, 29));
 //		}
 		
-		// 本来は正規化すべきだが、エントロピーを10^29することで調整
-		singleValue = calcIndependentValue(diff, entropy * Math.pow(10, 29));
+		singleValue = calcIndependentValue(diff, entropy);
 		return singleValue;
 	}	
 	
@@ -83,12 +83,9 @@ public class SingleEvaluator {
 		ArrayList<ArrayList<Double>> segments1 = getSegment(sl1);
 		ArrayList<ArrayList<Double>> segments2 = getSegment(sl2);
 		e = calcEntropy(segments1) + calcEntropy(segments2);
-//		double ip = calcMaxIP(segments1) + calcMaxIP(segments2);
-		double ip = calcMaxIP2(segments1) + calcMaxIP2(segments2);
-//		System.out.println("ip = " + ip);
+//		double ip = calcMinIP(segments1) + calcMinIP(segments2);
 //		System.out.println("e = " + e);
-//		return e;
-		return ip;
+		return e;
 	}
 	
 	/**
@@ -104,9 +101,9 @@ public class SingleEvaluator {
 				}else{
 					e -= p[i][j] * Math.log10(p[i][j]);
 				}
-//				System.out.println("log10(p[i][j]) = " + Math.log10(p[i][j]));
 			}
 		}
+//		System.out.println("entropy = " + e);
 		return e;
 	}
 	
@@ -115,7 +112,8 @@ public class SingleEvaluator {
 	 */
 	static double[][] calcPx(ArrayList<ArrayList<Double>> segments){
 		double p[][] = new double[xLength][xDirection];
-		int[][] x = calcSmallx(segments);
+//		int[][] x = calcSmallx(segments);
+		int[][] x = calcSmallx2(segments);
 		int num = segments.size();
 		if(num == 0) num = 1;		
 		for(int i = 0; i < xLength; i++){
@@ -131,6 +129,7 @@ public class SingleEvaluator {
 	 * ある流線について、xを算出する
 	 */
 	static int[][] calcSmallx(ArrayList<ArrayList<Double>> segments){
+		// Initialize Array
 		int x[][] = new int[xLength][xDirection];
 		for(int i = 0; i < xLength; i++){
 			for(int j = 0; j < xDirection; j++){
@@ -140,9 +139,33 @@ public class SingleEvaluator {
 		
 		for(ArrayList<Double> seg: segments){
 			int lFlag = calcOnePxLength(seg);
-			int dFlag = calcOnePxDirection(seg);
+			int dFlag = calcOnePxDirection2(seg);
 			x[lFlag][dFlag] ++;
-//			System.out.println("dFlag = " + dFlag);
+		}
+		return x;
+	}
+	
+	
+	/**
+	 * Calculate "x" of a streamline
+	 * calcPxLengthを利用
+	 */
+	static int[][] calcSmallx2(ArrayList<ArrayList<Double>> segments){
+		// initialize Array
+		int x[][] = new int[xLength][xDirection];
+		for(int i = 0; i < xLength; i++){
+			for(int j = 0; j < xDirection; j++){
+				x[i][j] = 0;
+			}
+		}
+		// Get flags of length
+		ArrayList<Integer> lFlagArray = calcPxLength(segments);
+		// Get "x"
+		for(int i = 0;i < segments.size();i ++){
+			int lFlag = lFlagArray.get(i);
+			int dFlag = calcOnePxDirection2(segments.get(i));
+			x[lFlag][dFlag] ++;
+//			System.out.println("lFlag = " + lFlag);
 		}
 		return x;
 	}
@@ -150,11 +173,51 @@ public class SingleEvaluator {
 	/**
 	 * あるセグメントについて、長さを評価する
 	 */
-	static int calcOnePxLength(ArrayList<Double> segments){
+	static int calcOnePxLength(ArrayList<Double> segment){
 		// 速度: 1段階評価
 		return 0;
 	}
+	
+	/**
+	 * ある流線のすべてのセグメントについて、長さを評価する
+	 */
+	static ArrayList<Integer> calcPxLength(ArrayList<ArrayList<Double>> segments){
+		ArrayList<Integer> flagArray = new ArrayList<Integer>();
 		
+		// TODO: add steps
+		// Velocity: 2 steps
+		
+		// Calculate length of all segments
+		ArrayList<Double> lengthArray = new ArrayList<Double>();
+		double aveLength = 0; // Keep longest length
+		
+		for(ArrayList<Double> segment: segments){
+			double length = 0;
+			for(int j = 0;j < 3; j++){					
+				length += Math.pow(segment.get(j), 2.0d);
+			}
+			aveLength += length;
+			lengthArray.add(Math.sqrt(length));
+		}
+		// Calculate average of length of segments
+		if(segments.size() != 0){
+			aveLength /= (double)segments.size();
+			
+			// Decide Flag
+			for(Double length: lengthArray){
+				if(length < aveLength){
+					flagArray.add(0);
+				}
+				else{
+					flagArray.add(1);
+				}
+			}
+		}
+		else flagArray.add(0);
+		
+		return flagArray;
+	}
+	
 	/**
 	 * あるセグメントについて、方向を評価する
 	 */
@@ -187,47 +250,77 @@ public class SingleEvaluator {
 	
 	/**
 	 * あるセグメントについて、方向を評価する
+	 * dFlag = 0~5: 6 steps evaluation
+	 * - x+:0, y+:1, z+:2, x-:3, y-:4, z-:5
+	 * dFlag = 6~13: 8 steps evaluation
 	 */
 	static int calcOnePxDirection2(ArrayList<Double> segment){
-		// 方向：14段階評価
-		// 基準ベクトル
-		double vec0 [] = {1, 0, 0};
-		double vec1 [] = {0, 1, 0};
-		double vec2 [] = {0, 0, 1};
-		double vec3 [] = {-1, 0, 0};
-		double vec4 [] = {0, -1, 0};
-		double vec5 [] = {0, 0, -1};
-		double vec6 [] = {1, 1, 1};
-		double vec7 [] = {-1, 1, 1};
-		double vec8 [] = {-1, -1, 1};
-		double vec9 [] = {1, -1, 1};
-		double vec10 [] = {1, 1, -1};
-		double vec11 [] = {-1, 1, -1};
-		double vec12 [] = {1, -1, -1};
-		double vec13 [] = {-1, -1, -1};
-		double[][] vecs = {vec0, vec1, vec2, vec3, vec4, vec5, vec6, vec7, vec8, vec9, vec10, vec11, vec12, vec13,};
-		int flag = 0;
+		// Direction：14 steps evaluation
+		int dFlag = 0;
 		
-		// セグメントとの内積が最も大きくなる基準ベクトルに近似
-		double ip = 0;
-		double maxIp = 0;
-		for(int i = 0; i < 14; i++){
-			double vec[] = vecs[i];
-			for(int j = 0; j < 3; j++){
-				ip += vec[j]*segment.get(j);
-			}
-			if(maxIp < ip){
-				maxIp = ip;
-				flag = i;
+		// Get and keep absolute value and axis of segment
+		ArrayList<Double> absSeg = new ArrayList<Double>();
+		for(int i = 0; i < 3; i++){
+			// 8桁で切る
+			String seg = String.format("%.8f", segment.get(i));
+			segment.set(i, Double.parseDouble(seg));
+			absSeg.add(Math.abs(segment.get(i)));
+		}
+		
+		// Sort absolute values to decide max value
+		ArrayList<Double> absRank = new ArrayList<Double>();
+		
+		// Sort values of segment
+		absRank.add(absSeg.get(0));
+		if(absSeg.get(0) > absSeg.get(1)){
+			absRank.add(absSeg.get(1));
+		}else{
+			absRank.add(0, absSeg.get(0));
+		}
+		if(absRank.get(1) > absSeg.get(2)){
+			absRank.add(absSeg.get(2));
+		}else if(absRank.get(0) > absSeg.get(2)){
+			absRank.add(1, absSeg.get(2));
+		}else absRank.add(0, absSeg.get(2));
+		
+		// 6 steps evaluation
+		// Decide axis of max absolute value
+		int fFlag = segment.indexOf(absRank.get(0));
+		if(fFlag == -1)
+			fFlag = segment.indexOf(-1.0d * absRank.get(0)) + 3;
+
+		// Decide 6 or 8 steps evaluation
+		if(absRank.get(0) > 10.0d * absRank.get(1)){
+			// 6 steps evaluation
+			dFlag = fFlag;
+		}else{
+			// 8 steps evaluation
+			if(segment.get(0) >= 0){
+				if(segment.get(1) >= 0){
+					if(segment.get(2) >= 0) dFlag = 6;
+					else dFlag = 7;
+				}else{
+					if(segment.get(2) >= 0) dFlag = 8;
+					else dFlag = 9;
+				}
+			}else{
+				if(segment.get(1) >= 0){
+					if(segment.get(2) >= 0) dFlag = 10;
+					else dFlag = 11;
+				}else{
+					if(segment.get(2) >= 0) dFlag = 12;
+					else dFlag = 13;
+				}
 			}
 		}
-		return flag;
+//		System.out.println("dFlag = " + dFlag);
+		return dFlag;
 	}
 	
 	/**
 	 * ある流線について、最小の内積を求める
 	 */
-	static double calcMaxIP2(ArrayList<ArrayList<Double>> segments){
+	static double calcMinIP(ArrayList<ArrayList<Double>> segments){
 		double min = 0;
 		
 		for(int i = 0; i < segments.size() - 1; i++){
@@ -250,40 +343,7 @@ public class SingleEvaluator {
 		}
 		return min;
 	}
-	
-	
-	
-	/**
-	 * ある流線のすべてのセグメントの組み合わせについて、最大の内積を求める
-	 */
-	static double calcMaxIP(ArrayList<ArrayList<Double>> segments){
-		double max = 0;
-		
-		for(int i = 0; i < segments.size(); i++){
-			ArrayList<Double> segment1 = new ArrayList<Double>();
-			segment1 = segments.get(i);
-			// 正規化するためにセグメントの大きさを取得
-			double mag1 = Math.pow(segment1.get(0), 2) + Math.pow(segment1.get(1), 2) + Math.pow(segment1.get(2), 2);
-			for(int j = 0; j < segments.size(); j++){
-				if(i == j) continue;
-				else{
-					ArrayList<Double> segment2 = new ArrayList<Double>();
-					segment2 = segments.get(j);
-					// 正規化するためにセグメントの大きさを取得
-					double mag2 = Math.pow(segment2.get(0), 2) + Math.pow(segment2.get(1), 2) + Math.pow(segment2.get(2), 2);
-					double ip = 0;
-					// 正規化したセグメン同士の内積を計算
-					for(int k = 0; k < 3; k++){
-						if(mag1 == 0 && mag2 ==0){
-							ip += (segment1.get(k) / Math.sqrt(mag1)) * (segment2.get(k) / Math.sqrt(mag2));
-						}
-					}
-					if(max < ip) max = ip;
-				}
-			}
-		}
-		return max;
-	}
+
 	
 	/**
 	 * ある流線を有向線分に分割する

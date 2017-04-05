@@ -23,21 +23,23 @@ public class MakeJsonFile {
 		ArrayList<Streamline> slArray1 = StreamlineArray.getAllList1(); // Get all streamlines in "bestset"
 		ArrayList<Streamline> slArray2 = StreamlineArray.getAllList2();
 		
-		JSONArray coordinates1 = new JSONArray();
-		JSONArray coordinates2 = new JSONArray();
 		JSONArray positions = new JSONArray();
 		
 		for(Integer i = 0; i < slArray1.size(); i++){
+			JSONArray coordinates1 = new JSONArray();
+			JSONArray coordinates2 = new JSONArray();
+			
 			Streamline sl1 = slArray1.get(i);
 			Streamline sl2 = slArray2.get(i);
 			
-			for(Integer j = 0; j < sl1.getNumVertex(); j++){
+			for(int j = 0; j < sl1.getNumVertex(); j++){
 				coordinates1.put(sl1.getPosition(j)); // add coordinate and coordinate ID to HashMap
-			}for(Integer j = 0; j < sl2.getNumVertex(); j++){
+			}for(int j = 0; j < sl2.getNumVertex(); j++){
 				coordinates2.put(sl2.getPosition(j)); // add coordinate and coordinate ID to HashMap
 			}
 			addPair(positions, coordinates1, coordinates2, i);
 		}
+		
 		
 		try{
 			FileWriter fileWriter= new FileWriter("jsonfile.txt", false);

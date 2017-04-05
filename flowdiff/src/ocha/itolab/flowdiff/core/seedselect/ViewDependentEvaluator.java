@@ -23,7 +23,6 @@ public class ViewDependentEvaluator {
 	public static StreamlineArray select(ArrayList<Seed> seedlist) {
 		plinelist = new ArrayList<ArrayList>();
 		StreamlineArray sarray = new StreamlineArray();
-//		System.out.println("size of seedlist = " + seedlist.size());
 		
 		pline1 = new ArrayList<double[]>();
 		pline2 = new ArrayList<double[]>();
@@ -36,7 +35,6 @@ public class ViewDependentEvaluator {
 			// 射影
 			boolean ret1 = project(seed.sl1, pline1);
 			if(ret1 == false) {
-//				System.out.println("1 is false!");
 				counter2++;
 				pline1.clear();
 				continue;
@@ -44,7 +42,6 @@ public class ViewDependentEvaluator {
 			// 射影
 			boolean ret2 = project(seed.sl2, pline2);
 			if(ret2 == false) {
-//				System.out.println("1 is false!");
 				counter2++;
 				pline2.clear();
 				continue;

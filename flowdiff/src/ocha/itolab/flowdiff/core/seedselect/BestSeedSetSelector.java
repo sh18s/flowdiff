@@ -14,7 +14,6 @@ public class BestSeedSetSelector {
 	static int NUMSEED = 20, NUMCANDIDATE = 100;
 	static int selectCounter = 0;
 	
-
 	
 	/**
 	 * Select the best set of streamlines
@@ -50,7 +49,7 @@ public class BestSeedSetSelector {
 					StreamlineGenerator.generate(grid1, seed.sl1, seed.eid, null);
 					StreamlineGenerator.generate(grid2, seed.sl2, seed.eid, null);
 					//seed.score = StreamlineArrayEvaluator.evaluate1(grid1, grid2, seed.sl1, seed.sl2);
-					seed.score = SingleEvaluator.calcSingleValue(grid1, grid2, seed.sl1, seed.sl2);
+					seed.score = SingleEvaluator.calcSingleValue(seed.sl1, seed.sl2);
 					//add now
 					seedlist.add(i, seed);
 //					System.out.println("score = " + seed.score + "," + i);
@@ -78,17 +77,15 @@ public class BestSeedSetSelector {
 			for(int i = 0; i < NUMCANDIDATE; i++){
 				meaningList.add(rankList.get(i));
 			}
-			bestset = ViewDependentEvaluator.select(meaningList);
-//		}
 			
-		// ランダムにNUMCANDIDATE本選んで可視化する
-		ArrayList<Seed> randomList = new ArrayList<Seed>();	
-		for(int i = 0; i < NUMCANDIDATE; i++){
-			int random = (int)(Math.random()*REPEAT1);
-			Seed seed = seedlist.get(random);
-			randomList.add(seed);
-		}
-//		bestset = ViewDependentEvaluator.select(randomList);
+			bestset = ViewDependentEvaluator.select(meaningList);
+			
+			// 視点に依存した評価値を無視して結果出力
+//			ignoreViewDependentEvaluation(meaningList, bestset);
+			
+			// ランダムにNUMCANDIDATE本選んで可視化する
+//			bestset = randomSelect(seedlist);
+//		}
 			
 		MakeJsonFile mjf = new MakeJsonFile();
 		mjf.makeJsonFile(bestset);
@@ -105,7 +102,7 @@ public class BestSeedSetSelector {
 		int seedid[] = new int[3];
 		int nume[] = grid.getNumElement();
 		
-		// for each seed0
+		// for each seed
 		for(int j = 0; j < 3; j++) {
 			int id = (int)(Math.random() * (double)nume[j]);
 			if(id < 0) id = 0;
@@ -155,22 +152,26 @@ public class BestSeedSetSelector {
 		return slset;
 	}
 	
-//	static class SeedComparator implements Comparator {
-//
-//		public int compare(Object obj1, Object obj2) {
-//
-//			Seed seed1 = (Seed) obj1;
-//			Seed seed2 = (Seed) obj2;
-//			
-//			if (seed2.score - seed1.score > 1.0e-10)
-//				return 1;
-//			if (seed1.score - seed2.score > 1.0e-10)
-//				return -1;
-//			if (seed1.id > seed2.id)	
-//				return 1;
-//			return -1;
-//		}
-//
-//	}
-
+	/**
+	 * 視点に依存した評価値を無視して結果出力
+	 */
+	static void ignoreViewDependentEvaluation(ArrayList<Seed> meaningList, StreamlineArray bestset){
+		for(int i = 0; i < REPEAT2; i++){
+			Seed seed = meaningList.get(i);
+			bestset.addList(seed.sl1, seed.sl2, seed.eid);
+		}
+	}
+	
+	/** 
+	 * ランダムにNUMCANDIDATE本選んで可視化する
+	 */
+	static StreamlineArray randomSelect(ArrayList<Seed> seedlist){
+		ArrayList<Seed> randomList = new ArrayList<Seed>();	
+		for(int i = 0; i < NUMCANDIDATE; i++){
+			int random = (int)(Math.random()*REPEAT1);
+			Seed seed = seedlist.get(random);
+				randomList.add(seed);
+			}
+		return ViewDependentEvaluator.select(randomList);
+	}
 }

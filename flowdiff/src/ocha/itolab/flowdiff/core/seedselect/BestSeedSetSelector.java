@@ -9,6 +9,7 @@ import ocha.itolab.flowdiff.core.streamline.*;
 import ocha.itolab.flowdiff.core.data.*;
 //import ocha.itolab.flowdiff.core.seedselect.BinarySearch;
 
+// Read on ViewingPanel
 public class BestSeedSetSelector {
 	static int REPEAT1 = 10000, REPEAT2 = 20;
 	static int NUMSEED = 20, NUMCANDIDATE = 100;

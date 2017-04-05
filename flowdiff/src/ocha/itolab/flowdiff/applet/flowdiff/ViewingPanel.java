@@ -516,6 +516,8 @@ public class ViewingPanel extends JPanel {
 			if (buttonPushed == autoStreamlineButton) {
 				try {
 					slset = BestSeedSetSelector.selectRandomly(grid1, grid2);
+					MakeEvaluationFile mef = new MakeEvaluationFile();
+					mef.makeEvaluationFile(grid1, grid2);
 				} catch (JSONException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();

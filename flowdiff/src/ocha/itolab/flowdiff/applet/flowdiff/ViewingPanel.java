@@ -40,8 +40,7 @@ import ocha.itolab.flowdiff.core.seedselect.*;
 public class ViewingPanel extends JPanel {
 	// new data
 	// file path for Mac
-	String path = "/Users/shokosawada/git/flowdiff/flowdiff/data/DeltaWing/";
-	// file path for Windows
+	String path = "../data/DeltaWing/";
 //	String path = "C:/DeltaWing/";
 	
 	String filename1 = "DeltaWing_AoA20.dat";

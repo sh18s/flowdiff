@@ -9,4 +9,5 @@ public class Seed {
 	double score;
 	int eid[];
 	Streamline sl1, sl2;
+	double entropy, diff; // added by sh
 }

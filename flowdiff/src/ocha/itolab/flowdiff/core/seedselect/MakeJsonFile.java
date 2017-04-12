@@ -37,7 +37,7 @@ public class MakeJsonFile {
 			}for(int j = 0; j < sl2.getNumVertex(); j++){
 				coordinates2.put(sl2.getPosition(j)); // add coordinate and coordinate ID to HashMap
 			}
-			addPair(positions, coordinates1, coordinates2, i);
+			addPair(positions, coordinates1, coordinates2);
 		}
 		
 		
@@ -51,7 +51,7 @@ public class MakeJsonFile {
 		}
 	}
 	
-	void addPair(JSONArray positions, JSONArray coordinates1, JSONArray coordinates2, Integer i) throws JSONException{
+	void addPair(JSONArray positions, JSONArray coordinates1, JSONArray coordinates2) throws JSONException{
 		JSONObject pair = new JSONObject();
 		
 		pair.put("sl1", coordinates1);

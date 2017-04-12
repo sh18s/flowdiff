@@ -1,14 +1,12 @@
 package ocha.itolab.flowdiff.core.seedselect;
 
-import ocha.itolab.flowdiff.applet.flowdiff.PlotPanel;
-import ocha.itolab.flowdiff.core.data.*;
 import ocha.itolab.flowdiff.core.streamline.*;
 
 import java.util.*;
 
 
 
-public class CalculateEvaluation {
+public class EvaluationCalculator {
 
 	public static final int xLength = 2;
 	public static final int xDirection = 14;
@@ -55,7 +53,6 @@ public class CalculateEvaluation {
 				}
 			}
 		}
-//		System.out.println("entropy = " + e);
 		return e;
 	}
 	
@@ -70,7 +67,6 @@ public class CalculateEvaluation {
 		for(int i = 0; i < xLength; i++){
 			for(int j = 0; j < xDirection; j++){
 				p[i][j] = (double)x[i][j] / (double)num;
-//				System.out.println("x, num, p = " + x[i][j] + "," + num + "," + p[i][j]);
 			}
 		}
 		return p;
@@ -211,34 +207,6 @@ public class CalculateEvaluation {
 //		System.out.println("dFlag = " + dFlag);
 		return dFlag;
 	}
-	
-	/**
-	 * ある流線について、最小の内積を求める
-	 */
-	static double calcMinIP(ArrayList<ArrayList<Double>> segments){
-		double min = 0;
-		
-		for(int i = 0; i < segments.size() - 1; i++){
-			ArrayList<Double> segment1 = new ArrayList<Double>();
-			ArrayList<Double> segment2 = new ArrayList<Double>();
-			segment1 = segments.get(i);
-			// 正規化するためにセグメントの大きさを取得
-			double mag1 = Math.pow(segment1.get(0), 2) + Math.pow(segment1.get(1), 2) + Math.pow(segment1.get(2), 2);
-			segment2 = segments.get(i + 1);
-			// 正規化するためにセグメントの大きさを取得
-			double mag2 = Math.pow(segment2.get(0), 2) + Math.pow(segment2.get(1), 2) + Math.pow(segment2.get(2), 2);
-			double ip = 0;
-			// 正規化したセグメント同士の内積を計算
-			for(int k = 0; k < 3; k++){
-				if(mag1 == 0 && mag2 ==0){
-					ip += (segment1.get(k) / Math.sqrt(mag1)) * (segment2.get(k) / Math.sqrt(mag2));
-				}
-			}
-			if(ip < min) min = ip;
-		}
-		return min;
-	}
-
 	
 	/**
 	 * ある流線を有向線分に分割する

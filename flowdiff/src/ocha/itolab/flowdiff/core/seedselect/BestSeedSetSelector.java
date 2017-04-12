@@ -71,7 +71,7 @@ public class BestSeedSetSelector {
 			// seedlistを評価値に並べ替え
 			LinkedList<Seed> rankList = new LinkedList<Seed>();
 			for(Seed key: seedlist){
-				rankList = BinarySearch.binarySearch(rankList, key);
+				BinarySearch.binarySearch(rankList, key, "score");
 			}
 			// 視点に依存しない評価値で足切り
 			ArrayList<Seed> meaningList = new ArrayList<Seed>(); // 意義のある流線ペア群

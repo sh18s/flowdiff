@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -26,6 +27,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.json.JSONException;
 
 import ocha.itolab.flowdiff.core.data.FileReader;
@@ -514,10 +517,18 @@ public class ViewingPanel extends JPanel {
 			StreamlineArray slset = new StreamlineArray();
 			if (buttonPushed == autoStreamlineButton) {
 				try {
-					slset = BestSeedSetSelector.selectRandomly(grid1, grid2);
-					MakeEvaluationFile mef = new MakeEvaluationFile();
-					mef.makeEvaluationFile(grid1, grid2);
+//					slset = BestSeedSetSelector.selectRandomly(grid1, grid2);
+					slset = BestSetSelector.selectRandomly(grid1, grid2);
 				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (JsonParseException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (JsonMappingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}

@@ -16,16 +16,20 @@ import ocha.itolab.flowdiff.core.data.*;
  */
 public class MakeEvaluationFile {
 	static int ALLPAIR = 10000; // 計算対象の流線の本数(ほんとは全部)
+	static String SCORE = "score";
 	static String ENTROPY = "entropy";
 	static String DIFF = "diff";
 	static double alpha = 0.5d;
 	static double beta = 1.0d - alpha;
 	
-	// Keep normalized evaluations and scores here
-	public static JSONArray nEvArray = new JSONArray();
-	public static JSONArray scoreArray = new JSONArray();
-	// Keep entropy and diff here
-	ArrayList<HashMap<String, Double>> evArray = new ArrayList<HashMap<String, Double>>();
+	// Keep seeds here
+	ArrayList<Seed> seedlist = new ArrayList<Seed>();
+	public static JSONArray seedArray= new JSONArray();
+	// Keep rank of score, entropy and diff here
+	public static JSONArray scoreRank  = new JSONArray();
+	public static JSONArray entropyRank  = new JSONArray();
+	public static JSONArray diffRank  = new JSONArray();
+	
 	// Keep range of entropy and diff here
 	static HashMap<String, Double> eRange = new HashMap<String, Double>(){
 		{put("max", 0d);}
@@ -49,54 +53,107 @@ public class MakeEvaluationFile {
 			StreamlineGenerator.generate(grid1, seed.sl1, seed.eid, null);
 			StreamlineGenerator.generate(grid2, seed.sl2, seed.eid, null);
 			
-			getEvaluation(seed.sl1, seed.sl2); // Get evaluation
+			getEvaluation(seed); // Get evaluation
+			seedlist.add(seed);
 		}
-		// Normalize evaluations
-		for(HashMap<String, Double> evaluation: evArray){
-			double nEntropy = normalize(evaluation.get(ENTROPY), eRange);
-			double nDiff = normalize(evaluation.get(DIFF), dRange);
-			HashMap<String, Double> nEvMap = new HashMap<String, Double>();
-			nEvMap.put(ENTROPY, nEntropy);
-			nEvMap.put(DIFF, nDiff);
-			nEvArray.put(nEvMap);
-			scoreArray.put(nEntropy * alpha + nDiff * beta);
+		// Normalize evaluations and calculate score
+		for(Seed seed: seedlist){
+			double nEntropy = normalize(seed.entropy, eRange);
+			seed.entropy = nEntropy;
+			double nDiff = normalize(seed.diff, dRange);
+			seed.diff = nDiff;
+			
+			seed.score = nEntropy * alpha + nDiff * beta;
+			
+			// Make Array to keep all information of the seeds
+			HashMap<String, Object> seedInfo = makeSeedInfoHash(seed);
+			seedArray.put(seedInfo);
 		}
 		
-		// Make File
-		try{
-			FileWriter fileWriter= new FileWriter("evaluation.txt", false);
-			fileWriter.write(nEvArray.toString());
-			fileWriter.close();
-			System.out.println("Evaluation File is done.");
-		}catch(IOException e){
-			System.out.println("Evaluation file failed...");
+		// Rank seeds by score, entropy and diff
+		LinkedList<Seed> sRankList = new LinkedList<Seed>();
+		LinkedList<Seed> eRankList = new LinkedList<Seed>();
+		LinkedList<Seed> dRankList = new LinkedList<Seed>();
+		for(Seed seed: seedlist){
+			BinarySearch.binarySearch(sRankList, seed, SCORE);
+			BinarySearch.binarySearch(eRankList, seed, ENTROPY);
+			BinarySearch.binarySearch(dRankList, seed, DIFF);
+		}
+		// Make file
+		for(int i = 0; i < sRankList.size(); i++){
+			makeRankArray(scoreRank, sRankList, i);
+			makeRankArray(entropyRank, eRankList, i);
+			makeRankArray(diffRank, dRankList, i);
 		}
 		try{
-			FileWriter fileWriter= new FileWriter("score.txt", false);
-			fileWriter.write(scoreArray.toString());
+			FileWriter fileWriter= new FileWriter("seeds.json", false);
+			fileWriter.write(seedArray.toString());
 			fileWriter.close();
-			System.out.println("Score file is done.");
+			System.out.println("Seeds File is done.");
+		}catch(IOException e){
+			System.out.println("Seeds file failed...");
+		}
+		try{
+			FileWriter fileWriter= new FileWriter("score.json", false);
+			fileWriter.write(scoreRank.toString());
+			fileWriter.close();
+			System.out.println("Score File is done.");
 		}catch(IOException e){
 			System.out.println("Score file failed...");
+		}
+		try{
+			FileWriter fileWriter= new FileWriter("entropy.json", false);
+			fileWriter.write(entropyRank.toString());
+			fileWriter.close();
+			System.out.println("Entropy File is done.");
+		}catch(IOException e){
+			System.out.println("Entropy file failed...");
+		}
+		try{
+			FileWriter fileWriter= new FileWriter("diff.json", false);
+			fileWriter.write(diffRank.toString());
+			fileWriter.close();
+			System.out.println("Diff File is done.");
+		}catch(IOException e){
+			System.out.println("Diff file failed...");
 		}
 	}
 	
 	
 	/**
-	 * Calculate Score
+	 * Make HashMap of the seed
 	 */
-	public double calcScore(double entropy, double diff){ 
-		double score = 0;
-		return score;
+	public HashMap<String, Object> makeSeedInfoHash(Seed seed){
+		HashMap<String, Object> seedInfo = new HashMap<String, Object>();
+		seedInfo.put(SCORE, (Object)seed.score);
+		seedInfo.put("eid", (Object)seed.eid);
+		seedInfo.put("entropy", seed.entropy);
+		seedInfo.put("diff", seed.diff);
+		
+		return seedInfo;
+	}
+	
+	/** 
+	 * Make rank hash of score and so on
+	 */
+	public void makeRankArray(JSONArray rankArray, LinkedList<Seed> rankList, int index){
+		HashMap<String, Double> rankHash = new HashMap<String, Double>();
+		Seed seed = rankList.get(index);
+		rankHash.put("id", (double)seed.id);
+		rankHash.put(SCORE, seed.score);
+		rankArray.put(rankHash);
 	}
 	
 	/**
 	 * Get evaluations of a pair of streamlines
 	 */
-	public void getEvaluation(Streamline streamline1, Streamline streamline2){
+	public void getEvaluation(Seed seed){
 		// Get evaluation
-		HashMap<String, Double> evaluation = CalculateEvaluation.calcEvaluation(streamline1, streamline2);
-		evArray.add(evaluation);
+		Streamline streamline1 = seed.sl1;
+		Streamline streamline2 = seed.sl2;
+		HashMap<String, Double> evaluation = EvaluationCalculator.calcEvaluation(streamline1, streamline2);
+		seed.entropy = evaluation.get(ENTROPY);
+		seed.diff = evaluation.get(DIFF);
 		
 		// Keep max and min value
 		compareMinMax(evaluation, eRange);

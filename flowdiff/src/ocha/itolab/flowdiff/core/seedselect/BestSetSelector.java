@@ -41,7 +41,11 @@ public class BestSetSelector {
 		if(! seedFile.exists() || ! scoreFile.exists()){
 			MakeEvaluationFile mef = new MakeEvaluationFile();
 			mef.makeEvaluationFile(grid1, grid2);
-		}else System.out.println("Files exist.");
+		}else{
+			System.out.println("Files exist.");
+			MakeAllEvaluationFile maef = new MakeAllEvaluationFile();
+			maef.makeEvaluationFile(grid1, grid2);
+		}
 		
 		// Read File
 		// Parse JSON files
@@ -65,7 +69,8 @@ public class BestSetSelector {
 			meaningList.add(seed); // add this seed to meaningList
 		}
 		
-		// TODO: 視点に依存しない評価値で足切り	
+		// TODO: 視点に依存しない評価値で足切り
+		
 		// Decide best set using view dependent evaluation
 		bestset = ViewDependentEvaluator.select(meaningList);
 			

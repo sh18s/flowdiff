@@ -14,8 +14,8 @@ import ocha.itolab.flowdiff.core.data.*;
 /**
  * Make JSON File to keeps scores of pair of streamlines
  */
-public class MakeEvaluationFile {
-	static int REPEAT= 10000; // 計算対象の流線の本数(ほんとは全部)
+public class MakeAllEvaluationFile {
+	static int REPEAT= 100; // 計算対象の流線の本数(ほんとは全部)
 	static String SCORE = "score";
 	static String ENTROPY = "entropy";
 	static String DIFF = "diff";
@@ -42,19 +42,24 @@ public class MakeEvaluationFile {
 	 */
 	public void makeEvaluationFile(Grid grid1, Grid grid2) throws JSONException{
 		// Get evaluations of all pairs of streamlines
-		for(int i = 0;i < REPEAT; i++){
-			// Generate seed
-			Seed seed = new Seed();
-			seed.id = i;
-			seed.eid = setSeedRandomly(grid1);
-			// Generate Streamline
-			seed.sl1 = new Streamline();
-			seed.sl2 = new Streamline();
-			StreamlineGenerator.generate(grid1, seed.sl1, seed.eid, null);
-			StreamlineGenerator.generate(grid2, seed.sl2, seed.eid, null);
-			
-			getEvaluation(seed); // Get evaluation
-			seedlist.add(seed);
+		for(int i = 0; i < REPEAT; i++){
+			for(int j = 0; j < REPEAT; j++){
+				for(int k = 0; k < REPEAT; k++){
+					if(i%10 == 0 && j%10 == 0 && k%10 == 0) System.out.println("i = " + i + ", j = " + j + ", k = " + k);
+					// Generate seed
+					Seed seed = new Seed();
+					seed.id = i;
+					seed.eid = setSeedRandomly(grid1);
+					// Generate Streamline
+					seed.sl1 = new Streamline();
+					seed.sl2 = new Streamline();
+					StreamlineGenerator.generate(grid1, seed.sl1, seed.eid, null);
+					StreamlineGenerator.generate(grid2, seed.sl2, seed.eid, null);
+					
+					getEvaluation(seed); // Get evaluation
+					seedlist.add(seed);
+				}
+			}
 		}
 		// Normalize evaluations and calculate score
 		for(Seed seed: seedlist){

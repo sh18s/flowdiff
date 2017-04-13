@@ -58,9 +58,13 @@ public class BestSetSelector {
 		for(int i = 0; i < NUMCANDIDATE; i++){
 			Seed seed = new Seed();
 			// Set information of the "i"th place seed by using read files
-			int id = (int)sRankList.get(i).getId();
-			seed.id =  id;
-			getSeedInfo(infoList.get(seed.id), seed);
+			int[] eid = sRankList.get(i).getEid();
+			seed.eid =  eid;
+			seed.id = eid[0] * 10000 + eid[1] *100 + eid[2];
+			
+			SeedInfo seedInfo = infoList.get(seed.id);
+			seedInfo.getSeedInfo(seed);
+			
 			// Generate a pair of streamlines
 			seed.sl1 = new Streamline();
 			seed.sl2 = new Streamline();
@@ -110,13 +114,13 @@ public class BestSetSelector {
 		return ViewDependentEvaluator.select(randomList);
 	}
 	
-	/**
-	 * Parse JSON file of seeds to Seed class
-	 */
-	public static void getSeedInfo(SeedInfo seedInfo, Seed seed) throws JsonParseException, JsonMappingException, IOException{
-		seed.score = seedInfo.getScore();
-		seed.entropy = seedInfo.getEntropy();
-		seed.diff = seedInfo.getDiff();
-		seed.eid = seedInfo.getEid();
-	}
+//	/**
+//	 * Parse JSON file of seeds to Seed class
+//	 */
+//	public static void getSeedInfo(SeedInfo seedInfo, Seed seed){
+//		seed.score = seedInfo.getScore();
+//		seed.entropy = seedInfo.getEntropy();
+//		seed.diff = seedInfo.getDiff();
+//		seed.eid = seedInfo.getEid();
+//	}
 }

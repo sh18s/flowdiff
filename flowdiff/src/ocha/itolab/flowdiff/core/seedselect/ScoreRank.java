@@ -2,14 +2,14 @@ package ocha.itolab.flowdiff.core.seedselect;
 
 
 public class ScoreRank{
-	private double id;
+	private int[] eid;
 	private double score;
 	
-	public double getId(){
-		return this.id;
+	public int[] getEid(){
+		return this.eid;
 	}
-	public void setId(double id){
-		this.id = id;
+	public void setEid(int[] eid){
+		this.eid = eid;
 	}
 	
 	public double getScore(){

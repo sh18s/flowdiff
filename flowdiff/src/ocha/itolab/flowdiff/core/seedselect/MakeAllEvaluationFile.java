@@ -43,9 +43,9 @@ public class MakeAllEvaluationFile {
 	public void makeEvaluationFile(Grid grid1, Grid grid2) throws JSONException{
 		// Get evaluations of all pairs of streamlines
 		for(int i = 0; i < REPEAT; i++){
+			System.out.println("i = " + i);
 			for(int j = 0; j < REPEAT; j++){
 				for(int k = 0; k < REPEAT; k++){
-					if(i%10 == 0 && j%10 == 0 && k%10 == 0) System.out.println("i = " + i + ", j = " + j + ", k = " + k);
 					// Generate seed
 					Seed seed = new Seed();
 					seed.id = i;

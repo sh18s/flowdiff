@@ -32,14 +32,13 @@ public class MakeAllEvaluationFile {
 	 * Make file to keep normalized evaluation values by using row entropy and diff
 	 */
 	public void makeEvaluationFile(Grid grid1, Grid grid2) throws JSONException{
-		JSONArray seedArray = new JSONArray();
+		// Keep seedInfo here to make JSON file
+		JSONArray seedInfoArray = new JSONArray();
 		// Keep rank of score, entropy and diff here
 		JSONArray scoreRank = new JSONArray();
 		JSONArray entropyRank = new JSONArray();
 		JSONArray diffRank = new JSONArray();
 		
-		// Keep seeds here
-		ArrayList<Seed> seedlist = new ArrayList<Seed>();
 		// Keep all SeedInfo here (sorted by id number)
 		ArrayList<SeedInfo> infoList = new ArrayList<SeedInfo>();
 		
@@ -67,9 +66,12 @@ public class MakeAllEvaluationFile {
 					
 					getEvaluation(seed); // Get evaluation
 					
+					// Make ArrayList to calculate score
 					SeedInfo seedInfo = new SeedInfo();
 					seedInfo.setSeedInfo(seed);
 					infoList.add(seedInfo);
+					
+					seedInfoArray.put(seedInfo); // Make JSONArray
 										
 					seedId++;
 				}
@@ -78,7 +80,7 @@ public class MakeAllEvaluationFile {
 		// Normalize evaluations and calculate score
 		int counter = 0;
 		for(SeedInfo seedInfo: infoList){
-			if(counter%10 == 0) System.out.println("Normalizing counter is " + counter);
+			if(counter%100 == 0) System.out.println("Normalizing counter is " + counter);
 			double nEntropy = normalize(seedInfo.getEntropy(), eRange);
 			seedInfo.setEntropy(nEntropy);
 			double nDiff = normalize(seedInfo.getDiff(), dRange);
@@ -94,11 +96,8 @@ public class MakeAllEvaluationFile {
 		LinkedList<SeedInfo> dRankList = new LinkedList<SeedInfo>();
 		counter = 0;
 		for(SeedInfo seedInfo: infoList){
-			if(counter%10 == 0) System.out.println("Ranking counter is " + counter);
-//			BinarySearch.seedInfoBinarySearch(sRankList, seedInfo, seedInfo.getScore());
-//			BinarySearch.seedInfoBinarySearch(eRankList, seedInfo, seedInfo.getEntropy());
-//			BinarySearch.seedInfoBinarySearch(dRankList, seedInfo, seedInfo.getDiff());
-			
+			if(counter%100 == 0) System.out.println("Ranking counter is " + counter);
+	
 			BinarySearch.keepSizeBinarySearch(sRankList, seedInfo, seedInfo.getScore());
 			BinarySearch.keepSizeBinarySearch(eRankList, seedInfo, seedInfo.getEntropy());
 			BinarySearch.keepSizeBinarySearch(dRankList, seedInfo, seedInfo.getDiff());
@@ -107,7 +106,7 @@ public class MakeAllEvaluationFile {
 		// Make file
 		counter = 0;
 		for(int i = 0; i < sRankList.size(); i++){
-			if(counter%10 == 0) System.out.println("Making files counter is " + counter);
+			if(counter%100 == 0) System.out.println("Making files counter is " + counter);
 			SeedInfo seedInfo = sRankList.get(i);
 			makeRankArray(scoreRank, seedInfo, seedInfo.getScore());
 			seedInfo = eRankList.get(i);
@@ -118,7 +117,7 @@ public class MakeAllEvaluationFile {
 		}
 		try{
 			FileWriter fileWriter= new FileWriter("all_seeds.json", false);
-			fileWriter.write(seedArray.toString());
+			fileWriter.write(seedInfoArray.toString());
 			fileWriter.close();
 			System.out.println("Seeds File is done.");
 		}catch(IOException e){
@@ -155,7 +154,7 @@ public class MakeAllEvaluationFile {
 	 */
 	public void makeRankArray(JSONArray rankArray, SeedInfo seedInfo, double score){	
 		HashMap<String, Object> rankHash = new HashMap<String, Object>();
-		rankHash.put("id", seedInfo.getEid());
+		rankHash.put("eid", seedInfo.getEid());
 		rankHash.put(SCORE, score);
 		rankArray.put(rankHash);
 	}

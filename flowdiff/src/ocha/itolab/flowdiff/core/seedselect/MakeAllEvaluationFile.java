@@ -95,9 +95,13 @@ public class MakeAllEvaluationFile {
 		counter = 0;
 		for(SeedInfo seedInfo: infoList){
 			if(counter%10 == 0) System.out.println("Ranking counter is " + counter);
-			BinarySearch.seedInfoBinarySearch(sRankList, seedInfo, seedInfo.getScore());
-			BinarySearch.seedInfoBinarySearch(eRankList, seedInfo, seedInfo.getEntropy());
-			BinarySearch.seedInfoBinarySearch(dRankList, seedInfo, seedInfo.getDiff());
+//			BinarySearch.seedInfoBinarySearch(sRankList, seedInfo, seedInfo.getScore());
+//			BinarySearch.seedInfoBinarySearch(eRankList, seedInfo, seedInfo.getEntropy());
+//			BinarySearch.seedInfoBinarySearch(dRankList, seedInfo, seedInfo.getDiff());
+			
+			BinarySearch.keepSizeBinarySearch(sRankList, seedInfo, seedInfo.getScore());
+			BinarySearch.keepSizeBinarySearch(eRankList, seedInfo, seedInfo.getEntropy());
+			BinarySearch.keepSizeBinarySearch(dRankList, seedInfo, seedInfo.getDiff());
 			counter++;
 		}
 		// Make file
@@ -151,7 +155,7 @@ public class MakeAllEvaluationFile {
 	 */
 	public void makeRankArray(JSONArray rankArray, SeedInfo seedInfo, double score){	
 		HashMap<String, Object> rankHash = new HashMap<String, Object>();
-		rankHash.put("eid", seedInfo.getEid());
+		rankHash.put("id", seedInfo.getEid());
 		rankHash.put(SCORE, score);
 		rankArray.put(rankHash);
 	}

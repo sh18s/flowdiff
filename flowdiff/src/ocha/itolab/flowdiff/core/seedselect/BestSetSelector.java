@@ -52,16 +52,18 @@ public class BestSetSelector {
 		// Parse JSON files
 		List<SeedInfo> infoList = new ObjectMapper().readValue(seedFile, new TypeReference<List<SeedInfo>>(){});
 		List<ScoreRank> sRankList = new ObjectMapper().readValue(scoreFile, new TypeReference<List<ScoreRank>>(){});
-//		System.out.println("scoreRank = " + sRankList.get(0).getScore());
 		
 		// Generate seed and make meaning list
-//		for(ScoreRank scoreRank: sRankList){
-		for(int i = 0; i < NUMCANDIDATE; i++){
+		int[] total = grid1.getNumElement();
+		int t2 = total[2];
+		int t12 = total[1] * t2;
+		
+		for(int i = 0; i < sRankList.size(); i++){
 			Seed seed = new Seed();
 			// Set information of the "i"th place seed by using read files
 			int[] eid = sRankList.get(i).getEid();
 			seed.eid =  eid;
-			seed.id = eid[0] * 10000 + eid[1] *100 + eid[2];
+			seed.id = eid[0] * t12 + eid[1] * t2 + eid[2];
 			SeedInfo seedInfo = infoList.get(seed.id);
 			seedInfo.getSeedInfo(seed);
 			
@@ -113,14 +115,4 @@ public class BestSetSelector {
 			}
 		return ViewDependentEvaluator.select(randomList);
 	}
-	
-//	/**
-//	 * Parse JSON file of seeds to Seed class
-//	 */
-//	public static void getSeedInfo(SeedInfo seedInfo, Seed seed){
-//		seed.score = seedInfo.getScore();
-//		seed.entropy = seedInfo.getEntropy();
-//		seed.diff = seedInfo.getDiff();
-//		seed.eid = seedInfo.getEid();
-//	}
 }

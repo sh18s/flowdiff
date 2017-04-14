@@ -20,8 +20,8 @@ public class BestSetSelector {
 	static int selectCounter = 0;
 	
 	static String SCORE = "score", ENTROPY = "entropy", DIFF = "diff";	
-	static String seedPATH = "../bin/seeds.json";
-	static String scorePATH = "../bin/score.json";
+	static String seedPATH = "../bin/all_seeds.json";
+	static String scorePATH = "../bin/all_score.json";
 	
 	/**
 	 * Select the best set of streamlines using the file
@@ -37,14 +37,15 @@ public class BestSetSelector {
 		// TODO: Confirm which file exists or not
 		File seedFile = new File(seedPATH);
 		File scoreFile = new File(scorePATH);
+		
 		// if there is no file, make it.
 		if(! seedFile.exists() || ! scoreFile.exists()){
-			MakeEvaluationFile mef = new MakeEvaluationFile();
-			mef.makeEvaluationFile(grid1, grid2);
-		}else{
-			System.out.println("Files exist.");
+//			MakeEvaluationFile mef = new MakeEvaluationFile();
+//			mef.makeEvaluationFile(grid1, grid2);
 			MakeAllEvaluationFile maef = new MakeAllEvaluationFile();
 			maef.makeEvaluationFile(grid1, grid2);
+		}else{
+			System.out.println("Files exist.");
 		}
 		
 		// Read File
@@ -61,7 +62,6 @@ public class BestSetSelector {
 			int[] eid = sRankList.get(i).getEid();
 			seed.eid =  eid;
 			seed.id = eid[0] * 10000 + eid[1] *100 + eid[2];
-			
 			SeedInfo seedInfo = infoList.get(seed.id);
 			seedInfo.getSeedInfo(seed);
 			

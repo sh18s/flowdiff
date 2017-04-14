@@ -137,9 +137,9 @@ public class MakeEvaluationFile {
 	 * Make rank hash of score and so on
 	 */
 	public void makeRankArray(JSONArray rankArray, LinkedList<Seed> rankList, int index){
-		HashMap<String, Double> rankHash = new HashMap<String, Double>();
+		HashMap<String, Object> rankHash = new HashMap<String, Object>();
 		Seed seed = rankList.get(index);
-		rankHash.put("id", (double)seed.id);
+		rankHash.put("eid", seed.eid);
 		rankHash.put(SCORE, seed.score);
 		rankArray.put(rankHash);
 	}

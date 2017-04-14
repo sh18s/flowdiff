@@ -76,32 +76,41 @@ public class MakeAllEvaluationFile {
 			}
 		}
 		// Normalize evaluations and calculate score
+		int counter = 0;
 		for(SeedInfo seedInfo: infoList){
+			if(counter%10 == 0) System.out.println("Normalizing counter is " + counter);
 			double nEntropy = normalize(seedInfo.getEntropy(), eRange);
 			seedInfo.setEntropy(nEntropy);
 			double nDiff = normalize(seedInfo.getDiff(), dRange);
 			seedInfo.setDiff(nDiff);
 
 			seedInfo.setScore(nEntropy * alpha + nDiff * beta);
+			counter++;
 		}
 		
 		// Rank seeds by score, entropy and diff
 		LinkedList<SeedInfo> sRankList = new LinkedList<SeedInfo>();
 		LinkedList<SeedInfo> eRankList = new LinkedList<SeedInfo>();
 		LinkedList<SeedInfo> dRankList = new LinkedList<SeedInfo>();
+		counter = 0;
 		for(SeedInfo seedInfo: infoList){
+			if(counter%10 == 0) System.out.println("Ranking counter is " + counter);
 			BinarySearch.seedInfoBinarySearch(sRankList, seedInfo, seedInfo.getScore());
 			BinarySearch.seedInfoBinarySearch(eRankList, seedInfo, seedInfo.getEntropy());
 			BinarySearch.seedInfoBinarySearch(dRankList, seedInfo, seedInfo.getDiff());
+			counter++;
 		}
 		// Make file
+		counter = 0;
 		for(int i = 0; i < sRankList.size(); i++){
+			if(counter%10 == 0) System.out.println("Making files counter is " + counter);
 			SeedInfo seedInfo = sRankList.get(i);
 			makeRankArray(scoreRank, seedInfo, seedInfo.getScore());
 			seedInfo = eRankList.get(i);
 			makeRankArray(entropyRank, seedInfo, seedInfo.getEntropy());
 			seedInfo = dRankList.get(i);
 			makeRankArray(diffRank, seedInfo, seedInfo.getDiff());
+			counter++;
 		}
 		try{
 			FileWriter fileWriter= new FileWriter("all_seeds.json", false);

@@ -72,32 +72,28 @@ public class MakeAllEvaluationFile {
 					infoList.add(seedInfo);
 					
 					seedInfoArray.put(seedInfo); // Make JSONArray
+					
 										
 					seedId++;
 				}
 			}
 		}
-		// Normalize evaluations and calculate score
+		// Keep LinkedList rank of score, entropy, and diff here
+		LinkedList<SeedInfo> sRankList = new LinkedList<SeedInfo>();
+		LinkedList<SeedInfo> eRankList = new LinkedList<SeedInfo>();
+		LinkedList<SeedInfo> dRankList = new LinkedList<SeedInfo>();
 		int counter = 0;
 		for(SeedInfo seedInfo: infoList){
 			if(counter%100 == 0) System.out.println("Normalizing counter is " + counter);
+			// Normalize evaluations
 			double nEntropy = normalize(seedInfo.getEntropy(), eRange);
 			seedInfo.setEntropy(nEntropy);
 			double nDiff = normalize(seedInfo.getDiff(), dRange);
 			seedInfo.setDiff(nDiff);
 
-			seedInfo.setScore(nEntropy * alpha + nDiff * beta);
-			counter++;
-		}
-		
-		// Rank seeds by score, entropy and diff
-		LinkedList<SeedInfo> sRankList = new LinkedList<SeedInfo>();
-		LinkedList<SeedInfo> eRankList = new LinkedList<SeedInfo>();
-		LinkedList<SeedInfo> dRankList = new LinkedList<SeedInfo>();
-		counter = 0;
-		for(SeedInfo seedInfo: infoList){
-			if(counter%100 == 0) System.out.println("Ranking counter is " + counter);
-	
+			seedInfo.setScore(nEntropy * alpha + nDiff * beta); // Calculate score
+			
+			// Rank seeds by score, entropy and diff
 			BinarySearch.keepSizeBinarySearch(sRankList, seedInfo, seedInfo.getScore());
 			BinarySearch.keepSizeBinarySearch(eRankList, seedInfo, seedInfo.getEntropy());
 			BinarySearch.keepSizeBinarySearch(dRankList, seedInfo, seedInfo.getDiff());

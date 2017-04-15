@@ -22,6 +22,8 @@ public class BestSetSelector {
 	static String SCORE = "score", ENTROPY = "entropy", DIFF = "diff";	
 	static String seedPATH = "../bin/all_seeds.json";
 	static String scorePATH = "../bin/all_score.json";
+//	static String seedPATH = "../bin/seeds.json";
+//	static String scorePATH = "../bin/score.json";
 	
 	/**
 	 * Select the best set of streamlines using the file
@@ -40,7 +42,7 @@ public class BestSetSelector {
 		
 		// if there is no file, make it.
 		if(! seedFile.exists() || ! scoreFile.exists()){
-//			MakeEvaluationFile mef = new MakeEvaluationFile();
+//			MakeRandomEvaluationFile mef = new MakeRandomEvaluationFile();
 //			mef.makeEvaluationFile(grid1, grid2);
 			MakeAllEvaluationFile maef = new MakeAllEvaluationFile();
 			maef.makeEvaluationFile(grid1, grid2);

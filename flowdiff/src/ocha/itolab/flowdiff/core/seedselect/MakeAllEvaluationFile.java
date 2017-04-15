@@ -71,9 +71,6 @@ public class MakeAllEvaluationFile {
 					seedInfo.setSeedInfo(seed);
 					infoList.add(seedInfo);
 					
-					seedInfoArray.put(seedInfo); // Make JSONArray
-					
-										
 					seedId++;
 				}
 			}
@@ -92,6 +89,8 @@ public class MakeAllEvaluationFile {
 			seedInfo.setDiff(nDiff);
 
 			seedInfo.setScore(nEntropy * alpha + nDiff * beta); // Calculate score
+			
+			makeSeedInfoArray(seedInfoArray, seedInfo); // Make JSONArray of SeedInfo
 			
 			// Rank seeds by score, entropy and diff
 			BinarySearch.keepSizeBinarySearch(sRankList, seedInfo, seedInfo.getScore());
@@ -153,6 +152,19 @@ public class MakeAllEvaluationFile {
 		rankHash.put("eid", seedInfo.getEid());
 		rankHash.put(SCORE, score);
 		rankArray.put(rankHash);
+	}
+	
+	/**
+	 * Make seedInfo JSONArray
+	 */
+	public void makeSeedInfoArray(JSONArray seedInfoArray, SeedInfo seedInfo){
+		HashMap<String, Object> infoHash = new HashMap<String, Object>();
+		infoHash.put("eid", seedInfo.getEid());
+		infoHash.put(SCORE, seedInfo.getScore());
+		infoHash.put(ENTROPY, seedInfo.getEntropy());
+		infoHash.put(DIFF, seedInfo.getDiff());
+		
+		seedInfoArray.put(infoHash);
 	}
 	
 	/**

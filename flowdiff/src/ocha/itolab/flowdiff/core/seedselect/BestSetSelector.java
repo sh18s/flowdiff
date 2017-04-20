@@ -56,18 +56,19 @@ public class BestSetSelector {
 		List<ScoreRank> sRankList = new ObjectMapper().readValue(scoreFile, new TypeReference<List<ScoreRank>>(){});
 		
 		// Generate seed and make meaning list
-		int[] total = grid1.getNumElement();
-		int t2 = total[2];
-		int t12 = total[1] * t2;
+//		int[] total = grid1.getNumElement();
+//		int t2 = total[2];
+//		int t12 = total[1] * t2;
 		
 		for(int i = 0; i < sRankList.size(); i++){
-			Seed seed = new Seed();
 			// Set information of the "i"th place seed by using read files
-			int[] eid = sRankList.get(i).getEid();
-			seed.eid =  eid;
-			seed.id = eid[0] * t12 + eid[1] * t2 + eid[2];
+			
+			ScoreRank scoreRank = sRankList.get(i);
+			Seed seed = new Seed();
+			seed.id = scoreRank.getId();
 			SeedInfo seedInfo = infoList.get(seed.id);
-			seedInfo.getSeedInfo(seed);
+			
+			seedInfo.getSeedInfo(seed); // Put information in seed
 			
 			// Generate a pair of streamlines
 			seed.sl1 = new Streamline();

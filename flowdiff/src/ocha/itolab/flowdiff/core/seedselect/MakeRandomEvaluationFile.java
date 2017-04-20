@@ -137,13 +137,13 @@ public class MakeRandomEvaluationFile {
 	/** 
 	 * Make rank hash of score and so on
 	 */
-	public void makeRankArray(JSONArray rankArray, LinkedList<Seed> rankList, int index){
-		HashMap<String, Object> rankHash = new HashMap<String, Object>();
-		Seed seed = rankList.get(index);
-		rankHash.put("eid", seed.eid);
-		rankHash.put(SCORE, seed.score);
-		rankArray.put(rankHash);
-	}
+//	public void makeRankArray(JSONArray rankArray, LinkedList<Seed> rankList, int index){
+//		HashMap<String, Object> rankHash = new HashMap<String, Object>();
+//		Seed seed = rankList.get(index);
+//		rankHash.put("id", seed.eid);
+//		rankHash.put(SCORE, seed.score);
+//		rankArray.put(rankHash);
+//	}
 	
 	/**
 	 * Get evaluations of a pair of streamlines
@@ -166,7 +166,7 @@ public class MakeRandomEvaluationFile {
 	 */
 	public void makeRankArray(JSONArray rankArray, SeedInfo seedInfo, double score){	
 		HashMap<String, Object> rankHash = new HashMap<String, Object>();
-		rankHash.put("eid", seedInfo.getEid());
+		rankHash.put("id", seedInfo.getId());
 		rankHash.put(SCORE, score);
 		rankArray.put(rankHash);
 	}
@@ -180,6 +180,7 @@ public class MakeRandomEvaluationFile {
 		infoHash.put(SCORE, seedInfo.getScore());
 		infoHash.put(ENTROPY, seedInfo.getEntropy());
 		infoHash.put(DIFF, seedInfo.getDiff());
+		infoHash.put("id", seedInfo.getId());
 		
 		seedInfoArray.put(infoHash);
 	}

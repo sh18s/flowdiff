@@ -9,6 +9,7 @@ public class SeedInfo{
 	private double entropy;
 	private double diff;
 	private int[] eid;
+	private int id;
 	
 	public double getScore(){
 		return this.score;
@@ -38,6 +39,13 @@ public class SeedInfo{
 		this.eid = eid;
 	}
 	
+	public int getId(){
+		return this.id;
+	}
+	public void setId(int id){
+		this.id = id;
+	}
+	
 	/**
 	 * Get seed information from SeedInfo
 	 */
@@ -56,5 +64,6 @@ public class SeedInfo{
 		this.entropy = seed.entropy;
 		this.diff = seed.diff;
 		this.eid = seed.eid;
+		this.id = seed.id;
 	}
 }

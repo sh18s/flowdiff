@@ -43,16 +43,16 @@ public class MakeAllEvaluationFile {
 		ArrayList<SeedInfo> infoList = new ArrayList<SeedInfo>();
 		
 		int[] total = grid1.getNumElement();
-		int[] eid = new int[3];
 		int seedId = 0;
 		
 		// Get evaluations of all pairs of streamlines
 		for(int i = 0; i < total[0]; i++){
-			eid[0] = i;
 			System.out.println("i = " + i);
 			for(int j = 0; j < total[1]; j++){
-				eid[1] = j;
 				for(int k = 0; k < total[2]; k++){
+					int[] eid = new int[3];
+					eid[0] = i;
+					eid[1] = j;
 					eid[2] = k;
 					// Generate seed
 					Seed seed = new Seed();
@@ -69,7 +69,6 @@ public class MakeAllEvaluationFile {
 					// Make ArrayList to calculate score
 					SeedInfo seedInfo = new SeedInfo();
 					seedInfo.setSeedInfo(seed);
-					infoList.add(seedInfo);
 					
 					seedId++;
 				}
@@ -91,6 +90,7 @@ public class MakeAllEvaluationFile {
 			seedInfo.setScore(nEntropy * alpha + nDiff * beta); // Calculate score
 			
 			makeSeedInfoArray(seedInfoArray, seedInfo); // Make JSONArray of SeedInfo
+//			System.out.println("eid = " + seedInfo.getEid()[0] + "," + seedInfo.getEid()[1] + ", " + seedInfo.getEid()[2]);
 			
 			// Rank seeds by score, entropy and diff
 			BinarySearch.keepSizeBinarySearch(sRankList, seedInfo, seedInfo.getScore());

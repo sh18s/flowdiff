@@ -1,13 +1,17 @@
 
 package ocha.itolab.flowdiff.applet.flowdiff;
 
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.Insets;
 import java.io.File;
 import java.io.IOException;
 
@@ -24,14 +28,15 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
+import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
 
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.json.JSONException;
 
-import ocha.itolab.flowdiff.core.data.FileReader;
 import ocha.itolab.flowdiff.core.data.Grid;
 import ocha.itolab.flowdiff.core.data.TecPlotFileReader;
 import ocha.itolab.flowdiff.core.streamline.Streamline;
@@ -66,7 +71,8 @@ public class ViewingPanel extends JPanel {
 	resetAllStreamlineButton,removeStreamlineButton,highlightStreamline, autoStreamlineButton;
 	public JRadioButton viewRotateButton, viewScaleButton, viewShiftButton, noneGridView, grid1View, grid2View, bothGridView,
 	noneRotView, grid1RotView, grid2RotView, bothRotView,viewRotate0,viewRotate1,viewRotate2,viewRotate3,viewRotate4,viewRotate5,
-	showDiffAngView,showDiffLenView,noneDiffView,showDiffVectorView,showDiffVectorViewLength;
+	showDiffAngView,showDiffLenView,noneDiffView,showDiffVectorView,showDiffVectorViewLength, aoa1g20, aoa1g27, aoa1g30, aoa1g33,
+	aoa2g20, aoa2g27, aoa2g30, aoa2g33;
 	public JLabel xText, yText, zText, vtext, vhText, vecviewText, diffText,distText,counterText;
 	public JSlider sliderX, sliderY, sliderZ,sliderVH,vheight,sliderDiff,sliderDist,sliderCounter;
 	public JList list;
@@ -93,12 +99,24 @@ public class ViewingPanel extends JPanel {
 	/*button toggle flag*/
 	boolean viewVorticity_flag = false;//trueの時オン
 	boolean viewBuildingButton_flag = false;
+	
+	public GridBagConstraints setConstraints(int x, int y, int w, int h, double wy){
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.fill = GridBagConstraints.BOTH;
+		gbc.gridx = x;
+		gbc.gridy = y;
+		gbc.gridwidth = w;
+		gbc.gridheight = h;
+		gbc.weighty = wy;
+		gbc.anchor = GridBagConstraints.WEST;
+		return gbc;
+	}
 
 	public ViewingPanel() {
 		// super class init
 		super();
 		setSize(150, 800);
-
+		
 		JTabbedPane tabbedpane = new JTabbedPane();
 		// パネル1
 		JPanel p1 = new JPanel();
@@ -138,7 +156,7 @@ public class ViewingPanel extends JPanel {
 		viewRotate5 = new JRadioButton("Left side");
 		group4.add(viewRotate5);
 		p1.add(viewRotate5);
-		viewBuildingButton = new JButton("建物表示");
+		viewBuildingButton = new JButton("Display buildings");
 		p1.add(viewBuildingButton);
 
 		// パネル2
@@ -178,14 +196,14 @@ public class ViewingPanel extends JPanel {
 		viewVorticity = new JButton("渦度表示");
 		p3.add(viewVorticity);
 		sliderVH = new JSlider(0, 85, 10);
-		vhText = new JLabel(" 高さ(渦度): " + sliderVH.getValue());
+		vhText = new JLabel(" Height(vorticity): " + sliderVH.getValue());
 		sliderVH.setMajorTickSpacing(10);
 		sliderVH.setMinorTickSpacing(5);
 		sliderVH.setPaintTicks(true);
 		sliderVH.setLabelTable(sliderVH.createStandardLabels(20));
 		sliderVH.setPaintLabels(true);
-		p3.add(sliderVH);
 		p3.add(vhText);
+		p3.add(sliderVH);
 		ButtonGroup group3 = new ButtonGroup();
 		noneRotView = new JRadioButton("なし", true);//最初にチェックが入っている
 		group3.add(noneRotView);
@@ -200,13 +218,91 @@ public class ViewingPanel extends JPanel {
 		group3.add(bothRotView);
 		p3.add(bothRotView);
 
-		// パネル4
+		// PANEL4: Streamlines panel
 		JPanel p4 = new JPanel();
-		p4.setLayout(new GridLayout(11,1));
-		p4.add(new JLabel("Display streamlines"));
-		p4.add(new JLabel("pink：Angle of attack is 20 degrees."));
-		p4.add(new JLabel("cyan：Angle of attack is 27 degrees."));
-		// Threshold of distance
+		GridBagLayout gbl = new GridBagLayout();
+		p4.setLayout(gbl);
+		// Panel title
+		JLabel slsLabel = new JLabel("Select streamlines automatically");
+		GridBagConstraints gbc = setConstraints(0,0,1,1,2.0d);
+		gbl.setConstraints(slsLabel, gbc);
+		p4.add(slsLabel);
+		// Select data label
+		JLabel dataLabel = new JLabel("Select two data you want to compare.");
+		gbc = setConstraints(0,1,1,1,1.0d);
+		gbl.setConstraints(dataLabel, gbc);
+		p4.add(dataLabel);
+		// Panel for data selection
+		JPanel aoaPanel = new JPanel();
+		LineBorder border = new LineBorder(Color.GRAY);
+		aoaPanel.setBorder(border);
+		GridBagLayout aoaGbl = new GridBagLayout();
+		aoaPanel.setLayout(aoaGbl);
+		// Data button1
+		JLabel pinkLabel = new JLabel("color: pink");
+		GridBagConstraints aoaGbc = setConstraints(0,0,1,1,1.0d);
+		aoaGbc.insets = new Insets(0,0,0,10); // padding
+		aoaGbl.setConstraints(pinkLabel, aoaGbc);
+		aoaPanel.add(pinkLabel);
+		ButtonGroup aoa1Group = new ButtonGroup();
+		aoa1g20 = new JRadioButton ("20°", true);
+		aoaGbc = setConstraints(0,1,1,1,1.0d);
+		aoaGbl.setConstraints(aoa1g20, aoaGbc);
+		aoa1Group.add(aoa1g20);
+		aoa1g27 = new JRadioButton("27°");
+		aoaGbc = setConstraints(0,2,1,1,1.0d);
+		aoaGbl.setConstraints(aoa1g27, aoaGbc);
+		aoa1Group.add(aoa1g27);
+		aoa1g30 = new JRadioButton("30°");
+		aoaGbc = setConstraints(0,3,1,1,1.0d);
+		aoaGbl.setConstraints(aoa1g30, aoaGbc);
+		aoa1Group.add(aoa1g30);
+		aoa1g33 = new JRadioButton("33°");
+		aoaGbc = setConstraints(0,4,1,1,1.0d);
+		aoaGbl.setConstraints(aoa1g33, aoaGbc);
+		aoa1Group.add(aoa1g33);
+		// Data button2
+		JLabel cyanLabel = new JLabel("color: cyan");
+		aoaGbc = setConstraints(1,0,1,1,1.0d);
+		aoaGbc.insets = new Insets(0,10,0,0); // padding
+		aoaGbl.setConstraints(cyanLabel, aoaGbc);
+		aoaPanel.add(cyanLabel);
+		ButtonGroup aoa2Group = new ButtonGroup();
+		aoa2g20 = new JRadioButton ("20°");
+		aoaGbc = setConstraints(1,1,1,1,1.0d);
+		aoaGbl.setConstraints(aoa2g20, aoaGbc);
+		aoa2Group.add(aoa2g20);
+		aoa2g27 = new JRadioButton("27°", true);
+		aoaGbc = setConstraints(1,2,1,1,1.0d);
+		aoaGbl.setConstraints(aoa2g27, aoaGbc);
+		aoa2Group.add(aoa2g27);
+		aoa2g30 = new JRadioButton("30°");
+		aoaGbc = setConstraints(1,3,1,1,1.0d);
+		aoaGbl.setConstraints(aoa2g30, aoaGbc);
+		aoa2Group.add(aoa2g30);
+		aoa2g33 = new JRadioButton("33°");
+		aoaGbc = setConstraints(1,4,1,1,1.0d);
+		aoaGbl.setConstraints(aoa2g33, aoaGbc);
+		aoa2Group.add(aoa2g33);
+		
+		aoaPanel.add(aoa1g20);
+		aoaPanel.add(aoa2g20);
+		aoaPanel.add(aoa1g27);
+		aoaPanel.add(aoa2g27);
+		aoaPanel.add(aoa1g30);
+		aoaPanel.add(aoa2g30);
+		aoaPanel.add(aoa1g33);
+		aoaPanel.add(aoa2g33);
+		gbc = setConstraints(0,2,1,1,2.0d);
+	    gbl.setConstraints(aoaPanel, gbc);
+		p4.add(aoaPanel);
+				
+		// Threshold of distance Panel
+		JPanel distPanel = new JPanel();
+		distPanel.setBorder(border);
+		GridBagLayout distGbl = new GridBagLayout();
+		distPanel.setLayout(distGbl);
+		// Slider
 		sliderDist = new JSlider(0, 10, 1);
 		sliderDist.setMajorTickSpacing(2); //描画するめもりの幅
 		sliderDist.setMinorTickSpacing(1);
@@ -214,9 +310,19 @@ public class ViewingPanel extends JPanel {
 		sliderDist.setLabelTable(sliderDist.createStandardLabels(2));
 	    sliderDist.setPaintLabels(true);
 	    distText = new JLabel(" Threshold of distance: " + sliderDist.getValue());
-	    p4.add(distText);
-	    p4.add(sliderDist);
-		
+	    
+	    GridBagConstraints distGbc = setConstraints(0,0,1,1,0.0d);
+	    distGbc.insets = new Insets(1,1,1,1);
+	    distGbl.setConstraints(distText, distGbc);
+	    distPanel.add(distText);
+	    distGbc = setConstraints(0,1,1,1,0.0d);
+	    distGbl.setConstraints(sliderDist, distGbc);
+	    distPanel.add(sliderDist);
+	    gbc = setConstraints(0,3,1,1,2.0d);
+	    distGbc.insets = new Insets(0,1,0,1); // padding
+	    gbl.setConstraints(distPanel, gbc);
+	    p4.add(distPanel);
+	    
 		// Threshold of number of vertex
 		sliderCounter = new JSlider(0, 3000, 100);
 		sliderCounter.setMajorTickSpacing(200);//描画するめもりの幅
@@ -225,14 +331,19 @@ public class ViewingPanel extends JPanel {
 		sliderCounter.setLabelTable(sliderCounter.createStandardLabels(500));
 		sliderCounter.setPaintLabels(true);
 		counterText = new JLabel(" Threshold of number of vertex: " + sliderCounter.getValue());
+		
+		gbc = setConstraints(0,4,1,1,2.0d);
+	    gbl.setConstraints(counterText, gbc);
+	    gbc = setConstraints(0,5,1,1,0.0d);
+	    gbl.setConstraints(sliderCounter, gbc);
 		p4.add(counterText);
 		p4.add(sliderCounter);
 		
 		autoStreamlineButton = new JButton("Automatically selection");
-//		p4.add(generateButton);
+		gbc = setConstraints(0,6,1,1,1.0d);
+		gbl.setConstraints(autoStreamlineButton, gbc);
 		p4.add(autoStreamlineButton);
-
-
+		
 		// パネル5
 		JPanel p5 = new JPanel();
 		p5.setLayout(new GridLayout(8,1));
@@ -322,7 +433,6 @@ public class ViewingPanel extends JPanel {
 	    
 	    //
 		// パネル群のレイアウト
-		//
 		tabbedpane.addTab("Display", p1);
 		tabbedpane.addTab("Vector", p2);
 		tabbedpane.addTab("Vorticity", p3);

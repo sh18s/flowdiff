@@ -206,37 +206,9 @@ public class ViewingPanel extends JPanel {
 		p4.add(new JLabel("Display streamlines"));
 		p4.add(new JLabel("pink：Angle of attack is 20 degrees."));
 		p4.add(new JLabel("cyan：Angle of attack is 27 degrees."));
-		/*sliderX = new JSlider(0, 100, 10);
-		sliderX.setMajorTickSpacing(10);
-		sliderX.setMinorTickSpacing(5);
-		sliderX.setPaintTicks(true);
-		sliderX.setLabelTable(sliderX.createStandardLabels(20));
-	    sliderX.setPaintLabels(true);
-	    xText = new JLabel(" よこ: " + sliderX.getValue());
-		//p4.add(sliderX);
-		//p4.add(xText);
-		sliderY = new JSlider(0, 100, 10);
-		sliderY.setMajorTickSpacing(10);
-		sliderY.setMinorTickSpacing(5);
-		sliderY.setPaintTicks(true);
-		sliderY.setLabelTable(sliderY.createStandardLabels(20));
-	    sliderY.setPaintLabels(true);
-	    yText = new JLabel(" 高さ: " + sliderY.getValue());
-		//p4.add(sliderY);
-		//p4.add(yText);
-		sliderZ = new JSlider(0, 100, 10);
-		sliderZ.setMajorTickSpacing(10);
-		sliderZ.setMinorTickSpacing(5);
-		sliderZ.setPaintTicks(true);
-		sliderZ.setLabelTable(sliderZ.createStandardLabels(20));
-	    sliderZ.setPaintLabels(true);
-	    zText = new JLabel(" たて: " + sliderZ.getValue());
-		//p4.add(sliderZ);
-		//p4.add(zText);*/
-		
-		//New Slider
+		// Threshold of distance
 		sliderDist = new JSlider(0, 10, 1);
-		sliderDist.setMajorTickSpacing(2);//描画するめもりの幅
+		sliderDist.setMajorTickSpacing(2); //描画するめもりの幅
 		sliderDist.setMinorTickSpacing(1);
 		sliderDist.setPaintTicks(true);
 		sliderDist.setLabelTable(sliderDist.createStandardLabels(2));
@@ -245,7 +217,7 @@ public class ViewingPanel extends JPanel {
 	    p4.add(distText);
 	    p4.add(sliderDist);
 		
-		//New Slider
+		// Threshold of number of vertex
 		sliderCounter = new JSlider(0, 3000, 100);
 		sliderCounter.setMajorTickSpacing(200);//描画するめもりの幅
 		sliderCounter.setMinorTickSpacing(100);

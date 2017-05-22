@@ -64,12 +64,13 @@ public class MakeAllEvaluationFile {
 					StreamlineGenerator.generate(grid1, seed.sl1, seed.eid, null);
 					StreamlineGenerator.generate(grid2, seed.sl2, seed.eid, null);
 					
-					getEvaluation(seed); // Get evaluation and keep min, max value
+					getEvaluation(seed); // Get evaluation
 					
 					// Make ArrayList to calculate score
 					SeedInfo seedInfo = new SeedInfo();
 					seedInfo.setSeedInfo(seed);
 					
+					infoList.add(seedInfo);
 					seedId++;
 				}
 			}
@@ -80,10 +81,9 @@ public class MakeAllEvaluationFile {
 		LinkedList<SeedInfo> dRankList = new LinkedList<SeedInfo>();
 		int counter = 0;
 		for(SeedInfo seedInfo: infoList){
-//			System.out.println("eid = "  + seedInfo.getEid()[0] + ", " + seedInfo.getEid()[1] + "," + seedInfo.getEid()[2]);
 			if(counter%100 == 0) System.out.println("Normalizing counter is " + counter);
 			// Normalize evaluations
-			System.out.println("seedInfo diff = " + seedInfo.getDiff());
+//			System.out.println("seedInfo diff = " + seedInfo.getDiff());
 			double nEntropy = normalize(seedInfo.getEntropy(), eRange);
 			seedInfo.setEntropy(nEntropy);
 			double nDiff = normalize(seedInfo.getDiff(), dRange);
@@ -151,7 +151,7 @@ public class MakeAllEvaluationFile {
 	 */
 	public void makeRankArray(JSONArray rankArray, SeedInfo seedInfo, double score){	
 		HashMap<String, Object> rankHash = new HashMap<String, Object>();
-		rankHash.put("id", seedInfo.getEid());
+		rankHash.put("id", seedInfo.getId());
 		rankHash.put(SCORE, score);
 		rankArray.put(rankHash);
 	}

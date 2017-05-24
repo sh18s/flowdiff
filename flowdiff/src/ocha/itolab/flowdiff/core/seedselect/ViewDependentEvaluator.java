@@ -12,6 +12,9 @@ import ocha.itolab.flowdiff.core.streamline.*;
 public class ViewDependentEvaluator {
 	static int numseed = 20;
 	
+	public static double DIST_TH = 5.0;  // ディスプレイ上の距離の2乗値の閾値
+	public static int COUNTER_TH = 1500;  // 既存流線に近隣する頂点数の閾値
+	
 	static DoubleBuffer model = null, proj = null;
 	static IntBuffer view = null;
 	static GLUgl2 glu2;
@@ -22,24 +25,28 @@ public class ViewDependentEvaluator {
 	
 	public static StreamlineArray select(ArrayList<Seed> seedlist) {
 		plinelist = new ArrayList<ArrayList>();
+		pline1 = new ArrayList<double[]>(); 
+		pline2 = new ArrayList<double[]>();
 		StreamlineArray sarray = new StreamlineArray();
 		
-		pline1 = new ArrayList<double[]>();
-		pline2 = new ArrayList<double[]>();
+		
 		
 		// for each seed
 		int counter = 0;
 		int counter2 = 0;
 		for(int i = 0; i < seedlist.size(); i++) {
+//			ArrayList<double[]> pline1 = new ArrayList<double[]>(); // added by sh
+//			ArrayList<double[]> pline2 = new ArrayList<double[]>();
+			
 			Seed seed = seedlist.get(i);
-			// 射影
+			// Projection
 			boolean ret1 = project(seed.sl1, pline1);
 			if(ret1 == false) {
 				counter2++;
 				pline1.clear();
 				continue;
 			}
-			// 射影
+			// Projection
 			boolean ret2 = project(seed.sl2, pline2);
 			if(ret2 == false) {
 				counter2++;
@@ -47,7 +54,7 @@ public class ViewDependentEvaluator {
 				continue;
 			}
 			
-			// add a new pair of streamlines
+			// Add a new pair of streamlines
 			sarray.addList(seed.sl1, seed.sl2, seed.eid);
 			if(++counter >= numseed) break;
 			// project関数によって価値があると判定された流線ペアをplinelistに追加
@@ -55,7 +62,7 @@ public class ViewDependentEvaluator {
 				plinelist.add(pline1);
 				plinelist.add(pline2);
 			}
-			pline1 = new ArrayList<double[]>();
+			pline1 = new ArrayList<double[]>(); // delete temporarily
 			pline2 = new ArrayList<double[]>();
 			
 		}
@@ -64,7 +71,6 @@ public class ViewDependentEvaluator {
 		return sarray;
 	}
 	
-	
 	/**
 	 * Set view configuration
 	 */
@@ -72,13 +78,15 @@ public class ViewDependentEvaluator {
 		model = m;   proj = p;   view = v;  glu2 = g;
 	}
 	
-	public static double DIST_TH = 5.0;  // ディスプレイ上の距離の2乗値の閾値
-	public static int COUNTER_TH = 1500;  // 既存流線に近隣する頂点数の閾値
 	
+	 // ある流線を描画するかどうか2次元上の距離を計算して決定する関数
+	 // 引数1: 対象の流線
+	 // 引数2: 対象の流線の2次元座標
 	/**
-	 * ある流線を描画するかどうか2次元上の距離を計算して決定する関数
-	 * 引数1: 対象の流線
-	 * 引数2: 対象の流線の2次元座標
+	 * Decide whether select the streamline by calculate the distance on the display. 
+	 * @param sl
+	 * @param pline
+	 * @return boolean: select or not
 	 */
 	static boolean project(Streamline sl, ArrayList<double[]> pline) {
 		if(model == null || proj == null || view == null)

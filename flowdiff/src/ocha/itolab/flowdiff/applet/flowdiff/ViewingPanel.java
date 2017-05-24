@@ -296,7 +296,8 @@ public class ViewingPanel extends JPanel {
 		gbc = setConstraints(0,2,1,1,2.0d);
 	    gbl.setConstraints(aoaPanel, gbc);
 		p4.add(aoaPanel);
-				
+		
+
 		// Threshold of distance Panel
 		JPanel distPanel = new JPanel();
 		distPanel.setBorder(border);

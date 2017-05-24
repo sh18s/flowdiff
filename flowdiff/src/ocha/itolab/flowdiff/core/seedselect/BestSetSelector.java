@@ -25,6 +25,12 @@ public class BestSetSelector {
 //	static String seedPATH = "../bin/seeds.json";
 //	static String scorePATH = "../bin/score.json";
 	
+	// Keep data from file here 
+	static List<SeedInfo> infoList = new ArrayList<SeedInfo>();
+	static List<ScoreRank> sRankList = new ArrayList<ScoreRank>();
+	// Keep meaning seeds here
+	static ArrayList<Seed> meaningList = new ArrayList<Seed>();
+	
 	/**
 	 * Select the best set of streamlines using the file
 	 * @throws JSONException 
@@ -34,51 +40,45 @@ public class BestSetSelector {
 	 */
 	public static StreamlineArray selectRandomly(Grid grid1, Grid grid2) throws JSONException, JsonParseException, JsonMappingException, IOException {
 		StreamlineArray bestset = null;
-		ArrayList<Seed> meaningList = new ArrayList<Seed>();
 		
-		// TODO: Confirm which file exists or not
-		File seedFile = new File(seedPATH);
-		File scoreFile = new File(scorePATH);
-		
-		// if there is no file, make it.
-		if(! seedFile.exists() || ! scoreFile.exists()){
-//			MakeRandomEvaluationFile mef = new MakeRandomEvaluationFile();
-//			mef.makeEvaluationFile(grid1, grid2);
-			MakeAllEvaluationFile maef = new MakeAllEvaluationFile();
-			maef.makeEvaluationFile(grid1, grid2);
-		}else{
-			System.out.println("Files exist.");
+		if(selectCounter == 0){
+			File seedFile = new File(seedPATH);
+			File scoreFile = new File(scorePATH);
+
+			// if there is no file, make it.
+			if(! seedFile.exists() || ! scoreFile.exists()){
+				//			MakeRandomEvaluationFile mef = new MakeRandomEvaluationFile();
+				//			mef.makeEvaluationFile(grid1, grid2);
+				MakeAllEvaluationFile maef = new MakeAllEvaluationFile();
+				maef.makeEvaluationFile(grid1, grid2);
+			}else{
+				System.out.println("Files exist.");
+			}
+
+			// Read File
+			// Parse JSON files
+			infoList = new ObjectMapper().readValue(seedFile, new TypeReference<List<SeedInfo>>(){});
+			sRankList = new ObjectMapper().readValue(scoreFile, new TypeReference<List<ScoreRank>>(){});
+
+			for(int i = 0; i < sRankList.size(); i++){
+				// Set information of the "i"th place seed by using read files
+				ScoreRank scoreRank = sRankList.get(i);
+				Seed seed = new Seed();
+				seed.id = scoreRank.getId();
+				SeedInfo seedInfo = infoList.get(seed.id); // Get seed information from infoList
+
+				seedInfo.getSeedInfo(seed); // Put information in seed
+
+				// Generate a pair of streamlines
+				seed.sl1 = new Streamline();
+				seed.sl2 = new Streamline();
+				StreamlineGenerator.generate(grid1, seed.sl1, seed.eid, null);
+				StreamlineGenerator.generate(grid2, seed.sl2, seed.eid, null);
+				meaningList.add(seed); // add this seed to meaningList
+			}
+
+			// TODO: 視点に依存しない評価値で足切り
 		}
-		
-		// Read File
-		// Parse JSON files
-		List<SeedInfo> infoList = new ObjectMapper().readValue(seedFile, new TypeReference<List<SeedInfo>>(){});
-		List<ScoreRank> sRankList = new ObjectMapper().readValue(scoreFile, new TypeReference<List<ScoreRank>>(){});
-		
-		// Generate seed and make meaning list
-//		int[] total = grid1.getNumElement();
-//		int t2 = total[2];
-//		int t12 = total[1] * t2;
-		
-		for(int i = 0; i < sRankList.size(); i++){
-			// Set information of the "i"th place seed by using read files
-			
-			ScoreRank scoreRank = sRankList.get(i);
-			Seed seed = new Seed();
-			seed.id = scoreRank.getId();
-			SeedInfo seedInfo = infoList.get(seed.id);
-			
-			seedInfo.getSeedInfo(seed); // Put information in seed
-			
-			// Generate a pair of streamlines
-			seed.sl1 = new Streamline();
-			seed.sl2 = new Streamline();
-			StreamlineGenerator.generate(grid1, seed.sl1, seed.eid, null);
-			StreamlineGenerator.generate(grid2, seed.sl2, seed.eid, null);
-			meaningList.add(seed); // add this seed to meaningList
-		}
-		
-		// TODO: 視点に依存しない評価値で足切り
 		
 		// Decide best set using view dependent evaluation
 		bestset = ViewDependentEvaluator.select(meaningList);
@@ -93,6 +93,8 @@ public class BestSetSelector {
 			
 		MakeJsonFile mjf = new MakeJsonFile();
 		mjf.makeJsonFile(bestset);
+		
+		selectCounter++;
         return bestset;
 	}
 	

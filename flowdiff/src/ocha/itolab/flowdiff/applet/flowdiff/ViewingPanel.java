@@ -297,51 +297,62 @@ public class ViewingPanel extends JPanel {
 	    gbl.setConstraints(aoaPanel, gbc);
 		p4.add(aoaPanel);
 		
-
 		// Threshold of distance Panel
 		JPanel distPanel = new JPanel();
-		distPanel.setBorder(border);
 		GridBagLayout distGbl = new GridBagLayout();
 		distPanel.setLayout(distGbl);
 		// Slider
-		sliderDist = new JSlider(0, 10, 1);
+		sliderDist = new JSlider(0, 10, 2);
 		sliderDist.setMajorTickSpacing(2); //描画するめもりの幅
 		sliderDist.setMinorTickSpacing(1);
 		sliderDist.setPaintTicks(true);
 		sliderDist.setLabelTable(sliderDist.createStandardLabels(2));
 	    sliderDist.setPaintLabels(true);
-	    distText = new JLabel(" Threshold of distance: " + sliderDist.getValue());
-	    
+	    // Text
+	 	distText = new JLabel(" Threshold of distance: " + sliderDist.getValue());
+	    // Layout (text)
 	    GridBagConstraints distGbc = setConstraints(0,0,1,1,0.0d);
 	    distGbc.insets = new Insets(1,1,1,1);
 	    distGbl.setConstraints(distText, distGbc);
 	    distPanel.add(distText);
+	    // Layout (slider)
 	    distGbc = setConstraints(0,1,1,1,0.0d);
 	    distGbl.setConstraints(sliderDist, distGbc);
 	    distPanel.add(sliderDist);
+	    // Layout (distPanel)
 	    gbc = setConstraints(0,3,1,1,2.0d);
-	    distGbc.insets = new Insets(0,1,0,1); // padding
 	    gbl.setConstraints(distPanel, gbc);
 	    p4.add(distPanel);
 	    
-		// Threshold of number of vertex
-		sliderCounter = new JSlider(0, 3000, 100);
+		// Threshold of number of vertex Panel
+	    JPanel numPanel = new JPanel();
+	    GridBagLayout numGbl = new GridBagLayout();
+	    numPanel.setLayout(numGbl);
+	    // Slider
+		sliderCounter = new JSlider(0, 3000, 2000);
 		sliderCounter.setMajorTickSpacing(200);//描画するめもりの幅
 		sliderCounter.setMinorTickSpacing(100);
 		sliderCounter.setPaintTicks(true);
 		sliderCounter.setLabelTable(sliderCounter.createStandardLabels(500));
 		sliderCounter.setPaintLabels(true);
-		counterText = new JLabel(" Threshold of number of vertex: " + sliderCounter.getValue());
-		
+	    // Text
+	    counterText = new JLabel(" Threshold of number of vertex: " + sliderCounter.getValue());
+		// Layout (text)
+		GridBagConstraints numGbc = setConstraints(0,0,1,1,0.0d);
+		numGbc.insets = new Insets(1,1,1,1);
+		numGbl.setConstraints(counterText, numGbc);
+		numPanel.add(counterText);
+		// Layout (slider)
+		numGbc = setConstraints(0,1,1,1,0.0d);
+		numGbl.setConstraints(sliderCounter, numGbc);
+		numPanel.add(sliderCounter);
+		// Layout (numPanel)
 		gbc = setConstraints(0,4,1,1,2.0d);
-	    gbl.setConstraints(counterText, gbc);
-	    gbc = setConstraints(0,5,1,1,0.0d);
-	    gbl.setConstraints(sliderCounter, gbc);
-		p4.add(counterText);
-		p4.add(sliderCounter);
+	    gbl.setConstraints(numPanel, gbc);
+		p4.add(numPanel);
 		
 		autoStreamlineButton = new JButton("Automatically selection");
-		gbc = setConstraints(0,6,1,1,1.0d);
+		gbc = setConstraints(0,5,1,1,1.0d);
 		gbl.setConstraints(autoStreamlineButton, gbc);
 		p4.add(autoStreamlineButton);
 		
@@ -375,7 +386,7 @@ public class ViewingPanel extends JPanel {
 		p5.add(sliderDiff);
 		p5.add(diffText);
 
-        // 流線(手動)選択
+        // Pannel6: 流線(手動)選択
 		JPanel p6 = new JPanel();
 		//p6.setLayout(new GridLayout(8,1));
 		JPanel pXYZ = new JPanel();

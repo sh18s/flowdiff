@@ -22,9 +22,7 @@ public class BestSetSelector {
 	static String SCORE = "score", ENTROPY = "entropy", DIFF = "diff";	
 	static String seedPATH = "../bin/all_seeds.json";
 	static String scorePATH = "../bin/all_score.json";
-//	static String seedPATH = "../bin/seeds.json";
-//	static String scorePATH = "../bin/score.json";
-	
+
 	// Keep data from file here 
 	static List<SeedInfo> infoList = new ArrayList<SeedInfo>();
 	static List<ScoreRank> sRankList = new ArrayList<ScoreRank>();
@@ -57,9 +55,12 @@ public class BestSetSelector {
 
 			// Read File
 			// Parse JSON files
+			System.out.print("Parsing files...");
 			infoList = new ObjectMapper().readValue(seedFile, new TypeReference<List<SeedInfo>>(){});
 			sRankList = new ObjectMapper().readValue(scoreFile, new TypeReference<List<ScoreRank>>(){});
-
+			System.out.println("Done.");
+			
+			System.out.print("Making meaning list...");
 			for(int i = 0; i < sRankList.size(); i++){
 				// Set information of the "i"th place seed by using read files
 				ScoreRank scoreRank = sRankList.get(i);
@@ -76,21 +77,22 @@ public class BestSetSelector {
 				StreamlineGenerator.generate(grid2, seed.sl2, seed.eid, null);
 				meaningList.add(seed); // add this seed to meaningList
 			}
+			System.out.println("Done.");
 
 			// TODO: 視点に依存しない評価値で足切り
 		}
 		
 		// Decide best set using view dependent evaluation
+		System.out.println("Calculating view-independent evaluation...");
 		bestset = ViewDependentEvaluator.select(meaningList);
 			
-		// 視点に依存した評価値を無視して結果出力
+		// Ignore view-dependent evaluation
 //		ignoreViewDependentEvaluation(meaningList, bestset);
 			
 		// ランダムにNUMCANDIDATE本選んで可視化する
 //		bestset = randomSelect(seedlist);
 		
-		// TODO: 散布図描画
-			
+		// TODO: 散布図描画	
 		MakeJsonFile mjf = new MakeJsonFile();
 		mjf.makeJsonFile(bestset);
 		

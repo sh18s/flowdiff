@@ -18,55 +18,56 @@ public class ViewDependentEvaluator {
 	static DoubleBuffer model = null, proj = null;
 	static IntBuffer view = null;
 	static GLUgl2 glu2;
-	// 2次元座標を一時的に保存するためのArrayList型
-	static ArrayList<double[]> pline1, pline2;
-	// 既に描画された流線ペア(の2次元座標)を保存するためのArrayList型
-	static ArrayList<ArrayList> plinelist;	
+	
+//	static ArrayList<double[]> coordinates1, coordinates2; // Keep 2d coordinates of streamline pair
+//	static ArrayList<ArrayList<double[]>> preList;	// Keep coordinates of already selected　streamlines
 	
 	public static StreamlineArray select(ArrayList<Seed> seedlist) {
-		plinelist = new ArrayList<ArrayList>();
-		pline1 = new ArrayList<double[]>(); 
-		pline2 = new ArrayList<double[]>();
+		ArrayList<ArrayList<double[]>> preList = new ArrayList<ArrayList<double[]>>();
+//		preList = new ArrayList<ArrayList<double[]>>();
+//		coordinates1 = new ArrayList<double[]>(); // delete temporarily by sh
+//		coordinates2 = new ArrayList<double[]>();
 		StreamlineArray sarray = new StreamlineArray();
-		
-		
+//		sarray.clear();
+		System.out.println("sarray length = " + sarray.getSize());
 		
 		// for each seed
 		int counter = 0;
-		int counter2 = 0;
+		int rejectCounter = 0;
 		for(int i = 0; i < seedlist.size(); i++) {
-//			ArrayList<double[]> pline1 = new ArrayList<double[]>(); // added by sh
-//			ArrayList<double[]> pline2 = new ArrayList<double[]>();
+			ArrayList<double[]> coordinates1 = new ArrayList<double[]>(); // added by sh
+			ArrayList<double[]> coordinates2 = new ArrayList<double[]>();
 			
 			Seed seed = seedlist.get(i);
 			// Projection
-			boolean ret1 = project(seed.sl1, pline1);
-			if(ret1 == false) {
-				counter2++;
-				pline1.clear();
+			boolean shouldSelect1 = project(seed.sl1, preList, coordinates1);
+			if(shouldSelect1 == false) {
+				rejectCounter++;
+				coordinates1.clear();
 				continue;
 			}
 			// Projection
-			boolean ret2 = project(seed.sl2, pline2);
-			if(ret2 == false) {
-				counter2++;
-				pline2.clear();
+			boolean shouldSelect2 = project(seed.sl2, preList,coordinates2);
+			if(shouldSelect2 == false) {
+				rejectCounter++;
+				coordinates2.clear();
 				continue;
 			}
 			
 			// Add a new pair of streamlines
 			sarray.addList(seed.sl1, seed.sl2, seed.eid);
+			
 			if(++counter >= numseed) break;
-			// project関数によって価値があると判定された流線ペアをplinelistに追加
-			if(ret1 == true && ret2 == true){
-				plinelist.add(pline1);
-				plinelist.add(pline2);
+			// project関数によって価値があると判定された流線ペアをpreListに追加
+			if(shouldSelect1 == true && shouldSelect2 == true){
+				preList.add(coordinates1);
+				preList.add(coordinates2);
 			}
-			pline1 = new ArrayList<double[]>(); // delete temporarily
-			pline2 = new ArrayList<double[]>();
+//			coordinates1 = new ArrayList<double[]>(); // delete temporarily by sh
+//			coordinates2 = new ArrayList<double[]>();
 			
 		}
-		System.out.println("counter2 = " + counter2);
+		System.out.println("rejectCounter = " + rejectCounter);
 		System.out.println("** " + sarray.streamlines1.size());
 		return sarray;
 	}
@@ -78,17 +79,13 @@ public class ViewDependentEvaluator {
 		model = m;   proj = p;   view = v;  glu2 = g;
 	}
 	
-	
-	 // ある流線を描画するかどうか2次元上の距離を計算して決定する関数
-	 // 引数1: 対象の流線
-	 // 引数2: 対象の流線の2次元座標
 	/**
 	 * Decide whether select the streamline by calculate the distance on the display. 
-	 * @param sl
-	 * @param pline
+	 * @param sl: Target streamline 
+	 * @param coordinates: 2d coordinates of target streamline
 	 * @return boolean: select or not
 	 */
-	static boolean project(Streamline sl, ArrayList<double[]> pline) {
+	static boolean project(Streamline sl, ArrayList<ArrayList<double[]>> preList, ArrayList<double[]> coordinates) {
 		if(model == null || proj == null || view == null)
 			return true;
 		
@@ -102,18 +99,15 @@ public class ViewDependentEvaluator {
 			double pos2[] = new double[2];
 			pos2[0] = ppos.get(0);
 			pos2[1] = ppos.get(1);
-			pline.add(pos2);
+			coordinates.add(pos2);
 		}
-		
 		// for each previously registered streamline
-		for(int i = 0; i < plinelist.size(); i++) {
-			ArrayList<double[]> pl = plinelist.get(i);
+		for(int i = 0; i < preList.size(); i++) {
+			ArrayList<double[]> pl = preList.get(i);
 			int counter = 0;
-			
 			// for each vertex of the current streamline
-			for(int j = 0; j < pline.size(); j++) {
-				double p1[] = pline.get(j);
-				
+			for(int j = 0; j < coordinates.size(); j++) {
+				double p1[] = coordinates.get(j);
 				// for each vertex of the previously registered streamline
 				for(int k = 0; k < pl.size(); k++) {
 					double p2[] = pl.get(k);
@@ -122,9 +116,8 @@ public class ViewDependentEvaluator {
 					if(dist < DIST_TH) counter++;
 					if(counter >= COUNTER_TH) return false;
 				}
-			}		
+			}
 		}
-		
 		return true;
 	}
 	

@@ -123,4 +123,11 @@ public class StreamlineArray {
 	public static void setStreamlineColor(int i,boolean b){
 		color.set(i,b);
 	}
+	
+	/**
+	 * Return size of streamlines1
+	 */
+	public static int getSize(){
+		return streamlines1.size();
+	}
 }

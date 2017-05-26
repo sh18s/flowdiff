@@ -53,6 +53,8 @@ public class ViewingPanel extends JPanel {
 	
 	String filename1 = "DeltaWing_AoA20.dat";
 	String filename2 = "DeltaWing_AoA27.dat";
+	String filename3 = "DeltaWing_AoA30.dat";
+	String filename4 = "DeltaWing_AoA33.dat";
 	
 
 	// ベクタ場のファイルを読み込む（相対パス）
@@ -72,7 +74,7 @@ public class ViewingPanel extends JPanel {
 	public JRadioButton viewRotateButton, viewScaleButton, viewShiftButton, noneGridView, grid1View, grid2View, bothGridView,
 	noneRotView, grid1RotView, grid2RotView, bothRotView,viewRotate0,viewRotate1,viewRotate2,viewRotate3,viewRotate4,viewRotate5,
 	showDiffAngView,showDiffLenView,noneDiffView,showDiffVectorView,showDiffVectorViewLength, aoa1g20, aoa1g27, aoa1g30, aoa1g33,
-	aoa2g20, aoa2g27, aoa2g30, aoa2g33;
+	aoa2g20, aoa2g27, aoa2g30, aoa2g33,aoa20, aoa27, aoa30, aoa33;
 	public JLabel xText, yText, zText, vtext, vhText, vecviewText, diffText,distText,counterText;
 	public JSlider sliderX, sliderY, sliderZ,sliderVH,vheight,sliderDiff,sliderDist,sliderCounter;
 	public JList list;
@@ -100,6 +102,9 @@ public class ViewingPanel extends JPanel {
 	boolean viewVorticity_flag = false;//trueの時オン
 	boolean viewBuildingButton_flag = false;
 	
+	/**
+	 * Settings for GridBagLayout
+	 */
 	public GridBagConstraints setConstraints(int x, int y, int w, int h, double wy){
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.fill = GridBagConstraints.BOTH;
@@ -111,6 +116,40 @@ public class ViewingPanel extends JPanel {
 		gbc.anchor = GridBagConstraints.WEST;
 		return gbc;
 	}
+	
+	public void setRadioButton(GridBagLayout gbl, GridBagConstraints gbc, JRadioButton button, int x, int y, int w, int h, double wy){
+//		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.fill = GridBagConstraints.BOTH;
+		gbc.gridx = x;
+		gbc.gridy = y;
+		gbc.gridwidth = w;
+		gbc.gridheight = h;
+		gbc.weighty = wy;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbl.setConstraints(button, gbc);
+	}
+	public void setButton(GridBagLayout gbl, GridBagConstraints gbc, JButton button, int x, int y, int w, int h, double wy){
+//		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.fill = GridBagConstraints.BOTH;
+		gbc.gridx = x;
+		gbc.gridy = y;
+		gbc.gridwidth = w;
+		gbc.gridheight = h;
+		gbc.weighty = wy;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbl.setConstraints(button, gbc);
+	}
+	public void setLabel(GridBagLayout gbl, GridBagConstraints gbc, JLabel label, int x, int y, int w, int h, double wy){
+//		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.fill = GridBagConstraints.BOTH;
+		gbc.gridx = x;
+		gbc.gridy = y;
+		gbc.gridwidth = w;
+		gbc.gridheight = h;
+		gbc.weighty = wy;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbl.setConstraints(label, gbc);
+	}
 
 	public ViewingPanel() {
 		// super class init
@@ -118,45 +157,143 @@ public class ViewingPanel extends JPanel {
 		setSize(150, 800);
 		
 		JTabbedPane tabbedpane = new JTabbedPane();
-		// パネル1
+		// PANEL1: Display and read files
 		JPanel p1 = new JPanel();
-		p1.setLayout(new GridLayout(14,1));
+//		p1.setLayout(new GridLayout(14,1));
+		GridBagLayout gbl = new GridBagLayout();
+		GridBagConstraints gbc = new GridBagConstraints();
+		p1.setLayout(gbl);
+		
+		// Select data label
+		JLabel dataLabel = new JLabel("Select two data you want to compare.");
+		setLabel(gbl, gbc, dataLabel, 0,0,1,1,1.0d);
+		p1.add(dataLabel);
+		// Panel for data selection
+		JPanel aoaPanel = new JPanel();
+		LineBorder border = new LineBorder(Color.GRAY);
+		aoaPanel.setBorder(border);
+		GridBagLayout subGbl = new GridBagLayout();
+		GridBagConstraints subGbc = new GridBagConstraints();
+		aoaPanel.setLayout(subGbl);
+		// Data group1
+		// Label 1
+		JLabel pinkLabel = new JLabel("color: pink");
+		subGbc.insets = new Insets(0,0,0,10); // padding
+		setLabel(subGbl, subGbc, pinkLabel, 0,0,1,1,0.0d);
+		aoaPanel.add(pinkLabel);
+		// Button group 1
+		ButtonGroup aoa1Group = new ButtonGroup();
+		aoa1g20 = new JRadioButton ("20°", true);
+		setRadioButton(subGbl, subGbc, aoa1g20, 0,1,1,1,0.0d);
+		aoa1Group.add(aoa1g20);
+		aoaPanel.add(aoa1g20);
+		aoa1g27 = new JRadioButton("27°");
+		setRadioButton(subGbl, subGbc, aoa1g27, 0,2,1,1,0.0d);
+		aoa1Group.add(aoa1g27);
+		aoaPanel.add(aoa1g27);
+		aoa1g30 = new JRadioButton("30°");
+		setRadioButton(subGbl, subGbc, aoa1g30, 0,3,1,1,0.0d);
+		aoa1Group.add(aoa1g30);
+		aoaPanel.add(aoa1g30);
+		aoa1g33 = new JRadioButton("33°");
+		setRadioButton(subGbl, subGbc, aoa1g33, 0,4,1,1,0.0d);
+		aoaPanel.add(aoa1g33);
+		// Label 2
+		JLabel cyanLabel = new JLabel("color: cyan");
+		subGbc.insets = new Insets(0,10,0,0); // padding
+		setLabel(subGbl, subGbc, cyanLabel, 1,0,1,1,0.0d);
+		aoaPanel.add(cyanLabel);
+		// Button group 2
+		ButtonGroup aoa2Group = new ButtonGroup();
+		aoa2g20 = new JRadioButton ("20°");
+		setRadioButton(subGbl, subGbc, aoa2g20, 1,1,1,1,0.0d);
+		aoa2Group.add(aoa2g20);
+		aoaPanel.add(aoa2g20);
+		aoa2g27 = new JRadioButton("27°", true);
+		setRadioButton(subGbl, subGbc, aoa2g27, 1,2,1,1,0.0d);
+		aoa2Group.add(aoa2g27);
+		aoaPanel.add(aoa2g27);
+		aoa2g30 = new JRadioButton("30°");
+		setRadioButton(subGbl, subGbc, aoa2g30, 1,3,1,1,0.0d);
+		aoa2Group.add(aoa2g30);
+		aoaPanel.add(aoa2g30);
+		aoa2g33 = new JRadioButton("33°");
+		setRadioButton(subGbl, subGbc, aoa2g33, 1,4,1,1,0.0d);
+		aoaPanel.add(aoa2g33);
+		// Add aoa panel to p1
+		gbc = setConstraints(0,1,1,1,1.0d);
+		gbl.setConstraints(aoaPanel, gbc);
+		p1.add(aoaPanel);
+		
+		// Open data button
 		openDataButton = new JButton("Read file");
-		viewResetButton = new JButton("Restore");
+		setButton(gbl, gbc, openDataButton, 0,2,1,1,2.0d);
 		p1.add(openDataButton);
+		// Reset button
+		viewResetButton = new JButton("Restore");
+		setButton(gbl, gbc, viewResetButton, 0,3,1,1,2.0d);
 		p1.add(viewResetButton);
-		p1.add(new JLabel("Operation"));
-		ButtonGroup group1 = new ButtonGroup();
-		viewRotateButton = new JRadioButton("rotation",true);//最初にチェックが入っている
-		group1.add(viewRotateButton);
-		p1.add(viewRotateButton);
+		
+		// Operation Panel
+		JPanel opePanel = new JPanel();
+		subGbl = new GridBagLayout();
+		subGbc = new GridBagConstraints();
+		opePanel.setLayout(subGbl);
+		// Operation label
+		JLabel opeLabel = new JLabel("Operation");
+		setLabel(subGbl, subGbc, opeLabel, 0,0,1,1,0.0d);
+		opePanel.add(opeLabel);
+		// Operation button
+		ButtonGroup opeGroup = new ButtonGroup();
+		viewRotateButton = new JRadioButton("rotation",true);
+		setRadioButton(subGbl, subGbc, viewRotateButton, 0,1,1,1,0.0d);
+		opeGroup.add(viewRotateButton);
+		opePanel.add(viewRotateButton);
 		viewScaleButton = new JRadioButton("Scale");
-		group1.add(viewScaleButton);
-		p1.add(viewScaleButton);
+		setRadioButton(subGbl, subGbc, viewScaleButton, 0,2,1,1,0.0d);
+		opeGroup.add(viewScaleButton);
+		opePanel.add(viewScaleButton);
 		viewShiftButton = new JRadioButton("Shift");
-		group1.add(viewShiftButton);
-		p1.add(viewShiftButton);
-		p1.add(new JLabel("Vewpoint"));
-		ButtonGroup group4 = new ButtonGroup();
-		viewRotate0 = new JRadioButton("Angle", true);//最初にチェックが入っている
-		group4.add(viewRotate0);
-		p1.add(viewRotate0);
-		viewRotate1 = new JRadioButton("Right above",true);
-		group4.add(viewRotate1);
-		p1.add(viewRotate1);
+		setRadioButton(subGbl, subGbc, viewShiftButton, 0,3,1,1,0.0d);
+		opeGroup.add(viewShiftButton);
+		opePanel.add(viewShiftButton);
+		// Viewpoint label
+		JLabel viewLabel = new JLabel("Viewpoint");
+		setLabel(subGbl, subGbc, viewLabel, 1,0,1,1,0.0d);
+		opePanel.add(viewLabel);
+		// View button group
+		ButtonGroup viewGroup = new ButtonGroup();
+		viewRotate0 = new JRadioButton("Angle", true);
+		setRadioButton(subGbl, subGbc, viewRotate0, 1,1,1,1,0.0d);
+		viewGroup.add(viewRotate0);
+		opePanel.add(viewRotate0);
+		viewRotate1 = new JRadioButton("Right above");
+		setRadioButton(subGbl, subGbc, viewRotate1, 1,2,1,1,0.0d);
+		viewGroup.add(viewRotate1);
+		opePanel.add(viewRotate1);
 		viewRotate2 = new JRadioButton("Front");
-		group4.add(viewRotate2);
-		p1.add(viewRotate2);
+		setRadioButton(subGbl, subGbc, viewRotate2, 1,3,1,1,0.0d);
+		viewGroup.add(viewRotate2);
+		opePanel.add(viewRotate2);
 		viewRotate3 = new JRadioButton("Back");
-		group4.add(viewRotate3);
-		p1.add(viewRotate3);
+		setRadioButton(subGbl, subGbc, viewRotate3, 1,4,1,1,0.0d);
+		viewGroup.add(viewRotate3);
+		opePanel.add(viewRotate3);
 		viewRotate4 = new JRadioButton("Right side");
-		group4.add(viewRotate4);
-		p1.add(viewRotate4);
+		setRadioButton(subGbl, subGbc, viewRotate4, 1,5,1,1,0.0d);
+		viewGroup.add(viewRotate4);
+		opePanel.add(viewRotate4);
 		viewRotate5 = new JRadioButton("Left side");
-		group4.add(viewRotate5);
-		p1.add(viewRotate5);
+		setRadioButton(subGbl, subGbc, viewRotate5, 1,6,1,1,0.0d);
+		viewGroup.add(viewRotate5);
+		opePanel.add(viewRotate5);
+		// Add operation panel to p1
+		gbc = setConstraints(0,4,1,1,1.0d);
+		gbl.setConstraints(opePanel, gbc);
+		p1.add(opePanel);
+		// Building button
 		viewBuildingButton = new JButton("Display buildings");
+		setButton(gbl, gbc, viewBuildingButton, 0,5,1,1,2.0d);
 		p1.add(viewBuildingButton);
 
 		// パネル2
@@ -220,82 +357,14 @@ public class ViewingPanel extends JPanel {
 
 		// PANEL4: Streamlines panel
 		JPanel p4 = new JPanel();
-		GridBagLayout gbl = new GridBagLayout();
+		gbl = new GridBagLayout();
 		p4.setLayout(gbl);
 		// Panel title
 		JLabel slsLabel = new JLabel("Select streamlines automatically");
-		GridBagConstraints gbc = setConstraints(0,0,1,1,2.0d);
+		gbc = setConstraints(0,0,1,1,2.0d);
 		gbl.setConstraints(slsLabel, gbc);
 		p4.add(slsLabel);
-		// Select data label
-		JLabel dataLabel = new JLabel("Select two data you want to compare.");
-		gbc = setConstraints(0,1,1,1,1.0d);
-		gbl.setConstraints(dataLabel, gbc);
-		p4.add(dataLabel);
-		// Panel for data selection
-		JPanel aoaPanel = new JPanel();
-		LineBorder border = new LineBorder(Color.GRAY);
-		aoaPanel.setBorder(border);
-		GridBagLayout aoaGbl = new GridBagLayout();
-		aoaPanel.setLayout(aoaGbl);
-		// Data button1
-		JLabel pinkLabel = new JLabel("color: pink");
-		GridBagConstraints aoaGbc = setConstraints(0,0,1,1,1.0d);
-		aoaGbc.insets = new Insets(0,0,0,10); // padding
-		aoaGbl.setConstraints(pinkLabel, aoaGbc);
-		aoaPanel.add(pinkLabel);
-		ButtonGroup aoa1Group = new ButtonGroup();
-		aoa1g20 = new JRadioButton ("20°", true);
-		aoaGbc = setConstraints(0,1,1,1,1.0d);
-		aoaGbl.setConstraints(aoa1g20, aoaGbc);
-		aoa1Group.add(aoa1g20);
-		aoa1g27 = new JRadioButton("27°");
-		aoaGbc = setConstraints(0,2,1,1,1.0d);
-		aoaGbl.setConstraints(aoa1g27, aoaGbc);
-		aoa1Group.add(aoa1g27);
-		aoa1g30 = new JRadioButton("30°");
-		aoaGbc = setConstraints(0,3,1,1,1.0d);
-		aoaGbl.setConstraints(aoa1g30, aoaGbc);
-		aoa1Group.add(aoa1g30);
-		aoa1g33 = new JRadioButton("33°");
-		aoaGbc = setConstraints(0,4,1,1,1.0d);
-		aoaGbl.setConstraints(aoa1g33, aoaGbc);
-		aoa1Group.add(aoa1g33);
-		// Data button2
-		JLabel cyanLabel = new JLabel("color: cyan");
-		aoaGbc = setConstraints(1,0,1,1,1.0d);
-		aoaGbc.insets = new Insets(0,10,0,0); // padding
-		aoaGbl.setConstraints(cyanLabel, aoaGbc);
-		aoaPanel.add(cyanLabel);
-		ButtonGroup aoa2Group = new ButtonGroup();
-		aoa2g20 = new JRadioButton ("20°");
-		aoaGbc = setConstraints(1,1,1,1,1.0d);
-		aoaGbl.setConstraints(aoa2g20, aoaGbc);
-		aoa2Group.add(aoa2g20);
-		aoa2g27 = new JRadioButton("27°", true);
-		aoaGbc = setConstraints(1,2,1,1,1.0d);
-		aoaGbl.setConstraints(aoa2g27, aoaGbc);
-		aoa2Group.add(aoa2g27);
-		aoa2g30 = new JRadioButton("30°");
-		aoaGbc = setConstraints(1,3,1,1,1.0d);
-		aoaGbl.setConstraints(aoa2g30, aoaGbc);
-		aoa2Group.add(aoa2g30);
-		aoa2g33 = new JRadioButton("33°");
-		aoaGbc = setConstraints(1,4,1,1,1.0d);
-		aoaGbl.setConstraints(aoa2g33, aoaGbc);
-		aoa2Group.add(aoa2g33);
 		
-		aoaPanel.add(aoa1g20);
-		aoaPanel.add(aoa2g20);
-		aoaPanel.add(aoa1g27);
-		aoaPanel.add(aoa2g27);
-		aoaPanel.add(aoa1g30);
-		aoaPanel.add(aoa2g30);
-		aoaPanel.add(aoa1g33);
-		aoaPanel.add(aoa2g33);
-		gbc = setConstraints(0,2,1,1,2.0d);
-	    gbl.setConstraints(aoaPanel, gbc);
-		p4.add(aoaPanel);
 		
 		// Threshold of distance Panel
 		JPanel distPanel = new JPanel();

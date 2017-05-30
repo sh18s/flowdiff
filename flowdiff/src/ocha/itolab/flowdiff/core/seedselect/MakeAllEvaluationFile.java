@@ -112,8 +112,11 @@ public class MakeAllEvaluationFile {
 			makeRankArray(diffRank, seedInfo, seedInfo.getDiff());
 			counter++;
 		}
+		
+		String filename = Integer.toString(BestSetSelector.data1) + Integer.toString(BestSetSelector.data1);
 		try{
-			FileWriter fileWriter= new FileWriter("all_seeds.json", false);
+			FileWriter fileWriter= new FileWriter(filename + "_seeds.json", false);
+//			FileWriter fileWriter= new FileWriter("all_seeds.json", false);
 			fileWriter.write(seedInfoArray.toString());
 			fileWriter.close();
 			System.out.println("Seeds File is done.");
@@ -121,7 +124,8 @@ public class MakeAllEvaluationFile {
 			System.out.println("Seeds file failed...");
 		}
 		try{
-			FileWriter fileWriter= new FileWriter("all_score.json", false);
+			FileWriter fileWriter= new FileWriter(filename + "_score.json", false);
+//			FileWriter fileWriter= new FileWriter("all_score.json", false);
 			fileWriter.write(scoreRank.toString());
 			fileWriter.close();
 			System.out.println("Score File is done.");
@@ -129,7 +133,8 @@ public class MakeAllEvaluationFile {
 			System.out.println("Score file failed...");
 		}
 		try{
-			FileWriter fileWriter= new FileWriter("all_entropy.json", false);
+			FileWriter fileWriter= new FileWriter(filename + "entropy.json", false);
+//			FileWriter fileWriter= new FileWriter("all_entropy.json", false);
 			fileWriter.write(entropyRank.toString());
 			fileWriter.close();
 			System.out.println("Entropy File is done.");
@@ -137,7 +142,7 @@ public class MakeAllEvaluationFile {
 			System.out.println("Entropy file failed...");
 		}
 		try{
-			FileWriter fileWriter= new FileWriter("all_diff.json", false);
+			FileWriter fileWriter= new FileWriter(filename + "diff.json", false);
 			fileWriter.write(diffRank.toString());
 			fileWriter.close();
 			System.out.println("Diff File is done.");

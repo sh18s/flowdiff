@@ -56,6 +56,9 @@ public class ViewingPanel extends JPanel {
 	String filename3 = "DeltaWing_AoA30.dat";
 	String filename4 = "DeltaWing_AoA33.dat";
 	
+	String filenamePink = filename1;
+	String filenameCyan = filename2;
+	
 
 	// ベクタ場のファイルを読み込む（相対パス）
 	//110度の時
@@ -197,6 +200,7 @@ public class ViewingPanel extends JPanel {
 		aoaPanel.add(aoa1g30);
 		aoa1g33 = new JRadioButton("33°");
 		setRadioButton(subGbl, subGbc, aoa1g33, 0,4,1,1,0.0d);
+		aoa1Group.add(aoa1g33);
 		aoaPanel.add(aoa1g33);
 		// Label 2
 		JLabel cyanLabel = new JLabel("color: cyan");
@@ -219,6 +223,7 @@ public class ViewingPanel extends JPanel {
 		aoaPanel.add(aoa2g30);
 		aoa2g33 = new JRadioButton("33°");
 		setRadioButton(subGbl, subGbc, aoa2g33, 1,4,1,1,0.0d);
+		aoa2Group.add(aoa2g33);
 		aoaPanel.add(aoa2g33);
 		// Add aoa panel to p1
 		gbc = setConstraints(0,1,1,1,1.0d);
@@ -565,6 +570,14 @@ public class ViewingPanel extends JPanel {
 	 * @param actionListener ActionListener
 	 */
 	public void addRadioButtonListener(ActionListener actionListener) {
+		aoa1g20.addActionListener(actionListener);
+		aoa1g27.addActionListener(actionListener);
+		aoa1g30.addActionListener(actionListener);
+		aoa1g33.addActionListener(actionListener);
+		aoa2g20.addActionListener(actionListener);
+		aoa2g27.addActionListener(actionListener);
+		aoa2g30.addActionListener(actionListener);
+		aoa2g33.addActionListener(actionListener);
 		viewRotateButton.addActionListener(actionListener);
 		viewScaleButton.addActionListener(actionListener);
 		viewShiftButton.addActionListener(actionListener);
@@ -639,8 +652,8 @@ public class ViewingPanel extends JPanel {
 			if (buttonPushed == openDataButton) {
 //				grid1 = FileReader.getGrid(url1);
 //				grid2 = FileReader.getGrid(url2);
-				grid1 = TecPlotFileReader.getGrid(path + filename1);
-				grid2 = TecPlotFileReader.getGrid(path + filename2);
+				grid1 = TecPlotFileReader.getGrid(path + filenamePink);
+				grid2 = TecPlotFileReader.getGrid(path + filenameCyan);
 				sliderX.setValue(10);
 				sliderY.setValue(10);
 				sliderZ.setValue(10);
@@ -801,6 +814,38 @@ public class ViewingPanel extends JPanel {
 	class RadioButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			JRadioButton buttonPushed = (JRadioButton) e.getSource();
+			if(buttonPushed == aoa1g20){
+				filenamePink = filename1;
+				BestSetSelector.data1 = 20;
+			}
+			if(buttonPushed == aoa1g27){
+				filenamePink = filename2;
+				BestSetSelector.data1 = 27;
+			}
+			if(buttonPushed == aoa1g30){
+				filenamePink = filename3;
+				BestSetSelector.data1 = 30;
+			}
+			if(buttonPushed == aoa1g33){
+				filenamePink = filename4;
+				BestSetSelector.data1 = 33;
+			}
+			if(buttonPushed == aoa2g20){
+				filenameCyan = filename1;
+				BestSetSelector.data2 = 20;
+			}
+			if(buttonPushed == aoa2g27){
+				filenameCyan = filename2;
+				BestSetSelector.data2 = 22;
+			}
+			if(buttonPushed == aoa2g30){
+				filenameCyan = filename3;
+				BestSetSelector.data2 = 30;
+			}
+			if(buttonPushed == aoa2g33){
+				filenameCyan = filename4;
+				BestSetSelector.data2 = 33;
+			}
 			if (buttonPushed == viewRotateButton) {
 				canvas.setDragMode(3);
 			}

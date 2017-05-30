@@ -22,6 +22,12 @@ public class BestSetSelector {
 	static String SCORE = "score", ENTROPY = "entropy", DIFF = "diff";	
 	static String seedPATH = "../bin/all_seeds.json";
 	static String scorePATH = "../bin/all_score.json";
+	
+	static final String path = "../bin/";
+	public static int data1 = 20;
+	public static int data2 = 27;
+	static final String seedFilename = "_seeds.json";
+	static final String scoreFilename = "_score.json";
 
 	// Keep data from file here 
 	static List<SeedInfo> infoList = new ArrayList<SeedInfo>();
@@ -40,8 +46,16 @@ public class BestSetSelector {
 		StreamlineArray bestset = null;
 		
 		if(selectCounter == 0){
-			File seedFile = new File(seedPATH);
-			File scoreFile = new File(scorePATH);
+			String usedData = null;
+			if(data1 > data2) usedData = Integer.toString(data2) + Integer.toString(data1);
+			else if(data2 > data1) usedData = Integer.toString(data1) + Integer.toString(data2);
+			//TODO: data1 == data2ならエラーに
+			
+			File seedFile = new File(path + usedData.toString() + seedFilename);
+			File scoreFile = new File(path + usedData.toString() + scoreFilename);
+			System.out.println("filename = " + path + usedData.toString() + seedFilename);
+//			File seedFile = new File(seedPATH);
+//			File scoreFile = new File(scorePATH);
 
 			// if there is no file, make it.
 			if(! seedFile.exists() || ! scoreFile.exists()){

@@ -29,7 +29,6 @@ public class ViewDependentEvaluator {
 //		coordinates2 = new ArrayList<double[]>();
 		StreamlineArray sarray = new StreamlineArray();
 //		sarray.clear();
-		System.out.println("sarray length = " + sarray.getSize());
 		
 		// for each seed
 		int counter = 0;

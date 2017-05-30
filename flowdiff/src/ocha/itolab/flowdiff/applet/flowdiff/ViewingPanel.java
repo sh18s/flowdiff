@@ -14,6 +14,7 @@ import java.awt.event.ItemListener;
 import java.awt.Insets;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -31,6 +32,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
 
 
 import org.codehaus.jackson.JsonParseException;
@@ -665,12 +667,19 @@ public class ViewingPanel extends JPanel {
 			}
 
 			if (buttonPushed == viewResetButton) {
-				grid1.setStartPoint(10, 10, 10);
-				grid2.setStartPoint(10, 10, 10);
+//				grid1.setStartPoint(10, 10, 10);
+//				grid2.setStartPoint(10, 10, 10);
 				sliderX.setValue(10);
 				sliderY.setValue(10);
 				sliderZ.setValue(10);
 				canvas.viewReset();
+				// for Automatically selection
+				grid1 = new Grid();
+				grid1 = new Grid();
+				BestSetSelector.infoList = new ArrayList<SeedInfo>();
+				BestSetSelector.sRankList = new ArrayList<ScoreRank>();
+				BestSetSelector.meaningList = new ArrayList<Seed>();
+				BestSetSelector.selectCounter = 0;
 			}
 
 			if (buttonPushed == generateButton) {

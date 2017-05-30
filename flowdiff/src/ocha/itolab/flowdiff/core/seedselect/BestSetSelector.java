@@ -17,11 +17,9 @@ import ocha.itolab.flowdiff.core.data.*;
 public class BestSetSelector {
 	static int REPEAT1 = 10000, REPEAT2 = 20;
 	static int NUMCANDIDATE = 100;
-	static int selectCounter = 0;
+	public static int selectCounter = 0;
 	
 	static String SCORE = "score", ENTROPY = "entropy", DIFF = "diff";	
-	static String seedPATH = "../bin/all_seeds.json";
-	static String scorePATH = "../bin/all_score.json";
 	
 	static final String path = "../bin/";
 	public static int data1 = 20;
@@ -30,10 +28,10 @@ public class BestSetSelector {
 	static final String scoreFilename = "_score.json";
 
 	// Keep data from file here 
-	static List<SeedInfo> infoList = new ArrayList<SeedInfo>();
-	static List<ScoreRank> sRankList = new ArrayList<ScoreRank>();
+	public static List<SeedInfo> infoList = new ArrayList<SeedInfo>();
+	public static List<ScoreRank> sRankList = new ArrayList<ScoreRank>();
 	// Keep meaning seeds here
-	static ArrayList<Seed> meaningList = new ArrayList<Seed>();
+	public static ArrayList<Seed> meaningList = new ArrayList<Seed>();
 	
 	/**
 	 * Select the best set of streamlines using the file
@@ -51,11 +49,9 @@ public class BestSetSelector {
 			else if(data2 > data1) usedData = Integer.toString(data1) + Integer.toString(data2);
 			//TODO: data1 == data2ならエラーに
 			
-			File seedFile = new File(path + usedData.toString() + seedFilename);
-			File scoreFile = new File(path + usedData.toString() + scoreFilename);
-			System.out.println("filename = " + path + usedData.toString() + seedFilename);
-//			File seedFile = new File(seedPATH);
-//			File scoreFile = new File(scorePATH);
+			File seedFile = new File(path + usedData + seedFilename);
+			File scoreFile = new File(path + usedData + scoreFilename);
+			System.out.println("filename = " + path + usedData + seedFilename);
 
 			// if there is no file, make it.
 			if(! seedFile.exists() || ! scoreFile.exists()){

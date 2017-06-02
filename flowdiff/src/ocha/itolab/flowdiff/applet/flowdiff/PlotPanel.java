@@ -19,7 +19,10 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
+import ocha.itolab.flowdiff.core.seedselect.BestSetSelector;
+import ocha.itolab.flowdiff.core.seedselect.Seed;
 import ocha.itolab.flowdiff.core.seedselect.SingleEvaluator;
+import ocha.itolab.flowdiff.core.seedselect.ViewDependentEvaluator;
 
 public class PlotPanel extends JPanel{
 	
@@ -60,8 +63,8 @@ public class PlotPanel extends JPanel{
 //		cpanel.setPreferredSize(new Dimension(50, 50));
 		this.add(cpanel);
 		
-		// スライダ
-		// eSlider
+		// Slider
+		// Slider for entropy
 		eSlider = new JSlider(0, 100, 1);
 		eSlider.setMajorTickSpacing(25);//描画するめもりの幅
 		eSlider.setMinorTickSpacing(5);
@@ -79,7 +82,7 @@ public class PlotPanel extends JPanel{
 		this.add(eSliderText);
 		this.add(eSlider);
 		
-		// dSlider
+		// Slider for diff
 		dSlider = new JSlider(0, 100, 1);
 		dSlider.setMajorTickSpacing(25); // 描画するめもりの幅
 		dSlider.setMinorTickSpacing(5);
@@ -97,34 +100,46 @@ public class PlotPanel extends JPanel{
 	public XYSeriesCollection createData(){
 	    XYSeriesCollection data = new XYSeriesCollection();
 
-	    int xdata[] = {0};
-	    int ydata[] = {0};
+//	    int xdata[] = {0};
+//	    int ydata[] = {0};
 	    
-	    ivSize = SingleEvaluator.graphIVList.size();
-
+	    // Get seed size
+	    if(BestSetSelector.selectCounter == 0){
+	    	ivSize = 0;
+	    }else{
+		    ivSize = ViewDependentEvaluator.bestSeedList.size();
+	    }
+//	    ivSize = SingleEvaluator.graphIVList.size();
+	    
 	    XYSeries series = new XYSeries("pair of streamlines");
 
-	    //if(xdata.length > 0 || ydata.length > 0){
-	    	for (int i = 0 ; i < 1 ; i++){
-	  	      series.add(xdata[i], ydata[i]);
-	  	    }
+//	    if(xdata.length > 0 || ydata.length > 0){
+//	    	for (int i = 0 ; i < 1 ; i++){
+//	  	      series.add(xdata[i], ydata[i]);
+//	  	    }
 	    //}
 	    
-	    if(ivSize>0){
-	    series = new XYSeries("pair of streamlines");
-	    for(int i= 0; i< 100; i++){
-	    	e = SingleEvaluator.graphIVList.get(i).outputEntropy();
-	    	d = SingleEvaluator.graphIVList.get(i).outputDiff();
-	    	// 正規化
-	    	series.add(e / emax, d / dmax);
-//	    	System.out.println("e/emax  d/dmax: " + e / emax + "  " + d / dmax);
-	    }
+	    if(0 < ivSize){
+	    	series = new XYSeries("streamline pairs");
+	    	for(int i= 0; i< ivSize; i++){
+	    		Seed seed = ViewDependentEvaluator.bestSeedList.get(i);
+	    		
+	    		int id = seed.getId();
+	    		e = BestSetSelector.infoList.get(id).getEntropy();
+	    		d = BestSetSelector.infoList.get(id).getDiff();
+	    		System.out.println("entropy in graph  = " + e);
+	    		System.out.println("diff in graph  = " + d);
+//	    		e = SingleEvaluator.graphIVList.get(i).outputEntropy();
+//	    		d = SingleEvaluator.graphIVList.get(i).outputDiff();
+//	    		series.add(e / emax, d / dmax);
+	    		series.add(e, d); // Add data to series
+	    	}
 	    }
 
 	    data.addSeries(series);
 
 	    return data;
-	  }
+	}
 	
 	public void addSliderListener(ChangeListener changeListener) {
 		eSlider.addChangeListener(changeListener);

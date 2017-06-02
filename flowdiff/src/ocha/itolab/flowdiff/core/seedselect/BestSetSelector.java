@@ -102,6 +102,8 @@ public class BestSetSelector {
 //		bestset = randomSelect(seedlist);
 		
 		// TODO: 散布図描画
+		PlotPanel plotPanel = new PlotPanel();
+		plotPanel.createData();
 		
 		// Make JSON file to observe this result in VR
 		MakeJsonFile mjf = new MakeJsonFile();

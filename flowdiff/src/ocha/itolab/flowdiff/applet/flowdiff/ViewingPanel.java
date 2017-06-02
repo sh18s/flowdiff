@@ -696,6 +696,7 @@ public class ViewingPanel extends JPanel {
 				model.addElement(" (横："+eIjk[0]+", 高さ："+eIjk[1]+2+", 縦："+eIjk[2]+")");
 			}
 
+			// Button action for automatically selection
 			StreamlineArray slset = new StreamlineArray();
 			if (buttonPushed == autoStreamlineButton) {
 				try {

@@ -70,6 +70,7 @@ public class MakeRandomEvaluationFile {
 		LinkedList<SeedInfo> dRankList = new LinkedList<SeedInfo>();
 		int counter = 0;
 		
+		BinarySearch bs = new BinarySearch();
 		for(SeedInfo seedInfo: infoList){
 			if(counter%100 == 0) System.out.println("Normalizing counter is " + counter);
 			// Normalize evaluations
@@ -83,9 +84,9 @@ public class MakeRandomEvaluationFile {
 			makeSeedInfoArray(seedInfoArray, seedInfo); // Make JSONArray
 
 			// Rank seeds by score, entropy and diff
-			BinarySearch.keepSizeBinarySearch(sRankList, seedInfo, seedInfo.getScore());
-			BinarySearch.keepSizeBinarySearch(eRankList, seedInfo, seedInfo.getEntropy());
-			BinarySearch.keepSizeBinarySearch(dRankList, seedInfo, seedInfo.getDiff());
+			bs.keepSizeBinarySearch(sRankList, seedInfo, seedInfo.getScore());
+			bs.keepSizeBinarySearch(eRankList, seedInfo, seedInfo.getEntropy());
+			bs.keepSizeBinarySearch(dRankList, seedInfo, seedInfo.getDiff());
 			counter++;
 		}
 		// Make file

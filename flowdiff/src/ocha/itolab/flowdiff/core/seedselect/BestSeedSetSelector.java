@@ -11,7 +11,7 @@ import ocha.itolab.flowdiff.core.data.*;
 
 // Read on ViewingPanel
 public class BestSeedSetSelector {
-	static int REPEAT1 = 10000, REPEAT2 = 20;
+	public static int MSIZE = 10000, REPEAT2 = 20;
 	static int NUMSEED = 20, NUMCANDIDATE = 100;
 	static int selectCounter = 0;
 	
@@ -33,7 +33,7 @@ public class BestSeedSetSelector {
 		int[] total = grid1.getNumElement();
 		int[] eleNum = new int[3];
 		
-		for(int i = 0; i < REPEAT1; i++) {
+		for(int i = 0; i < MSIZE; i++) {
 //		for(int i = 0; i < total[0] ; i++){
 //			eleNum[0] = i;
 //			for(int j = 0; j < total[1] ; j++){
@@ -71,7 +71,8 @@ public class BestSeedSetSelector {
 			// seedlistを評価値に並べ替え
 			LinkedList<Seed> rankList = new LinkedList<Seed>();
 			for(Seed key: seedlist){
-				BinarySearch.binarySearch(rankList, key, "score");
+				BinarySearch bs = new BinarySearch();
+				bs.binarySearch(rankList, key, "score");
 			}
 			// 視点に依存しない評価値で足切り
 			ArrayList<Seed> meaningList = new ArrayList<Seed>(); // 意義のある流線ペア群
@@ -169,7 +170,7 @@ public class BestSeedSetSelector {
 	static StreamlineArray randomSelect(ArrayList<Seed> seedlist){
 		ArrayList<Seed> randomList = new ArrayList<Seed>();	
 		for(int i = 0; i < NUMCANDIDATE; i++){
-			int random = (int)(Math.random()*REPEAT1);
+			int random = (int)(Math.random()*MSIZE);
 			Seed seed = seedlist.get(random);
 				randomList.add(seed);
 			}

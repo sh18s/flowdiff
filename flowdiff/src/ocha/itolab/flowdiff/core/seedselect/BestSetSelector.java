@@ -9,6 +9,7 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
+import ocha.itolab.flowdiff.applet.flowdiff.PlotPanel;
 import ocha.itolab.flowdiff.core.streamline.*;
 import ocha.itolab.flowdiff.core.data.*;
 
@@ -55,8 +56,8 @@ public class BestSetSelector {
 
 			// if there is no file, make it.
 			if(! seedFile.exists() || ! scoreFile.exists()){
-				//			MakeRandomEvaluationFile mef = new MakeRandomEvaluationFile();
-				//			mef.makeEvaluationFile(grid1, grid2);
+	//			MakeRandomEvaluationFile mef = new MakeRandomEvaluationFile();
+	//			mef.makeEvaluationFile(grid1, grid2);
 				MakeAllEvaluationFile maef = new MakeAllEvaluationFile();
 				maef.makeEvaluationFile(grid1, grid2);
 			}else{

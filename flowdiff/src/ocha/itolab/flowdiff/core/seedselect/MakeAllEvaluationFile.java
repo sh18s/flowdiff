@@ -35,9 +35,9 @@ public class MakeAllEvaluationFile {
 		// Keep seedInfo here to make JSON file
 		JSONArray seedInfoArray = new JSONArray();
 		// Keep rank of score, entropy and diff here
-		JSONArray scoreRank = new JSONArray();
-		JSONArray entropyRank = new JSONArray();
-		JSONArray diffRank = new JSONArray();
+		JSONArray scoreRankArray = new JSONArray();
+		JSONArray entropyRankArray = new JSONArray();
+		JSONArray diffRankArray = new JSONArray();
 		
 		// Keep all SeedInfo here (sorted by id number)
 		ArrayList<SeedInfo> infoList = new ArrayList<SeedInfo>();
@@ -76,14 +76,15 @@ public class MakeAllEvaluationFile {
 			}
 		}
 		// Keep LinkedList rank of score, entropy, and diff here
-		LinkedList<SeedInfo> sRankList = new LinkedList<SeedInfo>();
-		LinkedList<SeedInfo> eRankList = new LinkedList<SeedInfo>();
-		LinkedList<SeedInfo> dRankList = new LinkedList<SeedInfo>();
+		LinkedList<ScoreRank> sRankList = new LinkedList<ScoreRank>();
+		LinkedList<ScoreRank> eRankList = new LinkedList<ScoreRank>();
+		LinkedList<ScoreRank> dRankList = new LinkedList<ScoreRank>();
+		BinarySearch bs = new BinarySearch();
+		
 		int counter = 0;
 		for(SeedInfo seedInfo: infoList){
 			if(counter%100 == 0) System.out.println("Normalizing counter is " + counter);
 			// Normalize evaluations
-//			System.out.println("seedInfo diff = " + seedInfo.getDiff());
 			double nEntropy = normalize(seedInfo.getEntropy(), eRange);
 			seedInfo.setEntropy(nEntropy);
 			double nDiff = normalize(seedInfo.getDiff(), dRange);
@@ -95,28 +96,28 @@ public class MakeAllEvaluationFile {
 //			System.out.println("eid = " + seedInfo.getEid()[0] + "," + seedInfo.getEid()[1] + ", " + seedInfo.getEid()[2]);
 			
 			// Rank seeds by score, entropy and diff
-			BinarySearch.keepSizeBinarySearch(sRankList, seedInfo, seedInfo.getScore());
-			BinarySearch.keepSizeBinarySearch(eRankList, seedInfo, seedInfo.getEntropy());
-			BinarySearch.keepSizeBinarySearch(dRankList, seedInfo, seedInfo.getDiff());
+			int id = seedInfo.getId();
+			bs.scoreRankBinarySearch(sRankList, seedInfo.getScore(), id);
+			bs.scoreRankBinarySearch(eRankList, seedInfo.getEntropy(), id);
+			bs.scoreRankBinarySearch(dRankList, seedInfo.getDiff(), id);
 			counter++;
 		}
 		// Make file
 		counter = 0;
 		for(int i = 0; i < sRankList.size(); i++){
-			if(counter%100 == 0) System.out.println("Making files counter is " + counter);
-			SeedInfo seedInfo = sRankList.get(i);
-			makeRankArray(scoreRank, seedInfo, seedInfo.getScore());
-			seedInfo = eRankList.get(i);
-			makeRankArray(entropyRank, seedInfo, seedInfo.getEntropy());
-			seedInfo = dRankList.get(i);
-			makeRankArray(diffRank, seedInfo, seedInfo.getDiff());
+			if(counter%1000 == 0) System.out.println("Making files counter is " + counter);
+			ScoreRank scoreRank = sRankList.get(i);
+			makeRankArray(scoreRankArray, scoreRank);
+			scoreRank = eRankList.get(i);
+			makeRankArray(entropyRankArray, scoreRank);
+			scoreRank = dRankList.get(i);
+			makeRankArray(diffRankArray, scoreRank);
 			counter++;
 		}
 		
 		String filename = Integer.toString(BestSetSelector.data1) + Integer.toString(BestSetSelector.data2);
 		try{
 			FileWriter fileWriter= new FileWriter(filename + "_seeds.json", false);
-//			FileWriter fileWriter= new FileWriter("all_seeds.json", false);
 			fileWriter.write(seedInfoArray.toString());
 			fileWriter.close();
 			System.out.println("Seeds File is done.");
@@ -125,8 +126,7 @@ public class MakeAllEvaluationFile {
 		}
 		try{
 			FileWriter fileWriter= new FileWriter(filename + "_score.json", false);
-//			FileWriter fileWriter= new FileWriter("all_score.json", false);
-			fileWriter.write(scoreRank.toString());
+			fileWriter.write(scoreRankArray.toString());
 			fileWriter.close();
 			System.out.println("Score File is done.");
 		}catch(IOException e){
@@ -134,8 +134,7 @@ public class MakeAllEvaluationFile {
 		}
 		try{
 			FileWriter fileWriter= new FileWriter(filename + "entropy.json", false);
-//			FileWriter fileWriter= new FileWriter("all_entropy.json", false);
-			fileWriter.write(entropyRank.toString());
+			fileWriter.write(entropyRankArray.toString());
 			fileWriter.close();
 			System.out.println("Entropy File is done.");
 		}catch(IOException e){
@@ -143,7 +142,7 @@ public class MakeAllEvaluationFile {
 		}
 		try{
 			FileWriter fileWriter= new FileWriter(filename + "diff.json", false);
-			fileWriter.write(diffRank.toString());
+			fileWriter.write(diffRankArray.toString());
 			fileWriter.close();
 			System.out.println("Diff File is done.");
 		}catch(IOException e){
@@ -154,10 +153,10 @@ public class MakeAllEvaluationFile {
 	/** 
 	 * Make rank JSONArray of score, entropy ,diff
 	 */
-	public void makeRankArray(JSONArray rankArray, SeedInfo seedInfo, double score){	
+	public void makeRankArray(JSONArray rankArray, ScoreRank scoreRank){	
 		HashMap<String, Object> rankHash = new HashMap<String, Object>();
-		rankHash.put("id", seedInfo.getId());
-		rankHash.put(SCORE, score);
+		rankHash.put("id", scoreRank.getId());
+		rankHash.put(SCORE, scoreRank.getScore());
 		rankArray.put(rankHash);
 	}
 	

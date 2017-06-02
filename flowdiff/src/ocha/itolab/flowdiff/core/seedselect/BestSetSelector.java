@@ -89,7 +89,6 @@ public class BestSetSelector {
 			}
 			System.out.println("Done.");
 
-			// TODO: 視点に依存しない評価値で足切り
 		}
 		
 		// Decide best set using view dependent evaluation
@@ -102,7 +101,9 @@ public class BestSetSelector {
 		// ランダムにNUMCANDIDATE本選んで可視化する
 //		bestset = randomSelect(seedlist);
 		
-		// TODO: 散布図描画	
+		// TODO: 散布図描画
+		
+		// Make JSON file to observe this result in VR
 		MakeJsonFile mjf = new MakeJsonFile();
 		mjf.makeJsonFile(bestset);
 		

@@ -237,7 +237,7 @@ public class ViewingPanel extends JPanel {
 		setButton(gbl, gbc, openDataButton, 0,2,1,1,2.0d);
 		p1.add(openDataButton);
 		// Reset button
-		viewResetButton = new JButton("Restore");
+		viewResetButton = new JButton("Reset");
 		setButton(gbl, gbc, viewResetButton, 0,3,1,1,2.0d);
 		p1.add(viewResetButton);
 		
@@ -371,8 +371,6 @@ public class ViewingPanel extends JPanel {
 		gbc = setConstraints(0,0,1,1,2.0d);
 		gbl.setConstraints(slsLabel, gbc);
 		p4.add(slsLabel);
-		
-		
 		// Threshold of distance Panel
 		JPanel distPanel = new JPanel();
 		GridBagLayout distGbl = new GridBagLayout();
@@ -399,7 +397,6 @@ public class ViewingPanel extends JPanel {
 	    gbc = setConstraints(0,3,1,1,2.0d);
 	    gbl.setConstraints(distPanel, gbc);
 	    p4.add(distPanel);
-	    
 		// Threshold of number of vertex Panel
 	    JPanel numPanel = new JPanel();
 	    GridBagLayout numGbl = new GridBagLayout();
@@ -426,7 +423,7 @@ public class ViewingPanel extends JPanel {
 		gbc = setConstraints(0,4,1,1,2.0d);
 	    gbl.setConstraints(numPanel, gbc);
 		p4.add(numPanel);
-		
+		// Automatically selection button
 		autoStreamlineButton = new JButton("Automatically selection");
 		gbc = setConstraints(0,5,1,1,1.0d);
 		gbl.setConstraints(autoStreamlineButton, gbc);
@@ -845,7 +842,7 @@ public class ViewingPanel extends JPanel {
 			}
 			if(buttonPushed == aoa2g27){
 				filenameCyan = filename2;
-				BestSetSelector.data2 = 22;
+				BestSetSelector.data2 = 27;
 			}
 			if(buttonPushed == aoa2g30){
 				filenameCyan = filename3;

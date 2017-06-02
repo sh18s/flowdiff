@@ -15,6 +15,9 @@ public class ViewDependentEvaluator {
 	public static double DIST_TH = 5.0;  // ディスプレイ上の距離の2乗値の閾値
 	public static int COUNTER_TH = 1500;  // 既存流線に近隣する頂点数の閾値
 	
+	// Keep best seed to draw scatter plot
+	public static ArrayList<Seed> bestSeedList = null;
+	
 	static DoubleBuffer model = null, proj = null;
 	static IntBuffer view = null;
 	static GLUgl2 glu2;
@@ -28,7 +31,7 @@ public class ViewDependentEvaluator {
 //		coordinates1 = new ArrayList<double[]>(); // delete temporarily by sh
 //		coordinates2 = new ArrayList<double[]>();
 		StreamlineArray sarray = new StreamlineArray();
-//		sarray.clear();
+		bestSeedList = new ArrayList<Seed>();
 		
 		// for each seed
 		int counter = 0;
@@ -55,6 +58,7 @@ public class ViewDependentEvaluator {
 			
 			// Add a new pair of streamlines
 			sarray.addList(seed.sl1, seed.sl2, seed.eid);
+			bestSeedList.add(seed);
 			
 			if(++counter >= numseed) break;
 			// project関数によって価値があると判定された流線ペアをpreListに追加
@@ -67,7 +71,6 @@ public class ViewDependentEvaluator {
 			
 		}
 		System.out.println("rejectCounter = " + rejectCounter);
-		System.out.println("** " + sarray.streamlines1.size());
 		return sarray;
 	}
 	

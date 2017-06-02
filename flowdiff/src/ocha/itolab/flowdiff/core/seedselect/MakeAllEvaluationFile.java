@@ -113,7 +113,7 @@ public class MakeAllEvaluationFile {
 			counter++;
 		}
 		
-		String filename = Integer.toString(BestSetSelector.data1) + Integer.toString(BestSetSelector.data1);
+		String filename = Integer.toString(BestSetSelector.data1) + Integer.toString(BestSetSelector.data2);
 		try{
 			FileWriter fileWriter= new FileWriter(filename + "_seeds.json", false);
 //			FileWriter fileWriter= new FileWriter("all_seeds.json", false);

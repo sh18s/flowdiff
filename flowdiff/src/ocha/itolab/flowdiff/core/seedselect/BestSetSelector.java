@@ -1,6 +1,7 @@
 package ocha.itolab.flowdiff.core.seedselect;
 
 import java.io.*;
+import java.io.FileReader;
 import java.util.*;
 
 import org.json.JSONException;
@@ -8,6 +9,11 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
+
+import com.google.gson.*;
+import com.google.gson.annotations.*;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.*;
 
 import ocha.itolab.flowdiff.applet.flowdiff.PlotPanel;
 import ocha.itolab.flowdiff.core.streamline.*;
@@ -27,6 +33,7 @@ public class BestSetSelector {
 	public static int data2 = 27;
 	static final String seedFilename = "_seeds.json";
 	static final String scoreFilename = "_score.json";
+	static final String randomfile = "random"; // For random selection
 
 	// Keep data from file here 
 	public static List<SeedInfo> infoList = new ArrayList<SeedInfo>();
@@ -50,25 +57,29 @@ public class BestSetSelector {
 			else if(data2 > data1) usedData = Integer.toString(data1) + Integer.toString(data2);
 			//TODO: data1 == data2ならエラーに
 			
-			File seedFile = new File(path + usedData + seedFilename);
-			File scoreFile = new File(path + usedData + scoreFilename);
-			System.out.println("filename = " + path + usedData + seedFilename);
+//			File seedFile = new File(path + usedData + seedFilename);
+//			File scoreFile = new File(path + usedData + scoreFilename);
+//			System.out.println("filename = " + path + usedData + seedFilename);
+			// For random selection
+			File seedFile = new File(path + randomfile + seedFilename);
+			File scoreFile = new File(path + randomfile + scoreFilename);
+			System.out.println("filename = " + path + randomfile + seedFilename);
 
 			// if there is no file, make it.
 			if(! seedFile.exists() || ! scoreFile.exists()){
-	//			MakeRandomEvaluationFile mef = new MakeRandomEvaluationFile();
-	//			mef.makeEvaluationFile(grid1, grid2);
-				MakeAllEvaluationFile maef = new MakeAllEvaluationFile();
-				maef.makeEvaluationFile(grid1, grid2);
+				MakeRandomEvaluationFile mef = new MakeRandomEvaluationFile();
+				mef.makeEvaluationFile(grid1, grid2);
+//				MakeAllEvaluationFile maef = new MakeAllEvaluationFile();
+//				maef.makeEvaluationFile(grid1, grid2);
 			}else{
 				System.out.println("Files exist.");
 			}
-
+			
 			// Read File
 			// Parse JSON files
 			System.out.print("Parsing files...");
-			infoList = new ObjectMapper().readValue(seedFile, new TypeReference<List<SeedInfo>>(){});
-			sRankList = new ObjectMapper().readValue(scoreFile, new TypeReference<List<ScoreRank>>(){});
+			infoList = new ObjectMapper().readValue(seedFile, new TypeReference<ArrayList<SeedInfo>>(){});
+			sRankList = new ObjectMapper().readValue(scoreFile, new TypeReference<ArrayList<ScoreRank>>(){});
 			System.out.println("Done.");
 			
 			System.out.print("Making meaning list...");
@@ -94,10 +105,10 @@ public class BestSetSelector {
 		
 		// Decide best set using view dependent evaluation
 		System.out.println("Calculating view-independent evaluation...");
-		bestset = ViewDependentEvaluator.select(meaningList);
+//		bestset = ViewDependentEvaluator.select(meaningList);
 			
 		// Ignore view-dependent evaluation
-//		ignoreViewDependentEvaluation(meaningList, bestset);
+		ignoreViewDependentEvaluation(meaningList, bestset);
 			
 		// ランダムにNUMCANDIDATE本選んで可視化する
 //		bestset = randomSelect(seedlist);
@@ -111,6 +122,7 @@ public class BestSetSelector {
 		mjf.makeJsonFile(bestset);
 		
 		selectCounter++;
+		System.out.println("Number of streamline pair is " + bestset.getSize());
         return bestset;
 	}
 	

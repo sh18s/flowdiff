@@ -40,28 +40,36 @@ public class BinarySearch{
 		}
 	}
 	
-	public void seedInfoBinarySearch(LinkedList<SeedInfo> rankList, SeedInfo key, double keyValue){
+	public static void binarySearch(ArrayList<ScoreRank> rankList, double keyValue, int id){
+		int size = rankList.size();
 		int pLeft = 0;
-		int pRight = rankList.size() -1;
-
-		if(rankList.size() == 0){
-			rankList.add(key);
-		}
-		else{
+		int pRight = size -1;
+		int findFlag = 0;
+		
+		// Make Key whose type is ScorerRank
+		ScoreRank scoreRank = new ScoreRank();
+		scoreRank.setScore(keyValue);
+		scoreRank.setId(id);
+		
+		if(size == 0){
+			rankList.add(scoreRank);
+		}else{
 			do{
 				int center = (pLeft + pRight) / 2;
-				// 一致するものがあるか確認
-				if(rankList.contains(keyValue)){
-					rankList.add(rankList.lastIndexOf(key) + 1, key);
+				double centerScore = rankList.get(center).getScore();
+				// 中央値と一致するか確認
+				if(keyValue == centerScore){
+					findFlag = center + 1;
 					break;
-					// なければ二分探索	
-				}else if(rankList.get(center).getScore() < keyValue){
+				}else if(keyValue < centerScore){
 					pLeft = center + 1;
 				}else{
 					pRight = center - 1;
 				}
-			}while(pLeft < pRight);
-			rankList.add(pLeft, key);
+			}while(pLeft <= pRight);
+			
+			if(findFlag == 0) rankList.add(pLeft, scoreRank);
+			else rankList.add(findFlag, scoreRank);
 		}
 	}
 	
@@ -96,6 +104,7 @@ public class BinarySearch{
 		int size = rankList.size();
 		int pLeft = 0;
 		int pRight = size -1;
+		int findFlag = 0;
 		
 		// Make Key whose type is ScorerRank
 		ScoreRank scoreRank = new ScoreRank();
@@ -110,15 +119,14 @@ public class BinarySearch{
 				double centerScore = rankList.get(center).getScore();
 				// 中央値と一致するか確認
 				if(keyValue == centerScore){
-					rankList.add(center + 1, scoreRank);
+					findFlag = center + 1;
 					break;
-					// なければ二分探索	
-				}else if(centerScore < keyValue){
+				}else if(keyValue < centerScore){
 					pLeft = center + 1;
 				}else{
 					pRight = center - 1;
 				}
-			}while(pLeft < pRight);
+			}while(pLeft <= pRight);
 			
 			// Confirm size
 			if(rankList.getLast().getScore() < keyValue){
@@ -127,7 +135,8 @@ public class BinarySearch{
 				}
 			}
 			
-			rankList.add(pLeft, scoreRank);
+			if(findFlag == 0) rankList.add(pLeft, scoreRank);
+			else rankList.add(findFlag, scoreRank);
 		}
 	}
 }

@@ -127,8 +127,8 @@ public class PlotPanel extends JPanel{
 	    		int id = seed.getId();
 	    		e = BestSetSelector.infoList.get(id).getEntropy();
 	    		d = BestSetSelector.infoList.get(id).getDiff();
-	    		System.out.println("entropy in graph  = " + e);
-	    		System.out.println("diff in graph  = " + d);
+//	    		System.out.println("entropy in graph  = " + e);
+//	    		System.out.println("diff in graph  = " + d);
 //	    		e = SingleEvaluator.graphIVList.get(i).outputEntropy();
 //	    		d = SingleEvaluator.graphIVList.get(i).outputDiff();
 //	    		series.add(e / emax, d / dmax);

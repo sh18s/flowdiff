@@ -83,7 +83,7 @@ public class MakeAllEvaluationFile {
 		
 		int counter = 0;
 		for(SeedInfo seedInfo: infoList){
-			if(counter%100 == 0) System.out.println("Normalizing counter is " + counter);
+			if(counter%1000 == 0) System.out.println("Normalizing counter is " + counter);
 			// Normalize evaluations
 			double nEntropy = normalize(seedInfo.getEntropy(), eRange);
 			seedInfo.setEntropy(nEntropy);

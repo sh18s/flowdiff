@@ -44,12 +44,15 @@ public class EvaluationCalculator {
 	static double calcEntropy(ArrayList<ArrayList<Double>> segments){
 		double e = 0.0;
 		double[][] p = calcPx(segments);
-		for(int i = 0; i < xLength; i++){
-			for(int j = 0; j < xDirection; j++){
-				if(p[i][j] == 0){
-					continue;
-				}else{
-					e -= p[i][j] * Math.log10(p[i][j]);
+		
+		if(0 < segments.size()){
+			for(int i = 0; i < xLength; i++){
+				for(int j = 0; j < xDirection; j++){
+					if(p[i][j] == 0){
+						continue;
+					}else{
+						e -= p[i][j] * Math.log10(p[i][j]);
+					}
 				}
 			}
 		}
@@ -97,7 +100,6 @@ public class EvaluationCalculator {
 		return x;
 	}
 	
-
 	/**
 	 * ある流線のすべてのセグメントについて、長さを評価する
 	 */
@@ -113,7 +115,7 @@ public class EvaluationCalculator {
 		
 		for(ArrayList<Double> segment: segments){
 			double length = 0;
-			for(int j = 0;j < 3; j++){					
+			for(int j = 0;j < 3; j++){
 				length += Math.pow(segment.get(j), 2.0d);
 			}
 			aveLength += length;
@@ -137,7 +139,6 @@ public class EvaluationCalculator {
 		
 		return flagArray;
 	}
-	
 	
 	/**
 	 * あるセグメントについて、方向を評価する
@@ -214,14 +215,17 @@ public class EvaluationCalculator {
 	static ArrayList<ArrayList<Double>> getSegment(Streamline sl){
 		ArrayList<ArrayList<Double>> segments = new ArrayList<ArrayList<Double>>();
 		int nums = sl.getNumVertex() -1;
-		for(int i = 0; i < nums - 1; i++){
-			double p1[] = sl.getPosition(i);
-			double p2[] = sl.getPosition(i + 1);
-			ArrayList<Double> seg = new ArrayList<Double>();
-			for(int j = 0; j < 3; j++){
-				seg.add(j, p2[j] - p1[j]);
+		// 頂点が1つ以上存在すればセグメントを計算
+		if(0 < nums){
+			for(int i = 0; i < nums - 1; i++){
+				double p1[] = sl.getPosition(i);
+				double p2[] = sl.getPosition(i + 1);
+				ArrayList<Double> seg = new ArrayList<Double>();
+				for(int j = 0; j < 3; j++){
+					seg.add(j, p2[j] - p1[j]);
+				}
+				segments.add(seg);
 			}
-			segments.add(seg);
 		}
 		return segments;
 	}
@@ -247,10 +251,11 @@ public class EvaluationCalculator {
 	 */
 	static double calcPairDistance(Streamline sl1, Streamline sl2){
 		int numver = 0;
-		double distance = 1.0e+30;
+		double distance = 0;
 		int ver1 = sl1.getNumVertex();
 		int ver2 = sl2.getNumVertex();
-		if(ver1 <= 0 || ver2 <= 0) return distance;
+		// 頂点1つで構成されているものを省く
+		if(ver1 <= 1 || ver2 <= 1) return distance;
 		
 		Streamline sla, slb; // 線分が多い方の流線をslaにする
 		if(ver1 < ver2){

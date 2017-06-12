@@ -664,6 +664,7 @@ public class ViewingPanel extends JPanel {
 			}
 
 			if (buttonPushed == viewResetButton) {
+				System.out.print("reseting...");
 //				grid1.setStartPoint(10, 10, 10);
 //				grid2.setStartPoint(10, 10, 10);
 				sliderX.setValue(10);
@@ -677,6 +678,7 @@ public class ViewingPanel extends JPanel {
 				BestSetSelector.sRankList = new ArrayList<ScoreRank>();
 				BestSetSelector.meaningList = new ArrayList<Seed>();
 				BestSetSelector.selectCounter = 0;
+				System.out.println("Done.");
 			}
 
 			if (buttonPushed == generateButton) {

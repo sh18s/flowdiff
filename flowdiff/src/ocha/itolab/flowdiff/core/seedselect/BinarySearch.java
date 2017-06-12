@@ -40,7 +40,7 @@ public class BinarySearch{
 		}
 	}
 	
-	public static void binarySearch(ArrayList<ScoreRank> rankList, double keyValue, int id){
+	public static void binarySearch(LinkedList<ScoreRank> rankList, double keyValue, int id){
 		int size = rankList.size();
 		int pLeft = 0;
 		int pRight = size -1;
@@ -72,35 +72,8 @@ public class BinarySearch{
 			else rankList.add(findFlag, scoreRank);
 		}
 	}
-	
-	public void keepSizeBinarySearch(LinkedList<SeedInfo> rankList, SeedInfo key, double keyValue){
-		int size = rankList.size();
-		int pLeft = 0;
-		int pRight = size -1;
 
-		if(size == 0){
-			rankList.add(key);
-		}else{
-			do{
-				int center = (pLeft + pRight) / 2;
-				// 一致するものがあるか確認
-				if(rankList.contains(keyValue)){
-					rankList.add(rankList.lastIndexOf(key) + 1, key);
-					break;
-					// なければ二分探索	
-				}else if(rankList.get(center).getScore() < keyValue){
-					pLeft = center + 1;
-				}else{
-					pRight = center - 1;
-				}
-			}while(pLeft < pRight);
-			
-			if(size >= MSIZE) rankList.remove(size - 1);  // Confirm size
-			rankList.add(pLeft, key);
-		}
-	}
-	
-	public void scoreRankBinarySearch(LinkedList<ScoreRank> rankList, double keyValue, int id){
+	public static void keepSizeBinarySearch(LinkedList<ScoreRank> rankList, double keyValue, int id){
 		int size = rankList.size();
 		int pLeft = 0;
 		int pRight = size -1;
@@ -133,10 +106,10 @@ public class BinarySearch{
 				if(MSIZE <= size){
 					rankList.remove(size - 1);
 				}
+				rankList.add(pLeft, scoreRank);
 			}
 			
-			if(findFlag == 0) rankList.add(pLeft, scoreRank);
-			else rankList.add(findFlag, scoreRank);
+			if(findFlag != 0) rankList.add(findFlag, scoreRank);
 		}
 	}
 }

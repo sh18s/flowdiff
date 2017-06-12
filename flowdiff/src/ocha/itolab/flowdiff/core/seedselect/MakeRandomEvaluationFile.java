@@ -21,7 +21,7 @@ public class MakeRandomEvaluationFile {
 	static String SCORE = "score";
 	static String ENTROPY = "entropy";
 	static String DIFF = "diff";
-	static double alpha = 1.0d;
+	static double alpha = 0.5d;
 	static double beta = 1.0d - alpha;
 	
 	// Keep range of entropy and diff here
@@ -34,6 +34,8 @@ public class MakeRandomEvaluationFile {
 //		{put("min", 0d);}
 //	};;
 //	HashMap<String, Double> dRange = eRange;
+	
+	static MakeAllEvaluationFile mef = new MakeAllEvaluationFile();
 	
 	/**
 	 * Make file to keep normalized evaluation values by using row entropy and diff
@@ -71,18 +73,16 @@ public class MakeRandomEvaluationFile {
 		}
 		
 		// Keep LinkedList rank of score, entropy, and diff here
-		ArrayList<ScoreRank> sRankList = new ArrayList<ScoreRank>();
-		ArrayList<ScoreRank> eRankList = new ArrayList<ScoreRank>();
-		ArrayList<ScoreRank> dRankList = new ArrayList<ScoreRank>();
+		LinkedList<ScoreRank> sRankList = new LinkedList<ScoreRank>();
+		LinkedList<ScoreRank> eRankList = new LinkedList<ScoreRank>();
+		LinkedList<ScoreRank> dRankList = new LinkedList<ScoreRank>();
 		int counter = 0;
 		
 		for(SeedInfo seedInfo: infoList){
 			if(counter%1000 == 0) System.out.println("Normalizing counter is " + counter);
 			// Normalize evaluations
-//			double nEntropy = normalize(seedInfo.getEntropy(), eRange);
 			double nEntropy = (seedInfo.getEntropy() - emin) / (emax - emin);
 			seedInfo.setEntropy(nEntropy);
-//			double nDiff = normalize(seedInfo.getDiff(), dRange);
 			double nDiff = (seedInfo.getDiff() - dmin) / (dmax - dmin);
 			seedInfo.setDiff(nDiff);
 			// Calculate score
@@ -90,7 +90,7 @@ public class MakeRandomEvaluationFile {
 			seedInfo.setScore(score);
 			
 			makeSeedInfoArray(seedInfoArray, seedInfo); // Make JSONArray
-
+			
 			// Rank seeds by score, entropy and diff
 			int id = seedInfo.getId();
 			BinarySearch.binarySearch(sRankList, score, id);
@@ -167,15 +167,6 @@ public class MakeRandomEvaluationFile {
 	}
 	
 	/**
-	 * Normalize a param
-	 */
-//	public double normalize(double value, HashMap<String, Double> range){
-//		double max = range.get("max"), min = range.get("min");
-//		double nv = (value - min) / (max - min);
-//		return nv;
-//	}
-	
-	/**
 	 * Get evaluations of a pair of streamlines
 	 */
 	public void getEvaluation(Seed seed){
@@ -193,19 +184,7 @@ public class MakeRandomEvaluationFile {
 		else if(emax < e) emax = e;
 		if(d < dmin) dmin = d;
 		else if(dmax < d) dmax = d;
-//		compareMinMax(evaluation, eRange);
-//		compareMinMax(evaluation, dRange);
 	}
-	
-	/**
-	 * Compare value to keep max and min
-	 */
-//	void compareMinMax(HashMap<String, Double> evaluation, HashMap<String, Double> extreme){
-//		for(Double value: evaluation.values()){
-//			if(extreme.get("max") < value) extreme.put("max", value);
-//			if(extreme.get("min") > value) extreme.put("min", value);
-//		}
-//	}
 	
 	/**
 	 * Set seed randomly

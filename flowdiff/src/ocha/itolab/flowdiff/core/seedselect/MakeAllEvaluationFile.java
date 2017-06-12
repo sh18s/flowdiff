@@ -22,11 +22,10 @@ public class MakeAllEvaluationFile {
 	static double beta = 1.0d - alpha;
 	
 	// Keep range of entropy and diff here
-	HashMap<String, Double> eRange = new HashMap<String, Double>(){
-		{put("max", 0d);}
-		{put("min", 0d);}
-	};;
-	HashMap<String, Double> dRange = eRange;
+	double emin = 0d;
+	double emax = 0d;
+	double dmin = 0d;
+	double dmax = 0d;
 	
 	/**
 	 * Make file to keep normalized evaluation values by using row entropy and diff
@@ -79,15 +78,14 @@ public class MakeAllEvaluationFile {
 		LinkedList<ScoreRank> sRankList = new LinkedList<ScoreRank>();
 		LinkedList<ScoreRank> eRankList = new LinkedList<ScoreRank>();
 		LinkedList<ScoreRank> dRankList = new LinkedList<ScoreRank>();
-		BinarySearch bs = new BinarySearch();
 		
 		int counter = 0;
 		for(SeedInfo seedInfo: infoList){
 			if(counter%1000 == 0) System.out.println("Normalizing counter is " + counter);
 			// Normalize evaluations
-			double nEntropy = normalize(seedInfo.getEntropy(), eRange);
+			double nEntropy = (seedInfo.getEntropy() - emin) / (emax - emin);
 			seedInfo.setEntropy(nEntropy);
-			double nDiff = normalize(seedInfo.getDiff(), dRange);
+			double nDiff = (seedInfo.getDiff() - dmin) / (dmax - dmin);
 			seedInfo.setDiff(nDiff);
 
 			seedInfo.setScore(nEntropy * alpha + nDiff * beta); // Calculate score
@@ -97,9 +95,9 @@ public class MakeAllEvaluationFile {
 			
 			// Rank seeds by score, entropy and diff
 			int id = seedInfo.getId();
-			bs.scoreRankBinarySearch(sRankList, seedInfo.getScore(), id);
-			bs.scoreRankBinarySearch(eRankList, seedInfo.getEntropy(), id);
-			bs.scoreRankBinarySearch(dRankList, seedInfo.getDiff(), id);
+			BinarySearch.keepSizeBinarySearch(sRankList, seedInfo.getScore(), id);
+			BinarySearch.keepSizeBinarySearch(eRankList, seedInfo.getEntropy(), id);
+			BinarySearch.keepSizeBinarySearch(dRankList, seedInfo.getDiff(), id);
 			counter++;
 		}
 		// Make file
@@ -175,15 +173,6 @@ public class MakeAllEvaluationFile {
 	}
 	
 	/**
-	 * Normalize a param
-	 */
-	public double normalize(double value, HashMap<String, Double> range){
-		double max = range.get("max"), min = range.get("min");
-		double nv = (value - min) / (max - min);
-		return nv;
-	}
-	
-	/**
 	 * Get evaluations of a pair of streamlines
 	 */
 	public void getEvaluation(Seed seed){
@@ -191,21 +180,15 @@ public class MakeAllEvaluationFile {
 		Streamline streamline1 = seed.sl1;
 		Streamline streamline2 = seed.sl2;
 		HashMap<String, Double> evaluation = EvaluationCalculator.calcEvaluation(streamline1, streamline2);
-		seed.entropy = evaluation.get(ENTROPY);
-		seed.diff = evaluation.get(DIFF);
-		
+		double e = evaluation.get(ENTROPY);
+		double d = evaluation.get(DIFF);
+		seed.entropy = e;
+		seed.diff = d;
 		// Keep max and min value
-		compareMinMax(evaluation, eRange);
-		compareMinMax(evaluation, dRange);
+		if(e < emin) emin = e;
+		else if(emax < e) emax = e;
+		if(d < dmin) dmin = d;
+		else if(dmax < d) dmax = d;
 	}
 	
-	/**
-	 * Compare value to keep max and min
-	 */
-	void compareMinMax(HashMap<String, Double> evaluation, HashMap<String, Double> extreme){
-		for(Double value: evaluation.values()){
-			if(extreme.get("max") < value) extreme.put("max", value);
-			if(extreme.get("min") > value) extreme.put("min", value);
-		}
-	}
 }

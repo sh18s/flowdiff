@@ -12,8 +12,8 @@ import ocha.itolab.flowdiff.core.streamline.*;
 public class ViewDependentEvaluator {
 	static int numseed = 20;
 	
-	public static double DIST_TH = 5.0;  // ディスプレイ上の距離の2乗値の閾値
-	public static int COUNTER_TH = 1500;  // 既存流線に近隣する頂点数の閾値
+	public static double DIST_TH = 10.0;  // ディスプレイ上の距離の2乗値の閾値
+	public static int COUNTER_TH = 20;  // 既存流線に近隣する頂点数の閾値
 	
 	// Keep best seed to draw scatter plot
 	public static ArrayList<Seed> bestSeedList = null;

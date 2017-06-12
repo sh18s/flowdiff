@@ -63,9 +63,8 @@ public class BestSetSelector {
 			// if there is no file, make it.
 			if(! seedFile.exists() || ! scoreFile.exists()){
 				MakeRandomEvaluationFile mef = new MakeRandomEvaluationFile();
+//				MakeAllEvaluationFile mef = new MakeAllEvaluationFile();
 				mef.makeEvaluationFile(grid1, grid2);
-//				MakeAllEvaluationFile maef = new MakeAllEvaluationFile();
-//				maef.makeEvaluationFile(grid1, grid2);
 			}else{
 				System.out.println("Files exist.");
 			}
@@ -100,10 +99,10 @@ public class BestSetSelector {
 		
 		// Decide best set using view dependent evaluation
 		System.out.println("Calculating view-independent evaluation...");
-//		bestset = ViewDependentEvaluator.select(meaningList);
+		bestset = ViewDependentEvaluator.select(meaningList);
 			
 		// Ignore view-dependent evaluation
-		ignoreViewDependentEvaluation(meaningList, bestset);
+//		ignoreViewDependentEvaluation(meaningList, bestset);
 			
 		// ランダムにNUMCANDIDATE本選んで可視化する
 //		bestset = randomSelect(seedlist);
@@ -117,7 +116,7 @@ public class BestSetSelector {
 		mjf.makeJsonFile(bestset);
 		
 		selectCounter++;
-		System.out.println("Number of streamline pair is " + bestset.getSize());
+//		System.out.println("Number of streamline pair is " + bestset.getSize());
         return bestset;
 	}
 	

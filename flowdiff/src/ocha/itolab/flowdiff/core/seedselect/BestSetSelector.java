@@ -10,11 +10,6 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
-import com.google.gson.*;
-import com.google.gson.annotations.*;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.*;
-
 import ocha.itolab.flowdiff.applet.flowdiff.PlotPanel;
 import ocha.itolab.flowdiff.core.streamline.*;
 import ocha.itolab.flowdiff.core.data.*;

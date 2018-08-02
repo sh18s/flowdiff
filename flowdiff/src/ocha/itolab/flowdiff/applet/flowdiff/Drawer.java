@@ -402,8 +402,8 @@ public class Drawer implements GLEventListener {
 
 		// 視点位置を決定
 		gl2.glLoadIdentity();
-		glu.gluLookAt(centerX, centerY, (centerZ + 20.0), centerX, centerY,
-				centerZ, 0.0, 1.0, 0.0);
+		glu.gluLookAt(centerX, centerY, centerZ + 20.0, centerX, centerY,
+				centerZ, 0.0, 0.1, 0.0);
 
 		shiftX = trans.getViewShift(0);
 		shiftY = trans.getViewShift(1);
@@ -1129,7 +1129,7 @@ public class Drawer implements GLEventListener {
 		for(int i=0;i<arrsl.size();i++){
 			Streamline sl = arrsl.get(i);
 			int numvertex = sl.getNumVertex();
-			gl2.glLineWidth(2.0f);
+			gl2.glLineWidth(3.5f);
 
 			//色のハイライト
 			if(color.get(i)){
@@ -1158,10 +1158,17 @@ public class Drawer implements GLEventListener {
 
 			gl2.glBegin(GL2.GL_LINE_STRIP);
 			//流線描画
-			for(int j = 0; j < numvertex-1; j++) {
-				double pos[] = sl.getPosition(j);
-				gl2.glVertex3d(pos[0], pos[1], pos[2]);
-			}
+//			if(id == 2){ // only draw streamlines generated under one condition
+				for(int j = 0; j < numvertex-1; j++) {
+//					if(j == 0) gl2.glColor3d(1.0, 1.0, 1.0);
+//					else if(j > 0){
+//						if(id == 1) gl2.glColor3d(1.0, 0.0, 1.0);
+//						else gl2.glColor3d(0.0, 1.0, 1.0);
+//					}
+					double pos[] = sl.getPosition(j);
+					gl2.glVertex3d(pos[0], pos[1], pos[2]);
+				}
+//			}
 			gl2.glEnd();
 		}
 	}

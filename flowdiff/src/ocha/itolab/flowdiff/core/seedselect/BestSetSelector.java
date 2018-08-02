@@ -44,7 +44,7 @@ public class BestSetSelector {
 	 * @throws JsonParseException
 	 */
 	public static StreamlineArray selectRandomly(Grid grid1, Grid grid2) throws JSONException, JsonParseException, JsonMappingException, IOException {
-		StreamlineArray bestset = null;
+		StreamlineArray bestset = new StreamlineArray();
 		
 		if(selectCounter == 0){
 			String usedData = null;
@@ -56,11 +56,12 @@ public class BestSetSelector {
 //			File scoreFile = new File(path + usedData + scoreFilename);
 //			System.out.println("filename = " + path + usedData + seedFilename);
 			// For random selection
-			File seedFile = new File(path + randomfile + seedFilename);
-			File scoreFile = new File(path + randomfile + scoreFilename);
+			File seedFile = new File(path + usedData + randomfile + seedFilename);
+			File scoreFile = new File(path + usedData + randomfile + scoreFilename);
 			System.out.println("filename = " + path + randomfile + seedFilename);
 
 			// if there is no file, make it.
+			long start = System.currentTimeMillis();
 			if(! seedFile.exists() || ! scoreFile.exists()){
 				MakeRandomEvaluationFile mef = new MakeRandomEvaluationFile();
 //				MakeAllEvaluationFile mef = new MakeAllEvaluationFile();
@@ -68,9 +69,12 @@ public class BestSetSelector {
 			}else{
 				System.out.println("Files exist.");
 			}
+			long end = System.currentTimeMillis();
+			System.out.println("Making file time is " + (end - start) + " ms");
 			
 			// Read File
 			// Parse JSON files
+			start = System.currentTimeMillis();
 			System.out.print("Parsing files...");
 			infoList = new ObjectMapper().readValue(seedFile, new TypeReference<ArrayList<SeedInfo>>(){});
 			sRankList = new ObjectMapper().readValue(scoreFile, new TypeReference<ArrayList<ScoreRank>>(){});
@@ -94,13 +98,17 @@ public class BestSetSelector {
 				meaningList.add(seed); // add this seed to meaningList
 			}
 			System.out.println("Done.");
-
+			end = System.currentTimeMillis();
+			System.out.println("ViewIndependent evaluation time is " + (end - start) + " ms");
 		}
 		
 		// Decide best set using view dependent evaluation
+		long start = System.currentTimeMillis();
 		System.out.println("Calculating view-independent evaluation...");
 		bestset = ViewDependentEvaluator.select(meaningList);
-			
+		long end = System.currentTimeMillis();
+		System.out.println("ViewDependent evaluation time is " + (end - start) + " ms");
+		
 		// Ignore view-dependent evaluation
 //		ignoreViewDependentEvaluation(meaningList, bestset);
 			

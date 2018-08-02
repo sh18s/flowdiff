@@ -28,7 +28,7 @@ public class StreamlineArray {
 	 * 流線リストのセット
 	 * @param s1
 	 */
-	public static void addList(Streamline s1,Streamline s2,int[] eIjk){
+	public void addList(Streamline s1,Streamline s2,int[] eIjk){
 		deperture.add(eIjk);
 		streamlines1.add(s1);
 		streamlines2.add(s2);
@@ -127,7 +127,7 @@ public class StreamlineArray {
 	/**
 	 * Return size of streamlines1
 	 */
-	public static int getSize(){
+	public int getSize(){
 		return streamlines1.size();
 	}
 }

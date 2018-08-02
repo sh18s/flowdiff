@@ -95,7 +95,6 @@ public class EvaluationCalculator {
 			int lFlag = lFlagArray.get(i);
 			int dFlag = calcOnePxDirection(segments.get(i));
 			x[lFlag][dFlag] ++;
-//			System.out.println("lFlag = " + lFlag);
 		}
 		return x;
 	}
@@ -230,63 +229,119 @@ public class EvaluationCalculator {
 		return segments;
 	}
 
-	/**
-	 * すべての流線ペアについて差分を計算する
-	 */
-	static ArrayList<Double> calcStreamlineDifference(ArrayList<Streamline> list1, ArrayList<Streamline> list2){
-		ArrayList<Double> diff = new ArrayList<Double>();
 
-		for(int i = 0; i < list1.size(); i ++){
-			Streamline sl1 = list1.get(i);
-			Streamline sl2 = list1.get(i);
-			double distance = calcPairDistance(sl1, sl2);
-			diff.add(distance);
-		}
-		return diff;
-	}
-	
-	
 	/**
 	 * ある流線ペア間の距離を計算する
 	 */
 	static double calcPairDistance(Streamline sl1, Streamline sl2){
-		int numver = 0;
 		double distance = 0;
+		boolean useAllVer = true;
+		Streamline longSl = new Streamline();
+		Streamline shortSl = new Streamline();
+		
 		int ver1 = sl1.getNumVertex();
 		int ver2 = sl2.getNumVertex();
-		// 頂点1つで構成されているものを省く
-		if(ver1 <= 1 || ver2 <= 1) return distance;
 		
-		Streamline sla, slb; // 線分が多い方の流線をslaにする
+		// Cut off too short streamlines
+		if(ver1 <= 10 || ver2 <= 10) return distance;
+		
+		// Compare of number of vertexes and rename
 		if(ver1 < ver2){
-			sla = sl2; slb = sl1; numver = ver2;
+			longSl = sl2; shortSl = sl1;
 		}else{
-			sla = sl1; slb = sl2; numver = ver1;
+			longSl = sl1; shortSl = sl2;
 		}
+		
 		DistPos distPos = new DistPos();
 		double dist = 0;
 		int nearPos = 0;
 		int prePos = 0; // 1つ前の格子点の、最も近い格子点
 		
-		for(int i = 0; i < numver; i++){
-			if(i > 0) prePos = nearPos;
-			double pos[] = sla.getPosition(i);
-			distPos = calcOnePosDistance(pos, slb);
-			nearPos = distPos.getPos();
-//			System.out.println("i = " + i + ", nearPos = " + nearPos);
-			// 逆流判定
-			if(prePos > nearPos){
-				double pos2[] = slb.getPosition(i);
-				dist = (pos[0] - pos2[0]) * (pos[0] - pos2[0])
-					 + (pos[1] - pos2[1]) * (pos[1] - pos2[1])
-					 + (pos[2] - pos2[2]) * (pos[2] - pos2[2]);
-			}else dist = distPos.getDist();
-			distance += dist;
-//			distance += calcOnePosDistance(pos, slb);
-		}
-		distance /= numver;
-		return distance;
+		// 最後の頂点どうしの距離が遠すぎる流線ペアは，すべての頂点を使用しない
+		// Get Last vertexes
+		double[] pos1 = sl1.getPosition(ver1 -1);
+		double[] pos2 = sl2.getPosition(ver2 -1);
+		double lastDist = Math.sqrt((pos1[0] - pos2[0]) * (pos1[0] - pos2[0])
+				 + (pos1[1] - pos2[1]) * (pos1[1] - pos2[1])
+				 + (pos1[2] - pos2[2]) * (pos1[2] - pos2[2]));
 		
+		int vertex = 0;
+		
+		for(int i = 0; i < longSl.getNumVertex(); i++){
+			if(i < shortSl.getNumVertex()){
+				pos1 = shortSl.getPosition(i);
+				distPos = calcOnePosDistance(pos1, longSl);
+				distance += distPos.getDist();
+				vertex++;
+				if(i == shortSl.getNumVertex() -1){
+					if(lastDist > (distance / (double)vertex) * 10){ 
+						useAllVer = false;
+					}
+				}
+			}else{
+				if(!useAllVer) break;
+			}
+			pos2 = longSl.getPosition(i);
+			distPos = calcOnePosDistance(pos2, shortSl);
+			distance += distPos.getDist();
+			vertex++;
+		}
+//		System.out.println("distance = " + distance/vertex);
+		if(vertex == 0) return distance;
+		else return distance / vertex;
+		
+//		distance = calcDistance(useAllVer, longSl, shortSl);
+		
+//		for(int i = 0; i < shortSl.getNumVertex(); i++){
+//			if(i > 0) prePos = nearPos;
+//			double pos[] = shortSl.getPosition(i);
+//			distPos = calcOnePosDistance(pos, longSl);
+//			nearPos = distPos.getPos();
+////			System.out.println("i = " + i + ", nearPos = " + nearPos);
+//			// 逆流判定
+//			if(prePos > nearPos){
+//				pos2 = longSl.getPosition(i);
+//				dist = (pos[0] - pos2[0]) * (pos[0] - pos2[0])
+//					 + (pos[1] - pos2[1]) * (pos[1] - pos2[1])
+//					 + (pos[2] - pos2[2]) * (pos[2] - pos2[2]);
+//			}else dist = distPos.getDist();
+//			distance += dist;
+////			distance += calcOnePosDistance(pos, slb);
+//		}
+//		distance /= shortSl.getNumVertex();
+//		return distance;
+	}
+	
+	/**
+	 * Calculate Distance of a streamline pair.
+	 * @param useAllVer
+	 * @param longSl
+	 * @param shortSl
+	 * @return
+	 */
+	static double calcDistance(boolean useAllVer, Streamline longSl, Streamline shortSl){
+		double distance = 0 ;
+		int vertex = 0;
+		double[] pos = new double[3];
+		double[] pos2 = new double[3];
+		DistPos distPos = new DistPos();
+		
+		for(int i = 0; i < longSl.getNumVertex() -1; i++){
+			if(i < shortSl.getNumVertex() - 1){
+				pos = shortSl.getPosition(i);
+				distPos = calcOnePosDistance(pos, longSl);
+				distance += distPos.getDist();
+				vertex++;
+			}else{
+				if(!useAllVer) break;
+			}
+			pos2 = longSl.getPosition(i);
+			distPos = calcOnePosDistance(pos2, shortSl);
+			distance += distPos.getDist();
+			vertex++;
+		}
+		if(vertex == 0) return distance;
+		else return distance / vertex;
 	}
 	
 	/**

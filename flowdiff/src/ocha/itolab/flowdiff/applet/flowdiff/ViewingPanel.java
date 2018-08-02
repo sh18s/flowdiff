@@ -29,6 +29,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
+import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -106,6 +107,9 @@ public class ViewingPanel extends JPanel {
 	/*button toggle flag*/
 	boolean viewVorticity_flag = false;//trueの時オン
 	boolean viewBuildingButton_flag = false;
+	
+	// Keep selected streamlines here
+	StreamlineArray slset = new StreamlineArray();
 	
 	/**
 	 * Settings for GridBagLayout
@@ -362,70 +366,81 @@ public class ViewingPanel extends JPanel {
 		group3.add(bothRotView);
 		p3.add(bothRotView);
 
-		// PANEL4: Streamlines panel
+		// PANEL4: Streamline selection panel
 		JPanel p4 = new JPanel();
 		gbl = new GridBagLayout();
 		p4.setLayout(gbl);
 		// Panel title
-		JLabel slsLabel = new JLabel("Select streamlines automatically");
-		gbc = setConstraints(0,0,1,1,2.0d);
+		JLabel slsLabel = new JLabel("Select streamlines automatically.");
+		gbc = setConstraints(0,0,1,1,0.0d);
+		gbc.weighty = 0.5d; // 余白の重みづけしないと均等に割り振られちゃう
+//		gbc.insets = new Insets(10,0,20,0);
 		gbl.setConstraints(slsLabel, gbc);
 		p4.add(slsLabel);
-		// Threshold of distance Panel
-		JPanel distPanel = new JPanel();
-		GridBagLayout distGbl = new GridBagLayout();
-		distPanel.setLayout(distGbl);
-		// Slider
-		sliderDist = new JSlider(0, 10, 2);
-		sliderDist.setMajorTickSpacing(2); //描画するめもりの幅
+		// Threshold of distance of vertex Panel
+	    JPanel distPanel = new JPanel();
+	    GridBagLayout distGbl = new GridBagLayout();
+		distPanel.setBorder(new EtchedBorder(EtchedBorder.RAISED));
+	    distPanel.setLayout(distGbl);
+	    	// Slider
+		sliderDist = new JSlider(0, 20, 10);
+		sliderDist.setMajorTickSpacing(2);//描画するめもりの幅
 		sliderDist.setMinorTickSpacing(1);
 		sliderDist.setPaintTicks(true);
-		sliderDist.setLabelTable(sliderDist.createStandardLabels(2));
-	    sliderDist.setPaintLabels(true);
-	    // Text
-	 	distText = new JLabel(" Threshold of distance: " + sliderDist.getValue());
-	    // Layout (text)
-	    GridBagConstraints distGbc = setConstraints(0,0,1,1,0.0d);
-	    distGbc.insets = new Insets(1,1,1,1);
-	    distGbl.setConstraints(distText, distGbc);
-	    distPanel.add(distText);
-	    // Layout (slider)
-	    distGbc = setConstraints(0,1,1,1,0.0d);
-	    distGbl.setConstraints(sliderDist, distGbc);
-	    distPanel.add(sliderDist);
-	    // Layout (distPanel)
-	    gbc = setConstraints(0,3,1,1,2.0d);
+		sliderDist.setLabelTable(sliderDist.createStandardLabels(5));
+		sliderDist.setPaintLabels(true);
+	    	// Text
+	    distText = new JLabel(" Threshold of distance of vertex: " + sliderDist.getValue());
+			// Layout (text)
+		GridBagConstraints distGbc = setConstraints(0,0,1,1,0.0d);
+		distGbl.setConstraints(distText, distGbc);
+		distPanel.add(distText);
+			// Layout (slider)
+		distGbc = setConstraints(0,1,1,1,0.0d);
+		distGbl.setConstraints(sliderDist, distGbc);
+		distPanel.add(sliderDist);
+			// Layout (distPanel)
+		gbc = setConstraints(0,1,2,1,0.0d);
+		gbc.weighty = 0.5d;
+		gbc.insets = new Insets(10,0,0,0);
 	    gbl.setConstraints(distPanel, gbc);
-	    p4.add(distPanel);
-		// Threshold of number of vertex Panel
+		p4.add(distPanel);
+	    
+	    // Threshold of number of vertex Panel
 	    JPanel numPanel = new JPanel();
 	    GridBagLayout numGbl = new GridBagLayout();
+		numPanel.setBorder(new EtchedBorder(EtchedBorder.RAISED));
 	    numPanel.setLayout(numGbl);
-	    // Slider
-		sliderCounter = new JSlider(0, 3000, 2000);
-		sliderCounter.setMajorTickSpacing(200);//描画するめもりの幅
-		sliderCounter.setMinorTickSpacing(100);
+	    	// Slider
+		sliderCounter = new JSlider(0, 50, 20);
+		sliderCounter.setMajorTickSpacing(5);//描画するめもりの幅
+		sliderCounter.setMinorTickSpacing(1);
 		sliderCounter.setPaintTicks(true);
-		sliderCounter.setLabelTable(sliderCounter.createStandardLabels(500));
+		sliderCounter.setLabelTable(sliderCounter.createStandardLabels(10));
 		sliderCounter.setPaintLabels(true);
-	    // Text
+	    	// Text
 	    counterText = new JLabel(" Threshold of number of vertex: " + sliderCounter.getValue());
-		// Layout (text)
+			// Layout (text)
 		GridBagConstraints numGbc = setConstraints(0,0,1,1,0.0d);
-		numGbc.insets = new Insets(1,1,1,1);
 		numGbl.setConstraints(counterText, numGbc);
 		numPanel.add(counterText);
-		// Layout (slider)
+			// Layout (slider)
 		numGbc = setConstraints(0,1,1,1,0.0d);
 		numGbl.setConstraints(sliderCounter, numGbc);
 		numPanel.add(sliderCounter);
-		// Layout (numPanel)
-		gbc = setConstraints(0,4,1,1,2.0d);
+			// Layout (numPanel)
+		gbc = setConstraints(0,2,2,1,0.0d);
+		gbc.weighty = 0.3d;
+		gbc.insets = new Insets(10,0,10,0);
+		gbc.ipadx = 20;
+		gbc.ipady = 10;
 	    gbl.setConstraints(numPanel, gbc);
 		p4.add(numPanel);
 		// Automatically selection button
 		autoStreamlineButton = new JButton("Automatically selection");
-		gbc = setConstraints(0,5,1,1,1.0d);
+		gbc = setConstraints(0,3,2,1,0.0d);
+		gbc.weighty = 1.0d;
+		gbc.insets = new Insets(0,0,240,0); // 余白の重み付け
 		gbl.setConstraints(autoStreamlineButton, gbc);
 		p4.add(autoStreamlineButton);
 		
@@ -499,7 +514,6 @@ public class ViewingPanel extends JPanel {
 	    pXYZ.add(generateButton);
 		p6.add(pXYZ);
 		
-	    
 	    JScrollPane sp = new JScrollPane();
 	    sp.getViewport().setView(list);
 	    sp.setPreferredSize(new Dimension(200, 100));
@@ -515,7 +529,6 @@ public class ViewingPanel extends JPanel {
 		pb.add(resetAllStreamlineButton);
 	    p6.add(sp);
 	    p6.add(pb);
-	    
 	    //
 		// パネル群のレイアウト
 		tabbedpane.addTab("Display", p1);
@@ -680,7 +693,7 @@ public class ViewingPanel extends JPanel {
 				BestSetSelector.selectCounter = 0;
 				System.out.println("Done.");
 			}
-
+			
 			if (buttonPushed == generateButton) {
 				Streamline sl1 = new Streamline();
 				Streamline sl2 = new Streamline();
@@ -691,15 +704,15 @@ public class ViewingPanel extends JPanel {
 				eIjk[2] = sliderZ.getValue() * numg[2] / 100;
 				StreamlineGenerator.generate(grid1, sl1, eIjk, null);
 				StreamlineGenerator.generate(grid2, sl2, eIjk, null);
-				Drawer.slarray.addList(sl1, sl2, eIjk);
+				slset.addList(sl1, sl2, eIjk);
+				Drawer.slarray = slset;
 				canvas.setStreamline(Drawer.slarray.deperture, Drawer.slarray.streamlines1, Drawer.slarray.streamlines2, Drawer.slarray.color);
-				//canvas.setStreamlineHighColor(StreamlineArray.color);
-				//canvas.setStreamlineArray(Streamlinearray);
-				model.addElement(" (横："+eIjk[0]+", 高さ："+eIjk[1]+2+", 縦："+eIjk[2]+")");
+//				canvas.setStreamlineHighColor(StreamlineArray.color);
+//				canvas.setStreamlineArray(Streamlinearray);
+				model.addElement("width：" + eIjk[0] + ", height：" + eIjk[1] + ", depth：" + eIjk[2]);
 			}
 
 			// Button action for automatically selection
-			StreamlineArray slset = new StreamlineArray();
 			if (buttonPushed == autoStreamlineButton) {
 				try {
 //					slset = BestSeedSetSelector.selectRandomly(grid1, grid2);
@@ -964,7 +977,7 @@ public class ViewingPanel extends JPanel {
 				grid1.startPoint[2] = sliderZ.getValue() * numg[2] / 100;
 				grid2.startPoint[2] = sliderZ.getValue() * numg[2] / 100;
 			}
-			if (changedSlider == sliderDist) {//New Slider
+			else if (changedSlider == sliderDist) {//New Slider
 				distText.setText(" Threshold of distance:" + sliderDist.getValue());
 				ViewDependentEvaluator.DIST_TH = sliderDist.getValue();
 			}

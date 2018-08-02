@@ -56,6 +56,7 @@ public class TecPlotFileReader {
 				gp.setPosition(x, y, z);
 				gp.setVector(u, v, w);
 				
+				
 				if(count >= total)
 					isValues = false;
 			}

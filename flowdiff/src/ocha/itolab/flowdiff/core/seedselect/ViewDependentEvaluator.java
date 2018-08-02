@@ -27,9 +27,6 @@ public class ViewDependentEvaluator {
 	
 	public static StreamlineArray select(ArrayList<Seed> seedlist) {
 		ArrayList<ArrayList<double[]>> preList = new ArrayList<ArrayList<double[]>>();
-//		preList = new ArrayList<ArrayList<double[]>>();
-//		coordinates1 = new ArrayList<double[]>(); // delete temporarily by sh
-//		coordinates2 = new ArrayList<double[]>();
 		StreamlineArray sarray = new StreamlineArray();
 		bestSeedList = new ArrayList<Seed>();
 		
@@ -66,11 +63,11 @@ public class ViewDependentEvaluator {
 				preList.add(coordinates1);
 				preList.add(coordinates2);
 			}
-//			coordinates1 = new ArrayList<double[]>(); // delete temporarily by sh
-//			coordinates2 = new ArrayList<double[]>();
 			
 		}
 		System.out.println("rejectCounter = " + rejectCounter);
+		System.out.println("dist = " + DIST_TH + ", vertex = " + COUNTER_TH);
+		System.out.println("size of meaninglist = " + seedlist.size());
 		return sarray;
 	}
 	
@@ -82,7 +79,7 @@ public class ViewDependentEvaluator {
 	}
 	
 	/**
-	 * Decide whether select the streamline by calculate the distance on the display. 
+	 * Select streamline by calculate the distance on the display. 
 	 * @param sl: Target streamline 
 	 * @param coordinates: 2d coordinates of target streamline
 	 * @return boolean: select or not
@@ -91,19 +88,8 @@ public class ViewDependentEvaluator {
 		if(model == null || proj == null || view == null)
 			return true;
 		
-		DoubleBuffer ppos = DoubleBuffer.allocate(3);
+		projectStreamline(sl, coordinates);
 		
-		// for each vertex of the given streamline
-		for(int i = 0; i < sl.getNumVertex(); i++) {
-			double pos[] = sl.getPosition(i);
-			double y = view.get(3) - pos[1] + 1;
-			glu2.gluProject(pos[0], y, pos[2], model, proj, view, ppos);
-			double pos2[] = new double[2];
-			pos2[0] = ppos.get(0);
-			pos2[1] = ppos.get(1);
-			coordinates.add(pos2);
-		}
-		// for each previously registered streamline
 		for(int i = 0; i < preList.size(); i++) {
 			ArrayList<double[]> pl = preList.get(i);
 			int counter = 0;
@@ -121,6 +107,46 @@ public class ViewDependentEvaluator {
 			}
 		}
 		return true;
+	}
+	
+	/**
+	 * Project a streamline to 2D from 3D
+	 * @param streamline, 2D coordinates
+	 * @return 2D coordinates of vertex of the streamline
+	 */
+	public static void projectStreamline(Streamline sl, ArrayList<double[]> coordinates){
+		DoubleBuffer ppos = DoubleBuffer.allocate(3);
+		
+		for(int i = 0; i < sl.getNumVertex(); i++) {
+			double pos[] = sl.getPosition(i);
+			double y = view.get(3) - pos[1] + 1;
+			glu2.gluProject(pos[0], y, pos[2], model, proj, view, ppos);
+			double pos2[] = new double[2];
+			pos2[0] = ppos.get(0);
+			pos2[1] = ppos.get(1);
+			coordinates.add(pos2);
+		}
+	}
+	
+	/**
+	 * Count nodes(intersections) of streamlines in best set.
+	 * @param bestset
+	 * @return
+	 */
+	public static int nodeCounter(StreamlineArray sarray){
+		int counter = 0;
+		ArrayList<double[]> coordinates = new ArrayList<double[]>(); // Keep 2d coordinates on which already streamline has passed.
+		Streamline sl1 = new Streamline();
+		Streamline sl2 = new Streamline();
+		
+		for(int i = 0; i < sarray.getSize() - 1; i ++){
+			sl1 = sarray.getList1(i);
+			sl2 = sarray.getList2(i);
+			
+			projectStreamline(sl1, coordinates);
+			projectStreamline(sl2, coordinates);
+		}
+		return counter;
 	}
 	
 	

@@ -21,7 +21,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 import ocha.itolab.flowdiff.core.seedselect.BestSetSelector;
 import ocha.itolab.flowdiff.core.seedselect.Seed;
-import ocha.itolab.flowdiff.core.seedselect.SingleEvaluator;
+//import ocha.itolab.flowdiff.core.seedselect.SingleEvaluator;
 import ocha.itolab.flowdiff.core.seedselect.ViewDependentEvaluator;
 
 public class PlotPanel extends JPanel{
@@ -34,7 +34,7 @@ public class PlotPanel extends JPanel{
 	public static double emax = 1, dmax = 0;
 	public static double elim = 0, dlim = 0.5; // グラフの閾値(初期値を入れる)
 	
-	SingleEvaluator se = new SingleEvaluator();
+//	SingleEvaluator se = new SingleEvaluator();
 	
 	public SliderListener sl = new SliderListener();
 	

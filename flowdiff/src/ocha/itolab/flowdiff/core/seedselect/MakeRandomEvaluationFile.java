@@ -108,8 +108,9 @@ public class MakeRandomEvaluationFile {
 			counter++;
 		}
 		
+		String filename = Integer.toString(BestSetSelector.data1) + Integer.toString(BestSetSelector.data2);
 		try{
-			FileWriter fileWriter= new FileWriter("random_seeds.json", false);
+			FileWriter fileWriter= new FileWriter(filename + "random_seeds.json", false);
 			fileWriter.write(seedInfoArray.toString());
 			fileWriter.close();
 			System.out.println("Seeds File is done.");
@@ -117,7 +118,7 @@ public class MakeRandomEvaluationFile {
 			System.out.println("Seeds file failed...");
 		}
 		try{
-			FileWriter fileWriter= new FileWriter("random_score.json", false);
+			FileWriter fileWriter= new FileWriter(filename + "random_score.json", false);
 			fileWriter.write(scoreRankArray.toString());
 			fileWriter.close();
 			System.out.println("Score File is done.");
@@ -125,7 +126,7 @@ public class MakeRandomEvaluationFile {
 			System.out.println("Score file failed...");
 		}
 		try{
-			FileWriter fileWriter= new FileWriter("random_entropy.json", false);
+			FileWriter fileWriter= new FileWriter(filename + "random_entropy.json", false);
 			fileWriter.write(entropyRankArray.toString());
 			fileWriter.close();
 			System.out.println("Entropy File is done.");
@@ -133,7 +134,7 @@ public class MakeRandomEvaluationFile {
 			System.out.println("Entropy file failed...");
 		}
 		try{
-			FileWriter fileWriter= new FileWriter("random_diff.json", false);
+			FileWriter fileWriter= new FileWriter(filename + "random_diff.json", false);
 			fileWriter.write(diffRankArray.toString());
 			fileWriter.close();
 			System.out.println("Diff File is done.");

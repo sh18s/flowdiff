@@ -13,7 +13,7 @@ public class Transformer {
 	double viewScaleX, viewScaleY;
 	double viewShiftBak[] = new double[3];
 	double viewScaleBakX, viewScaleBakY;
-	double Xrotate, Yrotate, XrotateBak, YrotateBak;
+	double Xrotate, Yrotate, XrotateBak, YrotateBak, Zrotate, ZrotateBak;
 
 	double tableMin[] = new double[3];
 	double tableMax[] = new double[3];
@@ -193,6 +193,7 @@ public class Transformer {
 		viewShift[2] = viewShiftBak[2] = 0.0;
 		if(num == 0){
 			Xrotate = XrotateBak = 1.0;
+//			Zrotate = ZrotateBak = 1.0;
 			Yrotate = YrotateBak = 0.5;
 		}else if(num == 1){
 			Xrotate = XrotateBak = 0.0;
@@ -330,6 +331,14 @@ public class Transformer {
 	 */
 	public double getViewRotateY() {
 		return Yrotate;
+	}
+	
+	/**
+	 * 表示の回転角度を返す
+	 * @return 表示の回転角度
+	 */
+	public double getViewRotateZ() {
+		return Zrotate;
 	}
 	
 	/**
